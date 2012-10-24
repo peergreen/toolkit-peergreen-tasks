@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -13,8 +14,7 @@ import java.util.UUID;
  * Time: 16:52
  * To change this template use File | Settings | File Templates.
  */
-public class Pipeline implements TaskListener {
-    private String name;
+public class Pipeline extends AbstractTask {
     private UUID uuid;
     private Deque<Task> tasks = new ArrayDeque<Task>();
 
@@ -23,7 +23,7 @@ public class Pipeline implements TaskListener {
     }
 
     public Pipeline(String name) {
-        this.name = name;
+        super(name);
         this.uuid = UUID.randomUUID();
     }
 
@@ -42,10 +42,12 @@ public class Pipeline implements TaskListener {
         return Collections.unmodifiableCollection(tasks);
     }
 
-    @Override
-    public void taskCompleted(Task completed) {
+    public boolean isTerminated() {
         for (Task task : tasks) {
-            task.getDependencies().remove(completed);
+            if (task.getState() != State.COMPLETED) {
+                return false;
+            }
         }
+        return true;
     }
 }

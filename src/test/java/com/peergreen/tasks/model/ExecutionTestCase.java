@@ -2,15 +2,16 @@ package com.peergreen.tasks.model;
 
 import com.peergreen.tasks.runtime.Job;
 import com.peergreen.tasks.runtime.JobContext;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -29,20 +30,20 @@ public class ExecutionTestCase {
     public void testSequentialExecution() throws Exception {
         final StringBuffer sb = new StringBuffer();
         Pipeline pipeline = new Pipeline();
-        final Task task0 = new Task(new Job() {
+        final Task task0 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 System.out.printf("Task 1 Execution%n");
             }
         });
-        final Task task1 = new Task(new Job() {
+        final Task task1 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 sb.append("[Task 1] Task 0 is " + task0.getState().name() + "\n");
                 System.out.printf("Task 2 Execution%n");
             }
         });
-        Task task2 = new Task(new Job() {
+        Task task2 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 sb.append("[Task 2] Task 1 is " + task1.getState().name() + "\n");
@@ -81,13 +82,13 @@ public class ExecutionTestCase {
         Pipeline pipelineA = new Pipeline();
         Pipeline pipelineB = new Pipeline();
 
-        final Task taskB0 = new Task(new Job() {
+        final Task taskB0 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 System.out.printf("Task B0 Execution%n");
             }
         });
-        final Task taskB1 = new Task(new Job() {
+        final Task taskB1 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 sb.append("[Task B1] Task B0 is " + taskB0.getState().name() + "\n");
@@ -98,21 +99,21 @@ public class ExecutionTestCase {
         pipelineB.addTask(taskB0);
         pipelineB.addTask(taskB1);
 
-        final Task taskA0 = new Task(new Job() {
+        final Task taskA0 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 sb.append("[Task A0] Task B1 is " + taskB1.getState().name() + "\n");
                 System.out.printf("Task A0 Execution%n");
             }
         });
-        final Task taskA1 = new Task(new Job() {
+        final Task taskA1 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 sb.append("[Task A1] Task A0 is " + taskA0.getState().name() + "\n");
                 System.out.printf("Task A1 Execution%n");
             }
         });
-        final Task taskA2 = new Task(new Job() {
+        final Task taskA2 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 sb.append("[Task A2] Task A1 is " + taskA0.getState().name() + "\n");
@@ -156,21 +157,21 @@ public class ExecutionTestCase {
         Pipeline pipelineA = new Pipeline();
         Pipeline pipelineB = new Pipeline();
 
-        final Task taskA0 = new Task(new Job() {
+        final Task taskA0 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 System.out.printf("Task A0 Execution%n");
             }
         });
 
-        final Task taskB0 = new Task(new Job() {
+        final Task taskB0 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 System.out.printf("Task B0 Execution%n");
             }
         });
 
-        final Task taskA1 = new Task(new Job() {
+        final Task taskA1 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 sb.append("[Task A1] Task A0 is " + taskA0.getState().name() + "\n");
@@ -179,7 +180,7 @@ public class ExecutionTestCase {
             }
         });
 
-        final Task taskB1 = new Task(new Job() {
+        final Task taskB1 = new UnitOfWork(new Job() {
             @Override
             public void execute(JobContext context) {
                 sb.append("[Task B1] Task A0 is " + taskA0.getState().name() + "\n");
@@ -209,4 +210,162 @@ public class ExecutionTestCase {
         assertTrue(sb.toString().contains("[Task B1] Task B0 is COMPLETED"));
 
     }
+
+    @Test
+    public void testPipelineStateIsUpdated() throws Exception {
+        Pipeline pipeline = new Pipeline();
+
+        // Add a sleep task
+        pipeline.addTask(new UnitOfWork(new SleepJob(500)));
+
+        ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
+        Execution execution = new Execution(executorService, pipeline);
+
+        // Before execution, the pipeline is WAITING
+        assertEquals(pipeline.getState(), State.WAITING);
+        execution.start();
+        // Just after, it is RUNNING
+        assertEquals(pipeline.getState(), State.RUNNING);
+
+        // Wait 1 second, the sleep task should have been executed
+        executorService.awaitTermination(1, TimeUnit.SECONDS);
+
+        // When tasks have been executed, the new state is COMPLETED
+        assertEquals(pipeline.getState(), State.COMPLETED);
+
+    }
+
+
+    @Test
+    public void testPipelineInPipeline() throws Exception {
+        /**
+         * +-----------------------------------------+
+         * |          +-------------------+          |
+         * |  +---+   |   +---+   +---+   |   +---+  |
+         * |  | a | < |   | b | < | c |   | < | d |  |
+         * |  +---+   |   +---+   +---+   |   +---+  |
+         * |          +-------------------+          |
+         * +-----------------------------------------+
+         */
+
+        // Prepare objects
+        Pipeline master = new Pipeline("master");
+        Pipeline inner = new Pipeline("inner");
+
+        ExpectationsJob aJob = new ExpectationsJob(
+                new StateExpectation(master, State.RUNNING)
+        );
+        UnitOfWork a = new UnitOfWork(aJob, "a");
+
+        ExpectationsJob bJob = new ExpectationsJob(
+                new StateExpectation(inner, State.RUNNING),
+                new StateExpectation(a, State.COMPLETED)
+        );
+        UnitOfWork b = new UnitOfWork(bJob, "b");
+
+        ExpectationsJob cJob = new ExpectationsJob(
+                new StateExpectation(inner, State.RUNNING),
+                new StateExpectation(b, State.COMPLETED)
+        );
+        UnitOfWork c = new UnitOfWork(cJob, "c");
+
+        ExpectationsJob dJob = new ExpectationsJob(
+                new StateExpectation(inner, State.COMPLETED)
+        );
+        UnitOfWork d = new UnitOfWork(dJob, "d");
+
+        // Build inner pipeline first
+        inner.addTask(b);
+        inner.addTask(c);
+
+        // Then build master Pipeline
+        master.addTask(a);
+        master.addTask(inner);
+        master.addTask(d);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
+        Execution execution = new Execution(executorService, master);
+
+        execution.start();
+
+        // Wait for some time
+        executorService.awaitTermination(1, TimeUnit.SECONDS);
+
+        assertEquals(inner.getState(), State.COMPLETED);
+        assertEquals(master.getState(), State.COMPLETED);
+
+        // Assertions verification
+        assertTrue(aJob.passed);
+        assertTrue(bJob.passed);
+        assertTrue(cJob.passed);
+        assertTrue(dJob.passed);
+
+    }
+
+    private static class SleepJob implements Job {
+        private long time;
+
+        public SleepJob(long time) {
+            this.time = time;
+        }
+
+        @Override
+        public void execute(JobContext context) {
+            try {
+                Thread.sleep(time);
+            } catch (InterruptedException e) {
+                // Ignored
+            }
+        }
+    }
+
+    private static class ExpectationsJob implements Job {
+        public boolean passed;
+        private Collection<Expectation> expectations;
+
+        public ExpectationsJob(Expectation expectation) {
+            this(Collections.singleton(expectation));
+        }
+
+        public ExpectationsJob(Expectation... expectations) {
+            this(Arrays.asList(expectations));
+        }
+
+        public ExpectationsJob(Collection<Expectation> expectations) {
+            this.expectations = expectations;
+        }
+
+        @Override
+        public void execute(JobContext context) {
+            passed = true;
+            for (Expectation expectation : expectations) {
+                if (!expectation.verify()) {
+                    passed = false;
+                    return;
+                }
+            }
+        }
+    }
+
+    private static interface Expectation {
+        boolean verify();
+    }
+
+    public static class StateExpectation implements Expectation {
+
+        private Task task;
+        private State state;
+
+        public StateExpectation(Task task, State state) {
+            this.task = task;
+            this.state = state;
+        }
+
+        @Override
+        public boolean verify() {
+            return task.getState() == state;
+        }
+    }
+
+
 }

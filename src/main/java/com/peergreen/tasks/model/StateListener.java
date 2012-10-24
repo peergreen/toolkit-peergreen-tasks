@@ -3,10 +3,10 @@ package com.peergreen.tasks.model;
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
- * Date: 23/10/12
- * Time: 14:54
+ * Date: 24/10/12
+ * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public interface TaskListener {
-    void taskCompleted(Task task);
+public interface StateListener {
+    void stateChanged(Task source, State previous, State current);
 }
