@@ -50,4 +50,21 @@ public class Pipeline extends AbstractTask {
         }
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Pipeline pipeline = (Pipeline) o;
+
+        if (!uuid.equals(pipeline.uuid)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
+    }
 }

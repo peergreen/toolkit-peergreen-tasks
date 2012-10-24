@@ -37,15 +37,15 @@ public class UnitOfWork extends AbstractTask {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UnitOfWork task = (UnitOfWork) o;
+        UnitOfWork that = (UnitOfWork) o;
 
-        if (uuid != null ? !uuid.equals(task.uuid) : task.uuid != null) return false;
+        if (!uuid.equals(that.uuid)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return uuid != null ? uuid.hashCode() : 0;
+        return uuid.hashCode();
     }
 }
