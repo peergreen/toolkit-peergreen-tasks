@@ -44,7 +44,7 @@ public class PipelineTestCase {
         pipeline.addTask(task1);
         pipeline.addTask(task2);
 
-        verify(task2).getDependencies();
+        verify(task2).getRequirements();
     }
 
     @Test

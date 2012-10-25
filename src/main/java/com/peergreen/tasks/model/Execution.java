@@ -52,7 +52,10 @@ public class Execution implements StateListener {
             executeTask(task);
         }
 
-        if (pipeline.isTerminated()) {
+        if (pipeline.hasFailures() && (pipeline.getState() != State.FAILED)) {
+            System.out.printf("Failing %s%n", pipeline.getName());
+            pipeline.setState(State.FAILED);
+        } else if (pipeline.isTerminated() && (pipeline.getState() != State.COMPLETED)) {
             System.out.printf("Closing %s%n", pipeline.getName());
             pipeline.setState(State.COMPLETED);
         }
@@ -83,7 +86,12 @@ public class Execution implements StateListener {
             public void run() {
                 System.out.printf("Executing %s%n", unitOfWork.getName());
                 unitOfWork.setState(State.RUNNING);
-                unitOfWork.getJob().execute(null);
+                try {
+                    unitOfWork.getJob().execute(null);
+                } catch (Throwable t) {
+                    unitOfWork.setState(State.FAILED);
+                    return;
+                }
                 unitOfWork.setState(State.COMPLETED);
             }
         });
@@ -101,7 +109,7 @@ public class Execution implements StateListener {
 
     @Override
     public void stateChanged(Task source, State previous, State current) {
-        if (current == State.COMPLETED) {
+        if ((current == State.COMPLETED) || (current == State.FAILED)) {
             executePipelines();
         }
     }

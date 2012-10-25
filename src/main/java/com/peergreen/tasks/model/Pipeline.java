@@ -7,6 +7,8 @@ import java.util.Deque;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.peergreen.tasks.model.requirement.Requirements.completed;
+
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
@@ -28,13 +30,21 @@ public class Pipeline extends AbstractTask {
     }
 
     public void addTask(Task task) {
+        addTask(task, true);
+    }
 
-        // Automatically add the previous element of the queue as dependency
-        // That's an ordering guarantee
-        Task previous = tasks.peekLast();
-        if (previous != null) {
-            task.getDependencies().add(previous);
+    public void addTask(Task task, boolean link) {
+
+        if (link) {
+            // Automatically add the previous element of the queue as dependency
+            // That's an ordering guarantee
+            Task previous = tasks.peekLast();
+            if (previous != null) {
+                task.getRequirements().add(completed(previous));
+            }
         }
+
+        // Append the task in the queue
         tasks.offer(task);
     }
 
@@ -44,12 +54,26 @@ public class Pipeline extends AbstractTask {
 
     public boolean isTerminated() {
         for (Task task : tasks) {
-            if (task.getState() != State.COMPLETED) {
-                return false;
+            switch (task.getState()) {
+                case WAITING:
+                case RUNNING:
+                case SCHEDULED:
+                    return false;
             }
         }
+        // tasks are all either COMPLETED, FAILED or IGNORED
         return true;
     }
+
+    public boolean hasFailures() {
+        for (Task task : tasks) {
+            if (task.getState() == State.FAILED) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -67,4 +91,5 @@ public class Pipeline extends AbstractTask {
     public int hashCode() {
         return uuid.hashCode();
     }
+
 }

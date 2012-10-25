@@ -2,6 +2,10 @@ package com.peergreen.tasks.model;
 
 import com.peergreen.tasks.runtime.Job;
 import com.peergreen.tasks.runtime.JobContext;
+import com.peergreen.tasks.runtime.JobException;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -11,6 +15,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static com.peergreen.tasks.model.requirement.Requirements.completed;
+import static com.peergreen.tasks.model.requirement.Requirements.failed;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -23,8 +31,15 @@ import static org.testng.Assert.assertTrue;
  */
 public class ExecutionTestCase {
 
-
     public static final int N_THREADS = 2;
+
+    @Mock
+    private Job job;
+
+    @BeforeMethod
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void testSequentialExecution() throws Exception {
@@ -126,7 +141,7 @@ public class ExecutionTestCase {
         pipelineA.addTask(taskA2);
 
         // Add dependency
-        taskA0.getDependencies().add(taskB1);
+        taskA0.getRequirements().add(completed(taskB1));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         Execution execution = new Execution(executorService, Arrays.asList(pipelineA, pipelineB));
@@ -195,8 +210,8 @@ public class ExecutionTestCase {
         pipelineB.addTask(taskB0);
         pipelineB.addTask(taskB1);
 
-        taskA1.getDependencies().add(taskB0);
-        taskB1.getDependencies().add(taskA0);
+        taskA1.getRequirements().add(completed(taskB0));
+        taskB1.getRequirements().add(completed(taskA0));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         Execution execution = new Execution(executorService, Arrays.asList(pipelineA, pipelineB));
@@ -235,6 +250,58 @@ public class ExecutionTestCase {
 
     }
 
+    @Test
+    public void testTaskIsExecutedWhenPreviousIsFailed() throws Exception {
+
+        /**
+         *           ok  +---+
+         *             --| b |
+         *   +---+    /  +---+
+         *   | a | <--
+         *   +---+    \  +---+
+         *             --| c |
+         *           ko  +---+
+         */
+
+        Pipeline master = new Pipeline("master");
+
+        UnitOfWork a = new UnitOfWork(job, "a");
+
+        ExpectationsJob bJob = new ExpectationsJob(
+                new StateExpectation(a, State.COMPLETED)
+        );
+        UnitOfWork b = new UnitOfWork(bJob, "b");
+
+        ExpectationsJob cJob = new ExpectationsJob(
+                new StateExpectation(a, State.FAILED)
+        );
+        UnitOfWork c = new UnitOfWork(cJob, "c");
+
+        master.addTask(a);
+        master.addTask(b, false); // do not auto-link to previous
+        master.addTask(c, false); // do not auto-link to previous
+
+        // Manually manage links
+        b.getRequirements().add(completed(a));
+        c.getRequirements().add(failed(a));
+
+        doThrow(new RuntimeException(""))
+                .when(job).execute(null);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
+        Execution execution = new Execution(executorService, master);
+
+        execution.start();
+
+        // Wait for some time
+        executorService.awaitTermination(1, TimeUnit.SECONDS);
+
+        assertTrue(cJob.passed);
+        assertEquals(master.getState(), State.FAILED);
+        assertEquals(a.getState(), State.FAILED);
+        assertEquals(b.getState(), State.WAITING);
+        assertEquals(c.getState(), State.COMPLETED);
+    }
 
     @Test
     public void testPipelineInPipeline() throws Exception {

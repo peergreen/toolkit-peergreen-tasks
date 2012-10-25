@@ -3,6 +3,8 @@ package com.peergreen.tasks.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.peergreen.tasks.model.requirement.Requirements.waiting;
+
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
@@ -16,8 +18,11 @@ public class AbstractTask implements Task {
     private Set<Task> dependencies = new HashSet<Task>();
     private StateSupport support = new StateSupport(this);
 
+    private Set<Requirement> requirements = new HashSet<Requirement>();
+
     public AbstractTask(String name) {
         this.name = name;
+        this.requirements.add(waiting(this));
     }
 
     public String getName() {
@@ -25,8 +30,8 @@ public class AbstractTask implements Task {
     }
 
     @Override
-    public Set<Task> getDependencies() {
-        return dependencies;
+    public Set<Requirement> getRequirements() {
+        return requirements;
     }
 
     @Override
@@ -52,18 +57,11 @@ public class AbstractTask implements Task {
     @Override
     public boolean isReady() {
 
-        // Tasks ready to be executed are WAITING
-        if (state != State.WAITING) {
-            return false;
-        }
-
-        // Tasks ready to be executed have all their dependencies COMPLETED
-        for (Task dep : dependencies) {
-            if (dep.getState() != State.COMPLETED) {
+        for (Requirement requirement : requirements) {
+            if (!requirement.verify()) {
                 return false;
             }
         }
-
         return true;
 
     }

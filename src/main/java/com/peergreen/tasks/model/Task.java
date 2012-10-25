@@ -13,11 +13,11 @@ public interface Task {
 
     String getName();
 
-    Set<Task> getDependencies();
-
     State getState();
 
     void setState(State state);
 
     boolean isReady();
+
+    Set<Requirement> getRequirements();
 }
