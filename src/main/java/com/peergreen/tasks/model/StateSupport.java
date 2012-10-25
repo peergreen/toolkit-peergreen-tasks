@@ -15,7 +15,7 @@ public class StateSupport {
     private Collection<StateListener> listeners;
 
     public StateSupport(Task source) {
-        this.listeners = new ArrayList<>();
+        this.listeners = new ArrayList<StateListener>();
         this.source = source;
     }
 
