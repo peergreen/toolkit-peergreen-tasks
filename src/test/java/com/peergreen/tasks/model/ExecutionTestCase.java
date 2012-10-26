@@ -43,28 +43,19 @@ public class ExecutionTestCase {
 
     @Test
     public void testSequentialExecution() throws Exception {
-        final StringBuffer sb = new StringBuffer();
         Pipeline pipeline = new Pipeline();
-        final Task task0 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                System.out.printf("Task 1 Execution%n");
-            }
-        });
-        final Task task1 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                sb.append("[Task 1] Task 0 is " + task0.getState().name() + "\n");
-                System.out.printf("Task 2 Execution%n");
-            }
-        });
-        Task task2 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                sb.append("[Task 2] Task 1 is " + task1.getState().name() + "\n");
-                System.out.printf("Task 3 Execution%n");
-            }
-        });
+
+        final Task task0 = new UnitOfWork(new EmptyJob(), "task-0");
+
+        ExpectationsJob aExpectations = new ExpectationsJob(
+                new StateExpectation(task0, State.COMPLETED)
+        );
+        final Task task1 = new UnitOfWork(aExpectations, "task-1");
+
+        ExpectationsJob bExpectations = new ExpectationsJob(
+                new StateExpectation(task1, State.COMPLETED)
+        );
+        Task task2 = new UnitOfWork(bExpectations, "task-2");
 
         pipeline.addTask(task0);
         pipeline.addTask(task1);
@@ -76,15 +67,13 @@ public class ExecutionTestCase {
         execution.start();
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
-        assertTrue(sb.toString().contains("[Task 1] Task 0 is COMPLETED"));
-        assertTrue(sb.toString().contains("[Task 2] Task 1 is COMPLETED"));
+        assertTrue(aExpectations.passed);
+        assertTrue(bExpectations.passed);
 
     }
 
     @Test
-    public void testParallelExecution() throws Exception {
-
-        final StringBuffer sb = new StringBuffer();
+    public void testTwoParallelPipelinesWhereFirstTaskOfFirstPipelineDependsOnLastTaskOfSecondPipeline() throws Exception {
 
         /**
          * Pipelines description (A > B means A depends on B):
@@ -94,47 +83,33 @@ public class ExecutionTestCase {
          *        v
          * TB0 < TB1
          */
-        Pipeline pipelineA = new Pipeline();
-        Pipeline pipelineB = new Pipeline();
+        Pipeline pipelineA = new Pipeline("pipeline-a");
+        Pipeline pipelineB = new Pipeline("pipeline-b");
 
-        final Task taskB0 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                System.out.printf("Task B0 Execution%n");
-            }
-        });
-        final Task taskB1 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                sb.append("[Task B1] Task B0 is " + taskB0.getState().name() + "\n");
-                System.out.printf("Task B1 Execution%n");
-            }
-        });
+        final Task taskB0 = new UnitOfWork(new EmptyJob(), "task-b-0");
+
+        ExpectationsJob b1Expectations = new ExpectationsJob(
+                new StateExpectation(taskB0, State.COMPLETED)
+        );
+        final Task taskB1 = new UnitOfWork(b1Expectations, "task-b-1");
 
         pipelineB.addTask(taskB0);
         pipelineB.addTask(taskB1);
 
-        final Task taskA0 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                sb.append("[Task A0] Task B1 is " + taskB1.getState().name() + "\n");
-                System.out.printf("Task A0 Execution%n");
-            }
-        });
-        final Task taskA1 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                sb.append("[Task A1] Task A0 is " + taskA0.getState().name() + "\n");
-                System.out.printf("Task A1 Execution%n");
-            }
-        });
-        final Task taskA2 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                sb.append("[Task A2] Task A1 is " + taskA0.getState().name() + "\n");
-                System.out.printf("Task A2 Execution%n");
-            }
-        });
+        ExpectationsJob a0Expectations = new ExpectationsJob(
+                new StateExpectation(taskB1, State.COMPLETED)
+        );
+        final Task taskA0 = new UnitOfWork(a0Expectations, "task-a-0");
+
+        ExpectationsJob a1Expectations = new ExpectationsJob(
+                new StateExpectation(taskA0, State.COMPLETED)
+        );
+        final Task taskA1 = new UnitOfWork(a1Expectations, "task-a-1");
+
+        ExpectationsJob a2Expectations = new ExpectationsJob(
+                new StateExpectation(taskA1, State.COMPLETED)
+        );
+        final Task taskA2 = new UnitOfWork(a2Expectations, "task-a-2");
 
         pipelineA.addTask(taskA0);
         pipelineA.addTask(taskA1);
@@ -144,23 +119,20 @@ public class ExecutionTestCase {
         taskA0.getRequirements().add(completed(taskB1));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        Execution execution = new Execution(executorService, Arrays.asList(pipelineA, pipelineB));
+        Execution execution = new Execution(executorService, pipelineA, pipelineB);
 
         execution.start();
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
-        assertTrue(sb.toString().contains("[Task B1] Task B0 is COMPLETED"));
-        assertTrue(sb.toString().contains("[Task A0] Task B1 is COMPLETED"));
-        assertTrue(sb.toString().contains("[Task A1] Task A0 is COMPLETED"));
-        assertTrue(sb.toString().contains("[Task A2] Task A1 is COMPLETED"));
-
+        assertTrue(b1Expectations.passed);
+        assertTrue(a0Expectations.passed);
+        assertTrue(a1Expectations.passed);
+        assertTrue(a2Expectations.passed);
 
     }
 
     @Test
-    public void testExecutionOfWaitingTasks() throws Exception {
-
-        final StringBuffer sb = new StringBuffer();
+    public void testTwoParallelPipelinesWhereTheirSecondTaskAreWaitingForTheOtherPipelineFirstTasks() throws Exception {
 
         /**
          * Pipelines description (A > B means A depends on B):
@@ -169,40 +141,25 @@ public class ExecutionTestCase {
          * TB0 < TB1
          */
 
-        Pipeline pipelineA = new Pipeline();
-        Pipeline pipelineB = new Pipeline();
+        Pipeline pipelineA = new Pipeline("pipeline-a");
+        Pipeline pipelineB = new Pipeline("pipeline-b");
 
-        final Task taskA0 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                System.out.printf("Task A0 Execution%n");
-            }
-        });
+        final Task taskA0 = new UnitOfWork(new EmptyJob(), "task-a-0");
+        final Task taskB0 = new UnitOfWork(new EmptyJob(), "task-b-0");
 
-        final Task taskB0 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                System.out.printf("Task B0 Execution%n");
-            }
-        });
+        ExpectationsJob a1Expectations = new ExpectationsJob(
+                new StateExpectation(taskA0, State.COMPLETED),
+                new StateExpectation(taskB0, State.COMPLETED)
+        );
 
-        final Task taskA1 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                sb.append("[Task A1] Task A0 is " + taskA0.getState().name() + "\n");
-                sb.append("[Task A1] Task B0 is " + taskB0.getState().name() + "\n");
-                System.out.printf("Task A1 Execution%n");
-            }
-        });
+        final Task taskA1 = new UnitOfWork(a1Expectations, "task-a-1");
 
-        final Task taskB1 = new UnitOfWork(new Job() {
-            @Override
-            public void execute(JobContext context) {
-                sb.append("[Task B1] Task A0 is " + taskA0.getState().name() + "\n");
-                sb.append("[Task B1] Task B0 is " + taskB0.getState().name() + "\n");
-                System.out.printf("Task B1 Execution%n");
-            }
-        });
+        ExpectationsJob b1Expectations = new ExpectationsJob(
+                new StateExpectation(taskA0, State.COMPLETED),
+                new StateExpectation(taskB0, State.COMPLETED)
+        );
+
+        final Task taskB1 = new UnitOfWork(b1Expectations, "task-b-1");
 
         pipelineA.addTask(taskA0);
         pipelineA.addTask(taskA1);
@@ -214,15 +171,13 @@ public class ExecutionTestCase {
         taskB1.getRequirements().add(completed(taskA0));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        Execution execution = new Execution(executorService, Arrays.asList(pipelineA, pipelineB));
+        Execution execution = new Execution(executorService, pipelineA, pipelineB);
 
         execution.start();
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
-        assertTrue(sb.toString().contains("[Task A1] Task A0 is COMPLETED"));
-        assertTrue(sb.toString().contains("[Task A1] Task B0 is COMPLETED"));
-        assertTrue(sb.toString().contains("[Task B1] Task A0 is COMPLETED"));
-        assertTrue(sb.toString().contains("[Task B1] Task B0 is COMPLETED"));
+        assertTrue(a1Expectations.passed);
+        assertTrue(b1Expectations.passed);
 
     }
 
@@ -383,6 +338,13 @@ public class ExecutionTestCase {
             } catch (InterruptedException e) {
                 // Ignored
             }
+        }
+    }
+
+    private static class EmptyJob implements Job {
+        @Override
+        public void execute(JobContext context) {
+            // do nothing
         }
     }
 

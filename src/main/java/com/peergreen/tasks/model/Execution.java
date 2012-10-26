@@ -2,8 +2,12 @@ package com.peergreen.tasks.model;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
+
+import static com.peergreen.tasks.model.util.Pipelines.parallelize;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,36 +19,28 @@ import java.util.concurrent.ExecutorService;
 public class Execution implements StateListener {
 
     private ExecutorService executorService;
-    private Collection<Pipeline> pipelines;
+    private Pipeline pipeline;
 
-    public Execution(ExecutorService executorService, Pipeline pipeline) {
-        this(executorService, Collections.singleton(pipeline));
+    private Map<Pipeline, Execution> executions = new HashMap<Pipeline, Execution>();
+
+    public Execution(ExecutorService executorService, Pipeline... pipelines) {
+        this(executorService, parallelize(pipelines));
     }
 
-    public Execution(ExecutorService executorService, Collection<Pipeline> pipelines) {
+    public Execution(ExecutorService executorService, Pipeline pipeline) {
         this.executorService = executorService;
-        this.pipelines = pipelines;
+        this.pipeline = pipeline;
     }
 
     public void start() {
-        // Prepare initial states of Pipelines
-        for (Pipeline pipeline : pipelines) {
-            pipeline.setState(State.RUNNING);
-        }
+        pipeline.addStateListener(new LogStateListener());
+        pipeline.setState(State.RUNNING);
 
         // Start execution flow
-        executePipelines();
+        executePipeline();
     }
 
-    private void executePipelines() {
-
-        // Iterates on all the Pipelines
-        for (Pipeline pipeline : pipelines) {
-            executePipeline(pipeline);
-        }
-    }
-
-    private void executePipeline(Pipeline pipeline) {
+    private void executePipeline() {
         // Collect the runnable tasks of the pipeline
         Collection<Task> runnable = filter(pipeline.getTasks());
 
@@ -52,13 +48,10 @@ public class Execution implements StateListener {
             executeTask(task);
         }
 
-        if (pipeline.hasFailures() && (pipeline.getState() != State.FAILED)) {
-            System.out.printf("Failing %s%n", pipeline.getName());
-            pipeline.setState(State.FAILED);
-        } else if (pipeline.isTerminated() && (pipeline.getState() != State.COMPLETED)) {
-            System.out.printf("Closing %s%n", pipeline.getName());
-            pipeline.setState(State.COMPLETED);
+        for (Execution execution : executions.values()) {
+            execution.executePipeline();
         }
+
     }
 
     private void executeTask(Task task) {
@@ -69,22 +62,28 @@ public class Execution implements StateListener {
         } // Unknown type, error ?
     }
 
-    private void executeSubPipeline(Pipeline pipeline) {
-        // Execute the inner pipeline
-        System.out.printf("Executing %s%n", pipeline.getName());
-        pipeline.addStateListener(this);
-        Execution subExecution = new Execution(executorService, pipeline);
-        subExecution.start();
+    private void executeSubPipeline(Pipeline sub) {
+
+        Execution inner = executions.get(sub);
+        if (inner == null) {
+            sub.addStateListener(this);
+            inner = new Execution(executorService, sub);
+            executions.put(sub, inner);
+
+            inner.start();
+        } else {
+            inner.executePipeline();
+        }
     }
 
     private void executeUnitOfWork(final UnitOfWork unitOfWork) {
         // Execute/Schedule the unit of work
-        unitOfWork.setState(State.SCHEDULED);
+        unitOfWork.addStateListener(new LogStateListener());
         unitOfWork.addStateListener(this);
+        unitOfWork.setState(State.SCHEDULED);
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                System.out.printf("Executing %s%n", unitOfWork.getName());
                 unitOfWork.setState(State.RUNNING);
                 try {
                     unitOfWork.getJob().execute(null);
@@ -109,8 +108,35 @@ public class Execution implements StateListener {
 
     @Override
     public void stateChanged(Task source, State previous, State current) {
-        if ((current == State.COMPLETED) || (current == State.FAILED)) {
-            executePipelines();
+
+        // Try to find some new tasks to execute
+        executePipeline();
+
+        // If the task has failed, change the global state of the executed Pipeline
+        if ((current == State.FAILED) && (pipeline.getState() != State.FAILED)) {
+            pipeline.setState(State.FAILED);
+        }
+
+        // If the task has completed without problems AND that there are no more task to execute
+        if ((current == State.COMPLETED)
+                && (pipeline.getState() != State.COMPLETED)
+                && (pipeline.isTerminated())) {
+            pipeline.setState(State.COMPLETED);
+        }
+
+
+    }
+
+    private class LogStateListener implements StateListener {
+
+        @Override
+        public void stateChanged(Task source, State previous, State current) {
+            System.out.printf(
+                    "%15s - %9S - %s%n",
+                    Thread.currentThread().getName(),
+                    current.name(),
+                    source.getName()
+            );
         }
     }
 }
