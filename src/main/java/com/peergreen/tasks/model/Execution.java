@@ -22,11 +22,10 @@ import static com.peergreen.tasks.model.util.Pipelines.parallelize;
 public class Execution implements StateListener {
 
     private ExecutorService executorService;
+    private TrackerManager trackerManager = new TrackerManager();
     private Pipeline pipeline;
 
     private Map<Pipeline, Execution> executions = new HashMap<Pipeline, Execution>();
-
-    private TrackerManager trackerManager = new TrackerManager();
 
     public Execution(ExecutorService executorService, Pipeline... pipelines) {
         this(executorService, parallelize(pipelines));
@@ -37,8 +36,10 @@ public class Execution implements StateListener {
         this.pipeline = pipeline;
     }
 
-    public void setTrackerManager(TrackerManager trackerManager) {
-        this.trackerManager = trackerManager;
+    protected Execution(Execution parent, Pipeline pipeline) {
+        this.executorService = parent.executorService;
+        this.trackerManager = parent.trackerManager;
+        this.pipeline = pipeline;
     }
 
     public TrackerManager getTrackerManager() {
@@ -81,8 +82,7 @@ public class Execution implements StateListener {
         if (inner == null) {
             sub.addStateListener(trackerManager);
             sub.addStateListener(this);
-            inner = new Execution(executorService, sub);
-            inner.setTrackerManager(trackerManager);
+            inner = new Execution(this, sub);
             executions.put(sub, inner);
 
             inner.start();
