@@ -19,7 +19,6 @@ import static com.peergreen.tasks.model.requirement.Requirements.waiting;
 public class AbstractTask implements Task {
     protected String name;
     private State state = State.WAITING;
-    private Set<Task> dependencies = new HashSet<Task>();
     private StateSupport support = new StateSupport(this);
 
     private Set<Requirement> requirements = new HashSet<Requirement>();
