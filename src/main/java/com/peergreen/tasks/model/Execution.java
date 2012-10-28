@@ -1,7 +1,10 @@
 package com.peergreen.tasks.model;
 
+import com.peergreen.tasks.model.tracker.TrackerManager;
+import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.state.StateListener;
+
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,6 +26,8 @@ public class Execution implements StateListener {
 
     private Map<Pipeline, Execution> executions = new HashMap<Pipeline, Execution>();
 
+    private TrackerManager trackerManager = new TrackerManager();
+
     public Execution(ExecutorService executorService, Pipeline... pipelines) {
         this(executorService, parallelize(pipelines));
     }
@@ -32,8 +37,16 @@ public class Execution implements StateListener {
         this.pipeline = pipeline;
     }
 
+    public void setTrackerManager(TrackerManager trackerManager) {
+        this.trackerManager = trackerManager;
+    }
+
+    public TrackerManager getTrackerManager() {
+        return trackerManager;
+    }
+
     public void start() {
-        pipeline.addStateListener(new LogStateListener());
+        pipeline.addStateListener(trackerManager);
         pipeline.setState(State.RUNNING);
 
         // Start execution flow
@@ -66,8 +79,10 @@ public class Execution implements StateListener {
 
         Execution inner = executions.get(sub);
         if (inner == null) {
+            sub.addStateListener(trackerManager);
             sub.addStateListener(this);
             inner = new Execution(executorService, sub);
+            inner.setTrackerManager(trackerManager);
             executions.put(sub, inner);
 
             inner.start();
@@ -78,7 +93,7 @@ public class Execution implements StateListener {
 
     private void executeUnitOfWork(final UnitOfWork unitOfWork) {
         // Execute/Schedule the unit of work
-        unitOfWork.addStateListener(new LogStateListener());
+        unitOfWork.addStateListener(trackerManager);
         unitOfWork.addStateListener(this);
         unitOfWork.setState(State.SCHEDULED);
         executorService.submit(new Runnable() {
@@ -124,19 +139,5 @@ public class Execution implements StateListener {
             pipeline.setState(State.COMPLETED);
         }
 
-
-    }
-
-    private class LogStateListener implements StateListener {
-
-        @Override
-        public void stateChanged(Task source, State previous, State current) {
-            System.out.printf(
-                    "%15s - %9S - %s%n",
-                    Thread.currentThread().getName(),
-                    current.name(),
-                    source.getName()
-            );
-        }
     }
 }

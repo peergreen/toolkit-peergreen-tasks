@@ -1,5 +1,9 @@
 package com.peergreen.tasks.model;
 
+import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.state.StateListener;
+import com.peergreen.tasks.model.state.StateSupport;
+
 import java.util.HashSet;
 import java.util.Set;
 

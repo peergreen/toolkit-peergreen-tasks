@@ -1,4 +1,6 @@
-package com.peergreen.tasks.model;
+package com.peergreen.tasks.model.state;
+
+import com.peergreen.tasks.model.Task;
 
 import java.util.ArrayList;
 import java.util.Collection;

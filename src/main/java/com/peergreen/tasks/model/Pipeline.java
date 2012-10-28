@@ -1,10 +1,11 @@
 package com.peergreen.tasks.model;
 
+import com.peergreen.tasks.model.state.State;
+
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.Set;
 import java.util.UUID;
 
 import static com.peergreen.tasks.model.requirement.Requirements.completed;

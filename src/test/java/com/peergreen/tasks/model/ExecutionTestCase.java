@@ -1,8 +1,10 @@
 package com.peergreen.tasks.model;
 
+import com.peergreen.tasks.model.job.EmptyJob;
+import com.peergreen.tasks.model.job.SleepJob;
+import com.peergreen.tasks.model.state.State;
 import com.peergreen.tasks.runtime.Job;
 import com.peergreen.tasks.runtime.JobContext;
-import com.peergreen.tasks.runtime.JobException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
@@ -18,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import static com.peergreen.tasks.model.requirement.Requirements.completed;
 import static com.peergreen.tasks.model.requirement.Requirements.failed;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -322,30 +323,6 @@ public class ExecutionTestCase {
         assertTrue(cJob.passed);
         assertTrue(dJob.passed);
 
-    }
-
-    private static class SleepJob implements Job {
-        private long time;
-
-        public SleepJob(long time) {
-            this.time = time;
-        }
-
-        @Override
-        public void execute(JobContext context) {
-            try {
-                Thread.sleep(time);
-            } catch (InterruptedException e) {
-                // Ignored
-            }
-        }
-    }
-
-    private static class EmptyJob implements Job {
-        @Override
-        public void execute(JobContext context) {
-            // do nothing
-        }
     }
 
     private static class ExpectationsJob implements Job {

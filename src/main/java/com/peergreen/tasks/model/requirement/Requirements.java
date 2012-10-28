@@ -1,7 +1,7 @@
 package com.peergreen.tasks.model.requirement;
 
 import com.peergreen.tasks.model.Requirement;
-import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.state.State;
 import com.peergreen.tasks.model.Task;
 
 /**

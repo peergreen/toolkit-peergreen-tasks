@@ -1,4 +1,4 @@
-package com.peergreen.tasks.model;
+package com.peergreen.tasks.model.state;
 
 /**
  * Created with IntelliJ IDEA.

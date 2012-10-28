@@ -1,5 +1,6 @@
 package com.peergreen.tasks.model;
 
+import com.peergreen.tasks.model.state.State;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
