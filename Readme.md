@@ -36,7 +36,7 @@ A Requirement simply verifies that some conditions are met.
 An Execution is responsible of executing a Pipeline or Parallel.
 It uses a JDK ExecutorService to abstract itself from the ThreadPool.
 
-## TaskTracker<T>
+## TaskTracker
 TaskTrackers are the **extensibility elements** of the Tasks Framework.
 
 Toughts (for the future)
