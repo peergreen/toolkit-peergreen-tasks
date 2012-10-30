@@ -18,16 +18,14 @@ import static com.peergreen.tasks.model.requirement.Requirements.completed;
  * To change this template use File | Settings | File Templates.
  */
 public class Pipeline extends AbstractTask {
-    private UUID uuid;
     private Deque<Task> tasks = new ArrayDeque<Task>();
 
     public Pipeline() {
-        this("pipeline");
+        this(null);
     }
 
     public Pipeline(String name) {
         super(name);
-        this.uuid = UUID.randomUUID();
     }
 
     public void addTask(Task task) {
@@ -64,23 +62,6 @@ public class Pipeline extends AbstractTask {
         }
         // tasks are all COMPLETED or FAILED
         return true;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Pipeline pipeline = (Pipeline) o;
-
-        if (!uuid.equals(pipeline.uuid)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid.hashCode();
     }
 
 }

@@ -15,37 +15,18 @@ import java.util.UUID;
  */
 public class UnitOfWork extends AbstractTask {
 
-    private UUID uuid;
     private Job job;
 
     public UnitOfWork(Job job) {
-        this(job, "unnamed");
+        this(job, null);
     }
 
     public UnitOfWork(Job job, String name) {
         super(name);
         this.job = job;
-        this.uuid = UUID.randomUUID();
     }
 
     public Job getJob() {
         return job;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UnitOfWork that = (UnitOfWork) o;
-
-        if (!uuid.equals(that.uuid)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid.hashCode();
     }
 }

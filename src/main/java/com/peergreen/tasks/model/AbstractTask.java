@@ -6,6 +6,7 @@ import com.peergreen.tasks.model.state.StateSupport;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.peergreen.tasks.model.requirement.Requirements.waiting;
 
@@ -22,9 +23,11 @@ public class AbstractTask implements Task {
     private StateSupport support = new StateSupport(this);
 
     private Set<Requirement> requirements = new HashSet<Requirement>();
+    private UUID uuid;
 
     public AbstractTask(String name) {
-        this.name = name;
+        this.uuid = UUID.randomUUID();
+        this.name = (name == null) ? this.uuid.toString() : name;
         this.requirements.add(waiting(this));
     }
 
@@ -67,5 +70,22 @@ public class AbstractTask implements Task {
         }
         return true;
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractTask)) return false;
+
+        AbstractTask that = (AbstractTask) o;
+
+        if (!uuid.equals(that.uuid)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
     }
 }
