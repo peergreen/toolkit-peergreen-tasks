@@ -65,17 +65,17 @@ public class ElapsedTimeTaskTrackerTestCase {
     }
 
     private Parallel newParallel() {
-        Parallel pipeline = new Parallel("pipeline");
+        Parallel parallel = new Parallel("pipeline");
 
         UnitOfWork task0 = new UnitOfWork(new SleepJob(100), "task-0");
         UnitOfWork task1 = new UnitOfWork(new SleepJob(200), "task-1");
         UnitOfWork task2 = new UnitOfWork(new SleepJob(300), "task-2");
 
-        pipeline.addTask(task0);
-        pipeline.addTask(task1);
-        pipeline.addTask(task2);
+        parallel.addTask(task0);
+        parallel.addTask(task1);
+        parallel.addTask(task2);
         task1.getRequirements().add(completed(task0));
-        return pipeline;
+        return parallel;
     }
 
     private static final class Duration {
