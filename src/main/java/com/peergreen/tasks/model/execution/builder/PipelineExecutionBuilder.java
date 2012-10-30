@@ -2,6 +2,7 @@ package com.peergreen.tasks.model.execution.builder;
 
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
@@ -28,9 +29,9 @@ public class PipelineExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(Task task) {
+    public Execution newExecution(TaskContext taskContext, Task task) {
         if (task instanceof Pipeline) {
-            return new PipelineExecution(trackerManager, executionBuilderManager, (Pipeline) task);
+            return new PipelineExecution(trackerManager, executionBuilderManager, taskContext, (Pipeline) task);
         }
         return null;
     }

@@ -2,6 +2,7 @@ package com.peergreen.tasks.model.expect;
 
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.context.TaskContext;
 
 /**
 * Created with IntelliJ IDEA.
@@ -21,7 +22,7 @@ public class StateExpectation implements Expectation {
     }
 
     @Override
-    public boolean verify() {
+    public boolean verify(TaskContext context) {
         return task.getState() == state;
     }
 }

@@ -2,6 +2,7 @@ package com.peergreen.tasks.model.execution.builder;
 
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.internal.UnitOfWorkExecution;
@@ -28,9 +29,9 @@ public class UnitOfWorkExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(Task task) {
+    public Execution newExecution(TaskContext taskContext, Task task) {
         if (task instanceof UnitOfWork) {
-            return new UnitOfWorkExecution(trackerManager, executorService, (UnitOfWork) task);
+            return new UnitOfWorkExecution(trackerManager, executorService, taskContext, (UnitOfWork) task);
         }
         return null;
     }

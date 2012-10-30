@@ -1,6 +1,9 @@
 package com.peergreen.tasks.model.execution;
 
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.context.Breadcrumb;
+import com.peergreen.tasks.model.context.ExecutionContext;
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
@@ -21,6 +24,7 @@ public class RootExecution implements Execution, ExecutionBuilderManager {
     private List<ExecutionBuilder> builders = new ArrayList<ExecutionBuilder>();
     private TrackerManager trackerManager = new TrackerManager();
     private Task task;
+    private ExecutionContext executionContext = new ExecutionContext();
 
     public RootExecution(Task task) {
         this.task = task;
@@ -30,14 +34,19 @@ public class RootExecution implements Execution, ExecutionBuilderManager {
         return trackerManager;
     }
 
+    public ExecutionContext getExecutionContext() {
+        return executionContext;
+    }
+
     public void addExecutionBuilder(final ExecutionBuilder builder) {
         builders.add(builder);
     }
 
     @Override
-    public Execution newExecution(final Task task) {
+    public Execution newExecution(Breadcrumb breadcrumb, Task task) {
+        TaskContext taskContext = executionContext.newTaskContext(breadcrumb, task);
         for (ExecutionBuilder builder : builders) {
-            Execution execution = builder.newExecution(task);
+            Execution execution = builder.newExecution(taskContext, task);
             if (execution != null) {
                 return execution;
             }
@@ -47,7 +56,7 @@ public class RootExecution implements Execution, ExecutionBuilderManager {
     }
 
     public void execute() {
-        newExecution(task).execute();
+        newExecution(null, task).execute();
     }
 
 

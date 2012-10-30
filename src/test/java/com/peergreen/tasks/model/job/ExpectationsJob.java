@@ -1,8 +1,8 @@
 package com.peergreen.tasks.model.job;
 
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.expect.Expectation;
 import com.peergreen.tasks.runtime.Job;
-import com.peergreen.tasks.runtime.JobContext;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,10 +32,10 @@ public class ExpectationsJob implements Job {
     }
 
     @Override
-    public void execute(JobContext context) {
+    public void execute(TaskContext context) {
         passed = true;
         for (Expectation expectation : expectations) {
-            if (!expectation.verify()) {
+            if (!expectation.verify(context)) {
                 passed = false;
                 return;
             }

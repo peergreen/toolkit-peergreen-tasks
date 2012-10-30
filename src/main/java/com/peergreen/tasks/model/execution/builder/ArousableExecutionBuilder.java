@@ -3,6 +3,7 @@ package com.peergreen.tasks.model.execution.builder;
 import com.peergreen.tasks.model.ArousableTask;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
@@ -28,9 +29,9 @@ public class ArousableExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(Task task) {
+    public Execution newExecution(TaskContext taskContext, Task task) {
         if (task instanceof ArousableTask) {
-            return new ArousableExecution(trackerManager, executionBuilderManager, (ArousableTask) task);
+            return new ArousableExecution(trackerManager, executionBuilderManager, taskContext, (ArousableTask) task);
         }
         return null;
     }

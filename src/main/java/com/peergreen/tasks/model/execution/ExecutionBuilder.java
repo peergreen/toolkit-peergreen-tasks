@@ -1,6 +1,7 @@
 package com.peergreen.tasks.model.execution;
 
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.context.TaskContext;
 
 /**
 * Created with IntelliJ IDEA.
@@ -10,5 +11,5 @@ import com.peergreen.tasks.model.Task;
 * To change this template use File | Settings | File Templates.
 */
 public interface ExecutionBuilder {
-    Execution newExecution(Task task);
+    Execution newExecution(TaskContext taskContext, Task task);
 }

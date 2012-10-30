@@ -1,6 +1,7 @@
 package com.peergreen.tasks.model;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  * Time: 16:52
  * To change this template use File | Settings | File Templates.
  */
-public class Pipeline extends AbstractTask {
+public class Pipeline extends AbstractTask implements ScopingTask {
     private LinkedList<Task> tasks = new LinkedList<Task>();
 
     public Pipeline() {
@@ -52,4 +53,8 @@ public class Pipeline extends AbstractTask {
         tasks.add(index, added);
     }
 
+    @Override
+    public Iterator<Task> iterator() {
+        return getTasks().iterator();
+    }
 }

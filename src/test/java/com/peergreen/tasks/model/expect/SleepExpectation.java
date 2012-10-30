@@ -1,5 +1,7 @@
 package com.peergreen.tasks.model.expect;
 
+import com.peergreen.tasks.model.context.TaskContext;
+
 /**
 * Created with IntelliJ IDEA.
 * User: guillaume
@@ -16,7 +18,7 @@ public class SleepExpectation implements Expectation {
     }
 
     @Override
-    public boolean verify() {
+    public boolean verify(TaskContext context) {
         try {
             Thread.sleep(timeout);
         } catch (InterruptedException e) {

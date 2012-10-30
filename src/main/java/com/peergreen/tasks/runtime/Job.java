@@ -1,5 +1,7 @@
 package com.peergreen.tasks.runtime;
 
+import com.peergreen.tasks.model.context.TaskContext;
+
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
@@ -8,5 +10,5 @@ package com.peergreen.tasks.runtime;
  * To change this template use File | Settings | File Templates.
  */
 public interface Job {
-    void execute(JobContext context);
+    void execute(TaskContext context);
 }

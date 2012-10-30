@@ -2,6 +2,7 @@ package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.tracker.TrackerManager;
@@ -22,10 +23,12 @@ public class ParallelExecution extends TrackedExecution<Parallel> implements Pro
     private ExecutionBuilderManager executionBuilderManager;
     private AtomicInteger completed = new AtomicInteger(0);
     private State out = State.COMPLETED;
+    private TaskContext taskContext;
 
-    public ParallelExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, Parallel parallel) {
+    public ParallelExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, Parallel parallel) {
         super(trackerManager, parallel);
         this.executionBuilderManager = executionBuilderManager;
+        this.taskContext = taskContext;
     }
 
     public void execute() {
@@ -39,7 +42,7 @@ public class ParallelExecution extends TrackedExecution<Parallel> implements Pro
     private void executeAll() {
         for (Task task : task().getTasks()) {
             task.addPropertyChangeListener("state", this);
-            executionBuilderManager.newExecution(task).execute();
+            executionBuilderManager.newExecution(taskContext.getBreadcrumb(), task).execute();
         }
     }
 

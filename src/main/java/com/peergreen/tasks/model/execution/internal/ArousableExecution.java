@@ -2,6 +2,7 @@ package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.ArousableTask;
 import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
@@ -18,10 +19,12 @@ import java.beans.PropertyChangeListener;
 public class ArousableExecution extends TrackedExecution<ArousableTask> implements PropertyChangeListener {
 
     private ExecutionBuilderManager executionBuilderManager;
+    private TaskContext taskContext;
 
-    public ArousableExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, ArousableTask task) {
+    public ArousableExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, ArousableTask task) {
         super(trackerManager, task);
         this.executionBuilderManager = executionBuilderManager;
+        this.taskContext = taskContext;
         task.addPropertyChangeListener(this);
     }
 
@@ -36,7 +39,7 @@ public class ArousableExecution extends TrackedExecution<ArousableTask> implemen
         task().setState(State.RUNNING);
 
         task().getDelegate().addPropertyChangeListener("state", this);
-        executionBuilderManager.newExecution(task().getDelegate()).execute();
+        executionBuilderManager.newExecution(taskContext.getBreadcrumb(), task().getDelegate()).execute();
 
 
     }

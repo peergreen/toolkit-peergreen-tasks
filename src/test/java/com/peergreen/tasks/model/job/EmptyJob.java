@@ -1,7 +1,7 @@
 package com.peergreen.tasks.model.job;
 
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.runtime.Job;
-import com.peergreen.tasks.runtime.JobContext;
 
 /**
 * Created with IntelliJ IDEA.
@@ -12,7 +12,7 @@ import com.peergreen.tasks.runtime.JobContext;
 */
 public class EmptyJob implements Job {
     @Override
-    public void execute(JobContext context) {
+    public void execute(TaskContext context) {
         // do nothing
     }
 }

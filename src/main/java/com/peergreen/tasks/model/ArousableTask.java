@@ -1,5 +1,8 @@
 package com.peergreen.tasks.model;
 
+import java.util.Collections;
+import java.util.Iterator;
+
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
@@ -7,7 +10,7 @@ package com.peergreen.tasks.model;
  * Time: 09:45
  * To change this template use File | Settings | File Templates.
  */
-public class ArousableTask extends AbstractTask {
+public class ArousableTask extends AbstractTask implements ScopingTask {
 
     private Task delegate;
     private boolean wakeUp = false;
@@ -31,5 +34,10 @@ public class ArousableTask extends AbstractTask {
             wakeUp = true;
             propertyChangeSupport().firePropertyChange("wakeUp", false, true);
         }
+    }
+
+    @Override
+    public Iterator<Task> iterator() {
+        return Collections.singleton(delegate).iterator();
     }
 }

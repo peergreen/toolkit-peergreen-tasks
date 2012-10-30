@@ -1,5 +1,7 @@
 package com.peergreen.tasks.model.expect;
 
+import com.peergreen.tasks.model.context.TaskContext;
+
 /**
 * Created with IntelliJ IDEA.
 * User: guillaume
@@ -8,5 +10,5 @@ package com.peergreen.tasks.model.expect;
 * To change this template use File | Settings | File Templates.
 */
 public interface Expectation {
-    boolean verify();
+    boolean verify(TaskContext context);
 }

@@ -2,6 +2,7 @@ package com.peergreen.tasks.model.execution.builder;
 
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
@@ -28,9 +29,9 @@ public class ParallelExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(Task task) {
+    public Execution newExecution(TaskContext taskContext, Task task) {
         if (task instanceof Parallel) {
-            return new ParallelExecution(trackerManager, executionBuilderManager, (Parallel) task);
+            return new ParallelExecution(trackerManager, executionBuilderManager, taskContext, (Parallel) task);
         }
         return null;
     }

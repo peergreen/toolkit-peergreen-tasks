@@ -2,6 +2,7 @@ package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.tracker.TrackerManager;
@@ -21,10 +22,12 @@ public class PipelineExecution extends TrackedExecution<Pipeline> implements Pro
 
     private Iterator<Task> cursor;
     private ExecutionBuilderManager executionBuilderManager;
+    private TaskContext taskContext;
 
-    public PipelineExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, Pipeline pipeline) {
+    public PipelineExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, Pipeline pipeline) {
         super(trackerManager, pipeline);
         this.executionBuilderManager = executionBuilderManager;
+        this.taskContext = taskContext;
         this.cursor = task().getTasks().iterator();
     }
 
@@ -41,7 +44,7 @@ public class PipelineExecution extends TrackedExecution<Pipeline> implements Pro
             // Schedule the next one on the list
             Task next = cursor.next();
             next.addPropertyChangeListener("state", this);
-            executionBuilderManager.newExecution(next).execute();
+            executionBuilderManager.newExecution(taskContext.getBreadcrumb(), next).execute();
         } else {
             // Change Pipeline's state
             task().setState(State.COMPLETED);
