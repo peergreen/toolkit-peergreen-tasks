@@ -1,5 +1,6 @@
 package com.peergreen.tasks.model.util;
 
+import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 
@@ -12,10 +13,10 @@ import com.peergreen.tasks.model.Task;
  */
 public class Pipelines {
 
-    public static Pipeline parallelize(Task... tasks) {
-        Pipeline parallel = new Pipeline("parallel");
+    public static Parallel parallelize(Task... tasks) {
+        Parallel parallel = new Parallel("parallel");
         for (Task task : tasks) {
-            parallel.addTask(task, false);
+            parallel.addTask(task);
         }
         return parallel;
     }

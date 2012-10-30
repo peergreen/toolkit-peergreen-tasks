@@ -1,20 +1,19 @@
 package com.peergreen.tasks.model.tracker.time;
 
 import com.peergreen.tasks.model.Execution;
+import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.SleepJob;
-import com.peergreen.tasks.model.state.State;
 import com.peergreen.tasks.model.tracker.state.StateTaskTracker;
-import com.peergreen.tasks.runtime.Job;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static com.peergreen.tasks.model.requirement.Requirements.completed;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -29,21 +28,21 @@ public class ElapsedTimeTaskTrackerTestCase {
     @Test
     public void testElapsedTime() throws Exception {
 
-        Duration sequential = execute(newPipeline(), 1);
+        Duration sequential = execute(newParallel(), 1);
 
         // Re-run the same Pipeline, with 2 Threads
         // Pipeline execution time should be less than the first execution
 
-        Duration parallel = execute(newPipeline(), 2);
+        Duration parallel = execute(newParallel(), 2);
 
         assertTrue(parallel.value < sequential.value);
 
 
     }
 
-    private Duration execute(Pipeline pipeline, int executors) throws InterruptedException {
+    private Duration execute(Parallel parallel, int executors) throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(executors);
-        Execution execution = new Execution(executorService, pipeline);
+        Execution execution = new Execution(executorService, parallel);
 
         final Duration d = new Duration();
 
@@ -65,8 +64,8 @@ public class ElapsedTimeTaskTrackerTestCase {
         return d;
     }
 
-    private Pipeline newPipeline() {
-        Pipeline pipeline = new Pipeline("pipeline");
+    private Parallel newParallel() {
+        Parallel pipeline = new Parallel("pipeline");
 
         UnitOfWork task0 = new UnitOfWork(new SleepJob(100), "task-0");
         UnitOfWork task1 = new UnitOfWork(new SleepJob(200), "task-1");
@@ -74,7 +73,8 @@ public class ElapsedTimeTaskTrackerTestCase {
 
         pipeline.addTask(task0);
         pipeline.addTask(task1);
-        pipeline.addTask(task2, false); // task 2 can run concurrently of the other tasks
+        pipeline.addTask(task2);
+        task1.getRequirements().add(completed(task0));
         return pipeline;
     }
 

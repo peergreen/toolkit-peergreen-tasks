@@ -219,7 +219,7 @@ public class ExecutionTestCase {
          *           ko  +---+
          */
 
-        Pipeline master = new Pipeline("master");
+        Parallel master = new Parallel("master");
 
         UnitOfWork a = new UnitOfWork(job, "a");
 
@@ -234,8 +234,8 @@ public class ExecutionTestCase {
         UnitOfWork c = new UnitOfWork(cJob, "c");
 
         master.addTask(a);
-        master.addTask(b, false); // do not auto-link to previous
-        master.addTask(c, false); // do not auto-link to previous
+        master.addTask(b);
+        master.addTask(c);
 
         // Manually manage links
         b.getRequirements().add(completed(a));

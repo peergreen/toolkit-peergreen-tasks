@@ -23,23 +23,23 @@ public class Execution implements StateListener {
 
     private ExecutorService executorService;
     private TrackerManager trackerManager = new TrackerManager();
-    private Pipeline pipeline;
+    private TaskContainer container;
 
-    private Map<Pipeline, Execution> executions = new HashMap<Pipeline, Execution>();
+    private Map<TaskContainer, Execution> executions = new HashMap<TaskContainer, Execution>();
 
-    public Execution(ExecutorService executorService, Pipeline... pipelines) {
-        this(executorService, parallelize(pipelines));
+    public Execution(ExecutorService executorService, TaskContainer... containers) {
+        this(executorService, parallelize(containers));
     }
 
-    public Execution(ExecutorService executorService, Pipeline pipeline) {
+    public Execution(ExecutorService executorService, TaskContainer container) {
         this.executorService = executorService;
-        this.pipeline = pipeline;
+        this.container = container;
     }
 
-    protected Execution(Execution parent, Pipeline pipeline) {
+    protected Execution(Execution parent, TaskContainer container) {
         this.executorService = parent.executorService;
         this.trackerManager = parent.trackerManager;
-        this.pipeline = pipeline;
+        this.container = container;
     }
 
     public TrackerManager getTrackerManager() {
@@ -47,23 +47,23 @@ public class Execution implements StateListener {
     }
 
     public void start() {
-        pipeline.addStateListener(trackerManager);
-        pipeline.setState(State.RUNNING);
+        container.addStateListener(trackerManager);
+        container.setState(State.RUNNING);
 
         // Start execution flow
-        executePipeline();
+        executeContainer();
     }
 
-    private void executePipeline() {
-        // Collect the runnable tasks of the pipeline
-        Collection<Task> runnable = filter(pipeline.getTasks());
+    private void executeContainer() {
+        // Collect the runnable tasks of the container
+        Collection<Task> runnable = filter(container.getTasks());
 
         for (Task task : runnable) {
             executeTask(task);
         }
 
         for (Execution execution : executions.values()) {
-            execution.executePipeline();
+            execution.executeContainer();
         }
 
     }
@@ -71,12 +71,12 @@ public class Execution implements StateListener {
     private void executeTask(Task task) {
         if (task instanceof UnitOfWork) {
             executeUnitOfWork((UnitOfWork) task);
-        } else if (task instanceof Pipeline) {
-            executeSubPipeline((Pipeline) task);
+        } else if (task instanceof TaskContainer) {
+            executeSubContainer((TaskContainer) task);
         } // Unknown type, error ?
     }
 
-    private void executeSubPipeline(Pipeline sub) {
+    private void executeSubContainer(TaskContainer sub) {
 
         Execution inner = executions.get(sub);
         if (inner == null) {
@@ -87,7 +87,7 @@ public class Execution implements StateListener {
 
             inner.start();
         } else {
-            inner.executePipeline();
+            inner.executeContainer();
         }
     }
 
@@ -125,18 +125,18 @@ public class Execution implements StateListener {
     public void stateChanged(Task source, State previous, State current) {
 
         // Try to find some new tasks to execute
-        executePipeline();
+        executeContainer();
 
-        // If the task has failed, change the global state of the executed Pipeline
-        if ((current == State.FAILED) && (pipeline.getState() != State.FAILED)) {
-            pipeline.setState(State.FAILED);
+        // If the task has failed, change the global state of the executed container
+        if ((current == State.FAILED) && (container.getState() != State.FAILED)) {
+            container.setState(State.FAILED);
         }
 
         // If the task has completed without problems AND that there are no more task to execute
         if ((current == State.COMPLETED)
-                && (pipeline.getState() != State.COMPLETED)
-                && (pipeline.isTerminated())) {
-            pipeline.setState(State.COMPLETED);
+                && (container.getState() != State.COMPLETED)
+                && (container.isTerminated())) {
+            container.setState(State.COMPLETED);
         }
 
     }
