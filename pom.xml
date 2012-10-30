@@ -9,6 +9,9 @@
   <version>1.0-SNAPSHOT</version>
 
   <name>Peergreen Tasks</name>
+  <description>
+    Framework for concurrency programming.
+  </description>
 
   <dependencies>
     <dependency>
