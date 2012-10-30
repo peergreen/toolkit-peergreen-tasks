@@ -3,7 +3,6 @@ package com.peergreen.tasks.model.tracker.time;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.state.State;
 import com.peergreen.tasks.model.tracker.TaskTracker;
-import com.peergreen.tasks.model.tracker.Tracker;
 
 /**
  * Created with IntelliJ IDEA.

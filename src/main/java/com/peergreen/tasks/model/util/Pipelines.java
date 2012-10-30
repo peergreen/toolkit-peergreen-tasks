@@ -1,7 +1,6 @@
 package com.peergreen.tasks.model.util;
 
 import com.peergreen.tasks.model.Parallel;
-import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 
 /**

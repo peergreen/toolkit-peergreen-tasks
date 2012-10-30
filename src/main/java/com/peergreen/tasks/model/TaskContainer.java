@@ -1,10 +1,7 @@
 package com.peergreen.tasks.model;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 
 import static com.peergreen.tasks.model.requirement.Requirements.completed;
 

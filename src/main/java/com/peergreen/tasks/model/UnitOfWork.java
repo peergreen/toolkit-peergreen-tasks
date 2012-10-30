@@ -2,10 +2,6 @@ package com.peergreen.tasks.model;
 
 import com.peergreen.tasks.runtime.Job;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume

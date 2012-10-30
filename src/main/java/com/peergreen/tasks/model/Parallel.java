@@ -1,11 +1,7 @@
 package com.peergreen.tasks.model;
 
-import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.HashSet;
-
-import static com.peergreen.tasks.model.requirement.Requirements.completed;
 
 /**
  * Created with IntelliJ IDEA.

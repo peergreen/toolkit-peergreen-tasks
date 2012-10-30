@@ -1,8 +1,8 @@
 package com.peergreen.tasks.model;
 
-import com.peergreen.tasks.model.tracker.TrackerManager;
 import com.peergreen.tasks.model.state.State;
 import com.peergreen.tasks.model.state.StateListener;
+import com.peergreen.tasks.model.tracker.TrackerManager;
 
 import java.util.Collection;
 import java.util.HashMap;
