@@ -62,7 +62,7 @@ public class Pipeline extends AbstractTask {
                     return false;
             }
         }
-        // tasks are COMPLETED or FAILED
+        // tasks are all COMPLETED or FAILED
         return true;
     }
 
