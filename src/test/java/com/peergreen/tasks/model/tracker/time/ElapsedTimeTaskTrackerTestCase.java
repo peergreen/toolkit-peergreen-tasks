@@ -2,11 +2,9 @@ package com.peergreen.tasks.model.tracker.time;
 
 import com.peergreen.tasks.model.Execution;
 import com.peergreen.tasks.model.Parallel;
-import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.SleepJob;
-import com.peergreen.tasks.model.tracker.state.StateTaskTracker;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
