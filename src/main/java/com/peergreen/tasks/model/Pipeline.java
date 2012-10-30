@@ -66,16 +66,6 @@ public class Pipeline extends AbstractTask {
         return true;
     }
 
-    public boolean hasFailures() {
-        for (Task task : tasks) {
-            if (task.getState() == State.FAILED) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
