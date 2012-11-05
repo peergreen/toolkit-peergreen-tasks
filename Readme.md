@@ -46,6 +46,8 @@ TBC
 We may rework Pipelines and Parallels because they may lead tounderstanding errors.
 ATM, Pipelines should enforce the 'in-line' execution of its inner Task, and that's not completely the case right now,
 each Task can add a new Requirement on a Task that is out of the scope of the containing Pipeline.
+Maybe an InternalTask API that will hide the Task.requirements properties ?
+Or maybe an upper level API that will construct Pipelines with Tasks ?
 I have to think more about this...
 
 Building
