@@ -43,6 +43,10 @@ Toughts (for the future)
 --------
 
 TBC
+We may rework Pipelines and Parallels because they may lead tounderstanding errors.
+ATM, Pipelines should enforce the 'in-line' execution of its inner Task, and that's not completely the case right now,
+each Task can add a new Requirement on a Task that is out of the scope of the containing Pipeline.
+I have to think more about this...
 
 Building
 --------
