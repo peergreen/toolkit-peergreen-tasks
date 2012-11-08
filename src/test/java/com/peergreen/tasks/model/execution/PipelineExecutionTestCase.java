@@ -1,17 +1,15 @@
 package com.peergreen.tasks.model.execution;
 
+import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.expect.StateExpectation;
 import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.model.job.ExpectationsJob;
+import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.SleepJob;
 import com.peergreen.tasks.model.state.State;
-import com.peergreen.tasks.runtime.Job;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -32,16 +30,17 @@ public class PipelineExecutionTestCase {
 
     public static final int N_THREADS = 2;
 
-    @Mock
-    private Job job;
-
-    @BeforeMethod
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
     public void testSequentialExecution() throws Exception {
+
+        /**
+         * +---------------------------+
+         * |   +---+   +---+   +---+   |
+         * |   | a | < | b | < | c |   |
+         * |   +---+   +---+   +---+   |
+         * +---------------------------+
+         */
+
         Pipeline pipeline = new Pipeline();
 
         final Task task0 = new UnitOfWork(new EmptyJob(), "task-0");
@@ -68,6 +67,42 @@ public class PipelineExecutionTestCase {
         executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertTrue(aExpectations.passed);
         assertTrue(bExpectations.passed);
+
+    }
+
+    @Test
+    public void testSequentialExecutionWithFailure() throws Exception {
+
+        /**
+         * +---------------------------+
+         * |   +---+   +---+   +---+   |
+         * |   | a | < | b | < | c |   |
+         * |   +---+   +---+   +---+   |
+         * +---------------------------+
+         *               X
+         */
+
+        Pipeline pipeline = new Pipeline();
+
+        Task a = new UnitOfWork(new EmptyJob(), "task-a");
+
+        Task b = new UnitOfWork(new FailingJob(), "task-b");
+
+        Task c = new UnitOfWork(new EmptyJob(), "task-c");
+
+        pipeline.add(a, b, c);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
+        PipelineExecution execution = new PipelineExecution(executorService, pipeline);
+
+        execution.execute();
+
+        executorService.awaitTermination(1, TimeUnit.SECONDS);
+
+        assertEquals(a.getState(), State.COMPLETED);
+        assertEquals(b.getState(), State.FAILED);
+        assertEquals(c.getState(), State.WAITING);
+        assertEquals(pipeline.getState(), State.FAILED);
 
     }
 
@@ -123,56 +158,56 @@ public class PipelineExecutionTestCase {
 
     }
 
-    /*
     @Test
-    public void testTwoParallelPipelinesWhereTheirSecondTaskAreWaitingForTheOtherPipelineFirstTasks() throws Exception {
+    public void testStagedExecution() throws Exception {
 
-//        *
-//         * Pipelines description (A > B means A depends on B):
-//         * TA0 < TA1
-//         *     X
-//         * TB0 < TB1
+        /**
+         * +---------------------------------------------------+
+         * |  +--------------------+   +--------------------+  |
+         * |  |   +---+    +---+   |   |   +---+    +---+   |  |
+         * |  |   | a | // | b |   | < |   | c | // | d |   |  |
+         * |  |   +---+    +---+   |   |   +---+    +---+   |  |
+         * |  +--------------------+   +--------------------+  |
+         * +---------------------------------------------------+
+         */
 
-        Pipeline pipelineA = new Pipeline("pipeline-a");
-        Pipeline pipelineB = new Pipeline("pipeline-b");
+        Pipeline pipeline = new Pipeline();
+        Parallel stage1 = new Parallel("stage-one");
+        Parallel stage2 = new Parallel("stage-two");
 
-        final Task taskA0 = new UnitOfWork(new EmptyJob(), "task-a-0");
-        final Task taskB0 = new UnitOfWork(new EmptyJob(), "task-b-0");
+        Task a = new UnitOfWork(new EmptyJob(), "task-a");
+        Task b = new UnitOfWork(new EmptyJob(), "task-b");
 
-        ExpectationsJob a1Expectations = new ExpectationsJob(
-                new StateExpectation(taskA0, State.COMPLETED),
-                new StateExpectation(taskB0, State.COMPLETED)
+        ExpectationsJob cExpectations = new ExpectationsJob(
+                new StateExpectation(stage1, State.COMPLETED)
         );
 
-        final Task taskA1 = new UnitOfWork(a1Expectations, "task-a-1");
+        Task c = new UnitOfWork(cExpectations, "task-c");
 
-        ExpectationsJob b1Expectations = new ExpectationsJob(
-                new StateExpectation(taskA0, State.COMPLETED),
-                new StateExpectation(taskB0, State.COMPLETED)
+        ExpectationsJob dExpectations = new ExpectationsJob(
+                new StateExpectation(stage1, State.COMPLETED)
         );
 
-        final Task taskB1 = new UnitOfWork(b1Expectations, "task-b-1");
+        Task d = new UnitOfWork(dExpectations, "task-d");
 
-        pipelineA.addTask(taskA0);
-        pipelineA.addTask(taskA1);
+        stage1.add(a);
+        stage1.add(b);
 
-        pipelineB.addTask(taskB0);
-        pipelineB.addTask(taskB1);
+        stage2.add(c);
+        stage2.add(d);
 
-        taskA1.getRequirements().add(completed(taskB0));
-        taskB1.getRequirements().add(completed(taskA0));
+        pipeline.add(stage1, stage2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        Execution execution = new Execution(executorService, pipelineA, pipelineB);
+        PipelineExecution execution = new PipelineExecution(executorService, pipeline);
 
-        execution.start();
+        execution.execute();
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
-        assertTrue(a1Expectations.passed);
-        assertTrue(b1Expectations.passed);
+        assertTrue(cExpectations.passed);
+        assertTrue(dExpectations.passed);
 
     }
-    */
 
     @Test
     public void testPipelineStateIsUpdated() throws Exception {

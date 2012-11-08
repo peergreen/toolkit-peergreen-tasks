@@ -18,6 +18,7 @@ public class ParallelExecution extends AbstractExecution {
 
     private Parallel parallel;
     private AtomicInteger completed = new AtomicInteger(0);
+    private State out = State.COMPLETED;
 
     public ParallelExecution(ExecutorService executorService, Parallel parallel) {
         super(executorService);
@@ -48,14 +49,19 @@ public class ParallelExecution extends AbstractExecution {
 
     @Override
     public void stateChanged(Task source, State previous, State current) {
-        if (State.COMPLETED == current) {
-            // The inner Task has been completed
-            int number = completed.incrementAndGet();
-            if (number == parallel.getTasks().size()) {
-                // All tasks have been executed
-                parallel.setState(State.COMPLETED);
-            }
+
+        switch (current) {
+            case FAILED:
+                out = State.FAILED;
+            case COMPLETED:
+                // The inner Task has been completed
+                if (completed.incrementAndGet() == parallel.getTasks().size()) {
+                    // All tasks have been executed
+                    // The parallel is now either FAILED or COMPLETED
+                    parallel.setState(out);
+                }
         }
+
     }
 
 }

@@ -56,10 +56,15 @@ public class PipelineExecution extends AbstractExecution {
 
     @Override
     public void stateChanged(Task source, State previous, State current) {
-        if (State.COMPLETED == current) {
-            // The inner Task has been completed
-            executeNext();
+        switch (current) {
+            case FAILED:
+                pipeline.setState(State.FAILED);
+                break;
+            case COMPLETED:
+                // The inner Task has been completed
+                executeNext();
         }
+
     }
 
 }

@@ -5,7 +5,9 @@ import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.expect.SleepExpectation;
 import com.peergreen.tasks.model.expect.StateExpectation;
+import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.model.job.ExpectationsJob;
+import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.HolderJob;
 import com.peergreen.tasks.model.state.State;
 import org.testng.annotations.Test;
@@ -14,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -75,6 +78,33 @@ public class ParallelExecutionTestCase {
         assertTrue(zeroExpectations.passed);
         assertTrue(oneExpectations.passed);
         assertTrue(twoExpectations.passed);
+
+    }
+
+
+    @Test
+    public void testConcurrentExecutionWithFailure() throws Exception {
+        Parallel parallel = new Parallel();
+
+        Task a = new UnitOfWork(new EmptyJob(), "task-0");
+        Task b = new UnitOfWork(new FailingJob(), "task-1");
+        Task c = new UnitOfWork(new EmptyJob(), "task-2");
+
+        parallel.add(a);
+        parallel.add(b);
+        parallel.add(c);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
+        ParallelExecution execution = new ParallelExecution(executorService, parallel);
+
+        execution.execute();
+
+        executorService.awaitTermination(1, TimeUnit.SECONDS);
+
+        assertEquals(a.getState(), State.COMPLETED);
+        assertEquals(b.getState(), State.FAILED);
+        assertEquals(c.getState(), State.COMPLETED);
+        assertEquals(parallel.getState(), State.FAILED);
 
     }
 
