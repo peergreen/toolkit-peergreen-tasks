@@ -2,8 +2,6 @@ package com.peergreen.tasks.model;
 
 import com.peergreen.tasks.model.state.State;
 
-import java.util.Set;
-
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
@@ -19,7 +17,4 @@ public interface Task {
 
     void setState(State state);
 
-    boolean isReady();
-
-    Set<Requirement> getRequirements();
 }

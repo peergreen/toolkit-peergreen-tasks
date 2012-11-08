@@ -1,9 +1,9 @@
 package com.peergreen.tasks.model.tracker.time;
 
-import com.peergreen.tasks.model.Execution;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.execution.ParallelExecution;
 import com.peergreen.tasks.model.job.SleepJob;
 import org.testng.annotations.Test;
 
@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.peergreen.tasks.model.requirement.Requirements.completed;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -40,7 +39,7 @@ public class ElapsedTimeTaskTrackerTestCase {
 
     private Duration execute(Parallel parallel, int executors) throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(executors);
-        Execution execution = new Execution(executorService, parallel);
+        ParallelExecution execution = new ParallelExecution(executorService, parallel);
 
         final Duration d = new Duration();
 
@@ -56,7 +55,7 @@ public class ElapsedTimeTaskTrackerTestCase {
 
         execution.getTrackerManager().registerTracker(new ElapsedTimeTaskTracker(visitor));
 
-        execution.start();
+        execution.execute();
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
         return d;
@@ -69,10 +68,9 @@ public class ElapsedTimeTaskTrackerTestCase {
         UnitOfWork task1 = new UnitOfWork(new SleepJob(200), "task-1");
         UnitOfWork task2 = new UnitOfWork(new SleepJob(300), "task-2");
 
-        parallel.addTask(task0);
-        parallel.addTask(task1);
-        parallel.addTask(task2);
-        task1.getRequirements().add(completed(task0));
+        parallel.add(task0);
+        parallel.add(task1);
+        parallel.add(task2);
         return parallel;
     }
 

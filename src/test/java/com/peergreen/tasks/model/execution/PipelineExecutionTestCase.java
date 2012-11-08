@@ -1,25 +1,23 @@
-package com.peergreen.tasks.model;
+package com.peergreen.tasks.model.execution;
 
+import com.peergreen.tasks.model.Pipeline;
+import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.expect.StateExpectation;
 import com.peergreen.tasks.model.job.EmptyJob;
+import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.job.SleepJob;
 import com.peergreen.tasks.model.state.State;
 import com.peergreen.tasks.runtime.Job;
-import com.peergreen.tasks.runtime.JobContext;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.peergreen.tasks.model.requirement.Requirements.completed;
-import static com.peergreen.tasks.model.requirement.Requirements.failed;
-import static org.mockito.Mockito.doThrow;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -30,7 +28,7 @@ import static org.testng.Assert.assertTrue;
  * Time: 15:50
  * To change this template use File | Settings | File Templates.
  */
-public class ExecutionTestCase {
+public class PipelineExecutionTestCase {
 
     public static final int N_THREADS = 2;
 
@@ -58,14 +56,14 @@ public class ExecutionTestCase {
         );
         Task task2 = new UnitOfWork(bExpectations, "task-2");
 
-        pipeline.addTask(task0);
-        pipeline.addTask(task1);
-        pipeline.addTask(task2);
+        pipeline.add(task0);
+        pipeline.add(task1);
+        pipeline.add(task2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        Execution execution = new Execution(executorService, pipeline);
+        PipelineExecution execution = new PipelineExecution(executorService, pipeline);
 
-        execution.start();
+        execution.execute();
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertTrue(aExpectations.passed);
@@ -74,73 +72,66 @@ public class ExecutionTestCase {
     }
 
     @Test
-    public void testTwoParallelPipelinesWhereFirstTaskOfFirstPipelineDependsOnLastTaskOfSecondPipeline() throws Exception {
+    public void testPipelinesExecutedInSequence() throws Exception {
 
         /**
-         * Pipelines description (A > B means A depends on B):
-         * TA0 < TA1 < TA2
-         *  |
-         *  ------
-         *        v
-         * TB0 < TB1
+         * +-------------------------------------------------+
+         * |  +-------------------+   +-------------------+  |
+         * |  |   +---+   +---+   |   |   +---+   +---+   |  |
+         * |  |   | a | < | b |   | < |   | c | < | d |   |  |
+         * |  |   +---+   +---+   |   |   +---+   +---+   |  |
+         * |  +-------------------+   +-------------------+  |
+         * +-------------------------------------------------+
          */
-        Pipeline pipelineA = new Pipeline("pipeline-a");
-        Pipeline pipelineB = new Pipeline("pipeline-b");
+        Pipeline master = new Pipeline("master");
+        Pipeline one = new Pipeline("pipeline-one");
+        Pipeline two = new Pipeline("pipeline-two");
+        master.add(one, two);
 
-        final Task taskB0 = new UnitOfWork(new EmptyJob(), "task-b-0");
+        final Task taskA = new UnitOfWork(new EmptyJob(), "task-a");
 
-        ExpectationsJob b1Expectations = new ExpectationsJob(
-                new StateExpectation(taskB0, State.COMPLETED)
+        ExpectationsJob bExpectations = new ExpectationsJob(
+                new StateExpectation(taskA, State.COMPLETED)
         );
-        final Task taskB1 = new UnitOfWork(b1Expectations, "task-b-1");
+        final Task taskB = new UnitOfWork(bExpectations, "task-b");
 
-        pipelineB.addTask(taskB0);
-        pipelineB.addTask(taskB1);
+        one.add(taskA);
+        one.add(taskB);
 
-        ExpectationsJob a0Expectations = new ExpectationsJob(
-                new StateExpectation(taskB1, State.COMPLETED)
+        ExpectationsJob cExpectations = new ExpectationsJob(
+                new StateExpectation(one, State.COMPLETED)
         );
-        final Task taskA0 = new UnitOfWork(a0Expectations, "task-a-0");
+        final Task taskC = new UnitOfWork(cExpectations, "task-c");
 
-        ExpectationsJob a1Expectations = new ExpectationsJob(
-                new StateExpectation(taskA0, State.COMPLETED)
+        ExpectationsJob dExpectations = new ExpectationsJob(
+                new StateExpectation(taskC, State.COMPLETED)
         );
-        final Task taskA1 = new UnitOfWork(a1Expectations, "task-a-1");
+        final Task taskD = new UnitOfWork(dExpectations, "task-d");
 
-        ExpectationsJob a2Expectations = new ExpectationsJob(
-                new StateExpectation(taskA1, State.COMPLETED)
-        );
-        final Task taskA2 = new UnitOfWork(a2Expectations, "task-a-2");
-
-        pipelineA.addTask(taskA0);
-        pipelineA.addTask(taskA1);
-        pipelineA.addTask(taskA2);
-
-        // Add dependency
-        taskA0.getRequirements().add(completed(taskB1));
+        two.add(taskC);
+        two.add(taskD);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        Execution execution = new Execution(executorService, pipelineA, pipelineB);
+        PipelineExecution execution = new PipelineExecution(executorService, master);
 
-        execution.start();
+        execution.execute();
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
-        assertTrue(b1Expectations.passed);
-        assertTrue(a0Expectations.passed);
-        assertTrue(a1Expectations.passed);
-        assertTrue(a2Expectations.passed);
+        assertTrue(bExpectations.passed);
+        assertTrue(cExpectations.passed);
+        assertTrue(dExpectations.passed);
 
     }
 
+    /*
     @Test
     public void testTwoParallelPipelinesWhereTheirSecondTaskAreWaitingForTheOtherPipelineFirstTasks() throws Exception {
 
-        /**
-         * Pipelines description (A > B means A depends on B):
-         * TA0 < TA1
-         *     X
-         * TB0 < TB1
-         */
+//        *
+//         * Pipelines description (A > B means A depends on B):
+//         * TA0 < TA1
+//         *     X
+//         * TB0 < TB1
 
         Pipeline pipelineA = new Pipeline("pipeline-a");
         Pipeline pipelineB = new Pipeline("pipeline-b");
@@ -181,20 +172,21 @@ public class ExecutionTestCase {
         assertTrue(b1Expectations.passed);
 
     }
+    */
 
     @Test
     public void testPipelineStateIsUpdated() throws Exception {
         Pipeline pipeline = new Pipeline();
 
         // Add a sleep task
-        pipeline.addTask(new UnitOfWork(new SleepJob(500)));
+        pipeline.add(new UnitOfWork(new SleepJob(500)));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        Execution execution = new Execution(executorService, pipeline);
+        PipelineExecution execution = new PipelineExecution(executorService, pipeline);
 
         // Before execution, the pipeline is WAITING
         assertEquals(pipeline.getState(), State.WAITING);
-        execution.start();
+        execution.execute();
         // Just after, it is RUNNING
         assertEquals(pipeline.getState(), State.RUNNING);
 
@@ -206,18 +198,18 @@ public class ExecutionTestCase {
 
     }
 
+    /*
     @Test
     public void testTaskIsExecutedWhenPreviousIsFailed() throws Exception {
 
-        /**
-         *           ok  +---+
-         *             --| b |
-         *   +---+    /  +---+
-         *   | a | <--
-         *   +---+    \  +---+
-         *             --| c |
-         *           ko  +---+
-         */
+//        *
+//         *           ok  +---+
+//         *             --| b |
+//         *   +---+    /  +---+
+//         *   | a | <--
+//         *   +---+    \  +---+
+//         *             --| c |
+//         *           ko  +---+
 
         Parallel master = new Parallel("master");
 
@@ -257,7 +249,7 @@ public class ExecutionTestCase {
         assertEquals(a.getState(), State.FAILED);
         assertEquals(b.getState(), State.WAITING);
         assertEquals(c.getState(), State.COMPLETED);
-    }
+    }  */
 
     @Test
     public void testPipelineInPipeline() throws Exception {
@@ -298,18 +290,15 @@ public class ExecutionTestCase {
         UnitOfWork d = new UnitOfWork(dJob, "d");
 
         // Build inner pipeline first
-        inner.addTask(b);
-        inner.addTask(c);
+        inner.add(b, c);
 
         // Then build master Pipeline
-        master.addTask(a);
-        master.addTask(inner);
-        master.addTask(d);
+        master.add(a, inner, d);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        Execution execution = new Execution(executorService, master);
+        PipelineExecution execution = new PipelineExecution(executorService, master);
 
-        execution.start();
+        execution.execute();
 
         // Wait for some time
         executorService.awaitTermination(1, TimeUnit.SECONDS);
@@ -323,54 +312,6 @@ public class ExecutionTestCase {
         assertTrue(cJob.passed);
         assertTrue(dJob.passed);
 
-    }
-
-    private static class ExpectationsJob implements Job {
-        public boolean passed;
-        private Collection<Expectation> expectations;
-
-        public ExpectationsJob(Expectation expectation) {
-            this(Collections.singleton(expectation));
-        }
-
-        public ExpectationsJob(Expectation... expectations) {
-            this(Arrays.asList(expectations));
-        }
-
-        public ExpectationsJob(Collection<Expectation> expectations) {
-            this.expectations = expectations;
-        }
-
-        @Override
-        public void execute(JobContext context) {
-            passed = true;
-            for (Expectation expectation : expectations) {
-                if (!expectation.verify()) {
-                    passed = false;
-                    return;
-                }
-            }
-        }
-    }
-
-    private static interface Expectation {
-        boolean verify();
-    }
-
-    public static class StateExpectation implements Expectation {
-
-        private Task task;
-        private State state;
-
-        public StateExpectation(Task task, State state) {
-            this.task = task;
-            this.state = state;
-        }
-
-        @Override
-        public boolean verify() {
-            return task.getState() == state;
-        }
     }
 
 

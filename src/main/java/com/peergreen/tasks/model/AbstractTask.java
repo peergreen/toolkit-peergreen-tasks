@@ -4,11 +4,7 @@ import com.peergreen.tasks.model.state.State;
 import com.peergreen.tasks.model.state.StateListener;
 import com.peergreen.tasks.model.state.StateSupport;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
-
-import static com.peergreen.tasks.model.requirement.Requirements.waiting;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,22 +18,15 @@ public class AbstractTask implements Task {
     private State state = State.WAITING;
     private StateSupport support = new StateSupport(this);
 
-    private Set<Requirement> requirements = new HashSet<Requirement>();
     private UUID uuid;
 
     public AbstractTask(String name) {
         this.uuid = UUID.randomUUID();
         this.name = (name == null) ? this.uuid.toString() : name;
-        this.requirements.add(waiting(this));
     }
 
     public String getName() {
         return name;
-    }
-
-    @Override
-    public Set<Requirement> getRequirements() {
-        return requirements;
     }
 
     @Override
@@ -58,18 +47,6 @@ public class AbstractTask implements Task {
 
     public void removeStateListener(StateListener listener) {
         support.removeStateListener(listener);
-    }
-
-    @Override
-    public boolean isReady() {
-
-        for (Requirement requirement : requirements) {
-            if (!requirement.verify()) {
-                return false;
-            }
-        }
-        return true;
-
     }
 
     @Override

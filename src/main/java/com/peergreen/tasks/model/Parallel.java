@@ -1,6 +1,7 @@
 package com.peergreen.tasks.model;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -10,7 +11,7 @@ import java.util.HashSet;
  * Time: 16:52
  * To change this template use File | Settings | File Templates.
  */
-public class Parallel extends TaskContainer {
+public class Parallel extends AbstractTask {
     private Collection<Task> tasks = new HashSet<Task>();
 
     public Parallel() {
@@ -21,9 +22,12 @@ public class Parallel extends TaskContainer {
         super(name);
     }
 
-    @Override
-    protected Collection<Task> getInternalTasks() {
-        return tasks;
+    public Collection<Task> getTasks() {
+        return Collections.unmodifiableCollection(tasks);
+    }
+
+    public void add(Task task) {
+        this.tasks.add(task);
     }
 
 }
