@@ -58,8 +58,8 @@ public abstract class AbstractExecution implements StateListener {
         inner.execute();
     }
 
-    protected void executePipeline(Pipeline sub) {
-        PipelineExecution inner = new PipelineExecution(this, sub);
+    protected void executePipeline(Pipeline pipeline) {
+        PipelineExecution inner = new PipelineExecution(this, pipeline);
         inner.execute();
     }
 
