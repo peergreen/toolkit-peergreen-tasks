@@ -27,6 +27,8 @@ public class ParallelExecution extends AbstractExecution {
     protected ParallelExecution(AbstractExecution parent, Parallel parallel) {
         super(parent);
         this.parallel = parallel;
+
+        parallel.addStateListener(parent);
     }
 
     public void execute() {

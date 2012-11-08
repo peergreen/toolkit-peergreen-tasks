@@ -30,6 +30,8 @@ public class PipelineExecution extends AbstractExecution {
         super(parent);
         this.pipeline = pipeline;
         this.cursor = pipeline.getTasks().iterator();
+
+        pipeline.addStateListener(parent);
     }
 
     public void execute() {

@@ -24,9 +24,12 @@ public class UnitOfWorkExecution extends AbstractExecution {
     public UnitOfWorkExecution(AbstractExecution parent, UnitOfWork unitOfWork) {
         super(parent);
         this.unitOfWork = unitOfWork;
+
+        this.unitOfWork.addStateListener(parent);
     }
 
     public void execute() {
+        this.unitOfWork.addStateListener(getTrackerManager());
         // Execute/Schedule the unit of work
         unitOfWork.setState(State.SCHEDULED);
         getExecutorService().submit(new Runnable() {

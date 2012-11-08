@@ -54,24 +54,17 @@ public abstract class AbstractExecution implements StateListener {
     }
 
     private void executeParallel(Parallel parallel) {
-
-        parallel.addStateListener(this);
-
         ParallelExecution inner = new ParallelExecution(this, parallel);
         inner.execute();
     }
 
     protected void executePipeline(Pipeline sub) {
-
-        sub.addStateListener(this);
-
         PipelineExecution inner = new PipelineExecution(this, sub);
         inner.execute();
     }
 
     protected void executeUnitOfWork(final UnitOfWork unitOfWork) {
         // Execute/Schedule the unit of work
-        unitOfWork.addStateListener(this);
         UnitOfWorkExecution unitOfWorkExecution = new UnitOfWorkExecution(this, unitOfWork);
         unitOfWorkExecution.execute();
     }
