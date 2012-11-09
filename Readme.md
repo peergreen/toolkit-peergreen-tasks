@@ -29,9 +29,6 @@ A Pipeline represents a **sequential** (non parallelizable) set of Tasks.
     Representation: (), (A, B)
 A Parallele represents an **unordonned** (parallelizable) set of Tasks.
 
-## Requirement
-A Requirement simply verifies that some conditions are met.
-
 ## Execution
 An Execution is responsible of executing a Pipeline or Parallel.
 It uses a JDK ExecutorService to abstract itself from the ThreadPool.
