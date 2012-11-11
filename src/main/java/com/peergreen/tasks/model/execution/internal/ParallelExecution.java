@@ -1,10 +1,12 @@
-package com.peergreen.tasks.model.execution;
+package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.state.StateListener;
+import com.peergreen.tasks.model.tracker.TrackerManager;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -14,35 +16,29 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class ParallelExecution extends AbstractExecution {
+public class ParallelExecution extends TrackedExecution<Parallel> implements StateListener {
 
-    private Parallel parallel;
+    private ExecutionBuilderManager executionBuilderManager;
     private AtomicInteger completed = new AtomicInteger(0);
     private State out = State.COMPLETED;
 
-    public ParallelExecution(ExecutorService executorService, Parallel parallel) {
-        super(executorService);
-        this.parallel = parallel;
-    }
-
-    protected ParallelExecution(AbstractExecution parent, Parallel parallel) {
-        super(parent);
-        this.parallel = parallel;
-
-        parallel.addStateListener(parent);
+    public ParallelExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, Parallel parallel) {
+        super(trackerManager, parallel);
+        this.executionBuilderManager = executionBuilderManager;
     }
 
     public void execute() {
-        parallel.addStateListener(getTrackerManager());
-        parallel.setState(State.RUNNING);
+        super.execute();
+        task().setState(State.RUNNING);
 
         // Start execution flow
         executeAll();
     }
 
     private void executeAll() {
-        for (Task task : parallel.getTasks()) {
-            executeTask(task);
+        for (Task task : task().getTasks()) {
+            task.addStateListener(this);
+            executionBuilderManager.newExecution(task).execute();
         }
     }
 
@@ -55,10 +51,10 @@ public class ParallelExecution extends AbstractExecution {
                 out = State.FAILED;
             case COMPLETED:
                 // The inner Task has been completed
-                if (completed.incrementAndGet() == parallel.getTasks().size()) {
+                if (completed.incrementAndGet() == task().getTasks().size()) {
                     // All tasks have been executed
                     // The parallel is now either FAILED or COMPLETED
-                    parallel.setState(out);
+                    task().setState(out);
                 }
         }
 

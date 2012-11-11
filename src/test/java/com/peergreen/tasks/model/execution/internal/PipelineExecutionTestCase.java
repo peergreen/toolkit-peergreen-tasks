@@ -1,15 +1,18 @@
-package com.peergreen.tasks.model.execution;
+package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.execution.RootExecution;
+import com.peergreen.tasks.model.execution.internal.PipelineExecution;
 import com.peergreen.tasks.model.expect.StateExpectation;
 import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.SleepJob;
 import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -60,7 +63,7 @@ public class PipelineExecutionTestCase {
         pipeline.add(task2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        PipelineExecution execution = new PipelineExecution(executorService, pipeline);
+        RootExecution execution = Executions.newRootExecution(executorService, pipeline);
 
         execution.execute();
 
@@ -93,7 +96,7 @@ public class PipelineExecutionTestCase {
         pipeline.add(a, b, c);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        PipelineExecution execution = new PipelineExecution(executorService, pipeline);
+        RootExecution execution = Executions.newRootExecution(executorService, pipeline);
 
         execution.execute();
 
@@ -147,7 +150,7 @@ public class PipelineExecutionTestCase {
         two.add(taskD);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        PipelineExecution execution = new PipelineExecution(executorService, master);
+        RootExecution execution = Executions.newRootExecution(executorService, master);
 
         execution.execute();
 
@@ -199,7 +202,7 @@ public class PipelineExecutionTestCase {
         pipeline.add(stage1, stage2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        PipelineExecution execution = new PipelineExecution(executorService, pipeline);
+        RootExecution execution = Executions.newRootExecution(executorService, pipeline);
 
         execution.execute();
 
@@ -217,7 +220,7 @@ public class PipelineExecutionTestCase {
         pipeline.add(new UnitOfWork(new SleepJob(500)));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        PipelineExecution execution = new PipelineExecution(executorService, pipeline);
+        RootExecution execution = Executions.newRootExecution(executorService, pipeline);
 
         // Before execution, the pipeline is WAITING
         assertEquals(pipeline.getState(), State.WAITING);
@@ -331,7 +334,7 @@ public class PipelineExecutionTestCase {
         master.add(a, inner, d);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        PipelineExecution execution = new PipelineExecution(executorService, master);
+        RootExecution execution = Executions.newRootExecution(executorService, master);
 
         execution.execute();
 

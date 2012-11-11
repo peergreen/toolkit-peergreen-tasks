@@ -1,14 +1,11 @@
-package com.peergreen.tasks.model.execution;
+package com.peergreen.tasks.model.execution.internal;
 
-import com.peergreen.tasks.model.Parallel;
-import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
-import com.peergreen.tasks.model.expect.SleepExpectation;
-import com.peergreen.tasks.model.expect.StateExpectation;
-import com.peergreen.tasks.model.job.ExpectationsJob;
-import com.peergreen.tasks.model.job.HolderJob;
+import com.peergreen.tasks.model.execution.RootExecution;
+import com.peergreen.tasks.model.execution.internal.UnitOfWorkExecution;
 import com.peergreen.tasks.model.job.SleepJob;
 import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -34,7 +31,7 @@ public class UnitOfWorkExecutionTestCase {
         UnitOfWork unitOfWork = new UnitOfWork(new SleepJob(500));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        UnitOfWorkExecution execution = new UnitOfWorkExecution(executorService, unitOfWork);
+        RootExecution execution = Executions.newRootExecution(executorService, unitOfWork);
 
 
         assertEquals(unitOfWork.getState(), State.WAITING);

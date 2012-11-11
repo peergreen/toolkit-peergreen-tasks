@@ -1,6 +1,7 @@
 package com.peergreen.tasks.model;
 
 import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.state.StateListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,4 +18,7 @@ public interface Task {
 
     void setState(State state);
 
+    void addStateListener(StateListener listener);
+
+    void removeStateListener(StateListener listener);
 }

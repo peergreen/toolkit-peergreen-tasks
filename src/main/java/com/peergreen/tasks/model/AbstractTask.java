@@ -41,10 +41,12 @@ public class AbstractTask implements Task {
         support.fireStateChanged(previous, state);
     }
 
+    @Override
     public void addStateListener(StateListener listener) {
         support.addStateListener(listener);
     }
 
+    @Override
     public void removeStateListener(StateListener listener) {
         support.removeStateListener(listener);
     }

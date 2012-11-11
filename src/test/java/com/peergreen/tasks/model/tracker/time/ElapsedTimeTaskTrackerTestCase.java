@@ -3,8 +3,10 @@ package com.peergreen.tasks.model.tracker.time;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
-import com.peergreen.tasks.model.execution.ParallelExecution;
+import com.peergreen.tasks.model.execution.RootExecution;
+import com.peergreen.tasks.model.execution.internal.ParallelExecution;
 import com.peergreen.tasks.model.job.SleepJob;
+import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -39,7 +41,7 @@ public class ElapsedTimeTaskTrackerTestCase {
 
     private Duration execute(Parallel parallel, int executors) throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(executors);
-        ParallelExecution execution = new ParallelExecution(executorService, parallel);
+        RootExecution execution = Executions.newRootExecution(executorService, parallel);
 
         final Duration d = new Duration();
 

@@ -1,12 +1,13 @@
-package com.peergreen.tasks.model.execution;
+package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.state.State;
 import com.peergreen.tasks.model.state.StateListener;
+import com.peergreen.tasks.model.tracker.TrackerManager;
 
 import java.util.Iterator;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,28 +16,20 @@ import java.util.concurrent.ExecutorService;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class PipelineExecution extends AbstractExecution {
+public class PipelineExecution extends TrackedExecution<Pipeline> implements StateListener {
 
-    private Pipeline pipeline;
     private Iterator<Task> cursor;
+    private ExecutionBuilderManager executionBuilderManager;
 
-    public PipelineExecution(ExecutorService executorService, Pipeline pipeline) {
-        super(executorService);
-        this.pipeline = pipeline;
-        this.cursor = pipeline.getTasks().iterator();
-    }
-
-    protected PipelineExecution(AbstractExecution parent, Pipeline pipeline) {
-        super(parent);
-        this.pipeline = pipeline;
-        this.cursor = pipeline.getTasks().iterator();
-
-        pipeline.addStateListener(parent);
+    public PipelineExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, Pipeline pipeline) {
+        super(trackerManager, pipeline);
+        this.executionBuilderManager = executionBuilderManager;
+        this.cursor = task().getTasks().iterator();
     }
 
     public void execute() {
-        pipeline.addStateListener(getTrackerManager());
-        pipeline.setState(State.RUNNING);
+        super.execute();
+        task().setState(State.RUNNING);
 
         // Start execution flow
         executeNext();
@@ -45,10 +38,12 @@ public class PipelineExecution extends AbstractExecution {
     private void executeNext() {
         if (cursor.hasNext()) {
             // Schedule the next one on the list
-            executeTask(cursor.next());
+            Task next = cursor.next();
+            next.addStateListener(this);
+            executionBuilderManager.newExecution(next).execute();
         } else {
             // Change Pipeline's state
-            pipeline.setState(State.COMPLETED);
+            task().setState(State.COMPLETED);
         }
 
     }
@@ -58,7 +53,7 @@ public class PipelineExecution extends AbstractExecution {
     public void stateChanged(Task source, State previous, State current) {
         switch (current) {
             case FAILED:
-                pipeline.setState(State.FAILED);
+                task().setState(State.FAILED);
                 break;
             case COMPLETED:
                 // The inner Task has been completed

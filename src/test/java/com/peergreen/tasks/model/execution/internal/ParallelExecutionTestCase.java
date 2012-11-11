@@ -1,8 +1,10 @@
-package com.peergreen.tasks.model.execution;
+package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.execution.RootExecution;
+import com.peergreen.tasks.model.execution.internal.ParallelExecution;
 import com.peergreen.tasks.model.expect.SleepExpectation;
 import com.peergreen.tasks.model.expect.StateExpectation;
 import com.peergreen.tasks.model.job.EmptyJob;
@@ -10,6 +12,7 @@ import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.HolderJob;
 import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -70,7 +73,7 @@ public class ParallelExecutionTestCase {
         two.job = twoExpectations;
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        ParallelExecution execution = new ParallelExecution(executorService, parallel);
+        RootExecution execution = Executions.newRootExecution(executorService, parallel);
 
         execution.execute();
 
@@ -95,7 +98,7 @@ public class ParallelExecutionTestCase {
         parallel.add(c);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        ParallelExecution execution = new ParallelExecution(executorService, parallel);
+        RootExecution execution = Executions.newRootExecution(executorService, parallel);
 
         execution.execute();
 
