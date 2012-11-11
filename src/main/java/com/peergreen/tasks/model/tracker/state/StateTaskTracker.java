@@ -33,9 +33,10 @@ public class StateTaskTracker extends TaskTracker<Object> {
     @Override
     public void sourceChanged(Task source, State previous, Object bag) {
         stream.printf(
-                "%15s - %9S - %s%n",
+                "%15s - %9S - %s[%s]%n",
                 Thread.currentThread().getName(),
                 source.getState().name(),
+                source.getClass().getSimpleName(),
                 source.getName()
         );
     }
