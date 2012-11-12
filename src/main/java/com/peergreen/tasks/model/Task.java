@@ -1,7 +1,6 @@
 package com.peergreen.tasks.model;
 
-import com.peergreen.tasks.model.state.State;
-import com.peergreen.tasks.model.state.StateListener;
+import java.beans.PropertyChangeListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,7 +17,11 @@ public interface Task {
 
     void setState(State state);
 
-    void addStateListener(StateListener listener);
+    void addPropertyChangeListener(PropertyChangeListener listener);
 
-    void removeStateListener(StateListener listener);
+    void removePropertyChangeListener(PropertyChangeListener listener);
+
+    void addPropertyChangeListener(String propertyName, PropertyChangeListener listener);
+
+    void removePropertyChangeListener(String propertyName, PropertyChangeListener listener);
 }

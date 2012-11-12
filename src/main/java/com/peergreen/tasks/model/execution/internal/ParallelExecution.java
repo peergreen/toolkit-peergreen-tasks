@@ -3,10 +3,11 @@ package com.peergreen.tasks.model.execution.internal;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
-import com.peergreen.tasks.model.state.State;
-import com.peergreen.tasks.model.state.StateListener;
+import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class ParallelExecution extends TrackedExecution<Parallel> implements StateListener {
+public class ParallelExecution extends TrackedExecution<Parallel> implements PropertyChangeListener {
 
     private ExecutionBuilderManager executionBuilderManager;
     private AtomicInteger completed = new AtomicInteger(0);
@@ -37,16 +38,16 @@ public class ParallelExecution extends TrackedExecution<Parallel> implements Sta
 
     private void executeAll() {
         for (Task task : task().getTasks()) {
-            task.addStateListener(this);
+            task.addPropertyChangeListener("state", this);
             executionBuilderManager.newExecution(task).execute();
         }
     }
 
-
     @Override
-    public void stateChanged(Task source, State previous, State current) {
+    public void propertyChange(PropertyChangeEvent event) {
+        State newValue = (State) event.getNewValue();
 
-        switch (current) {
+        switch (newValue) {
             case FAILED:
                 out = State.FAILED;
             case COMPLETED:
@@ -57,7 +58,5 @@ public class ParallelExecution extends TrackedExecution<Parallel> implements Sta
                     task().setState(out);
                 }
         }
-
     }
-
 }

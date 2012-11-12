@@ -5,13 +5,12 @@ import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.execution.RootExecution;
-import com.peergreen.tasks.model.execution.internal.PipelineExecution;
 import com.peergreen.tasks.model.expect.StateExpectation;
 import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.SleepJob;
-import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 

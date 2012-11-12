@@ -1,7 +1,7 @@
 package com.peergreen.tasks.model.expect;
 
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.State;
 
 /**
 * Created with IntelliJ IDEA.

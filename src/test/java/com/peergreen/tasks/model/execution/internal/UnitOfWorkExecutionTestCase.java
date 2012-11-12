@@ -2,9 +2,8 @@ package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.execution.RootExecution;
-import com.peergreen.tasks.model.execution.internal.UnitOfWorkExecution;
 import com.peergreen.tasks.model.job.SleepJob;
-import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 

@@ -1,7 +1,7 @@
 package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.UnitOfWork;
-import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
 import java.util.concurrent.ExecutorService;

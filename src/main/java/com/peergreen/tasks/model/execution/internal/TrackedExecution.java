@@ -2,8 +2,9 @@ package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.execution.Execution;
-import com.peergreen.tasks.model.state.State;
 import com.peergreen.tasks.model.tracker.TrackerManager;
+
+import java.beans.PropertyChangeListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,7 +20,7 @@ public class TrackedExecution<T extends Task> implements Execution {
     public TrackedExecution(TrackerManager trackerManager, T task) {
         this.trackerManager = trackerManager;
         this.task = task;
-        this.task.addStateListener(trackerManager);
+        this.task.addPropertyChangeListener("state", trackerManager);
     }
 
     protected T task() {

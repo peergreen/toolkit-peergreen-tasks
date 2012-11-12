@@ -1,7 +1,7 @@
 package com.peergreen.tasks.model.tracker;
 
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.State;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;

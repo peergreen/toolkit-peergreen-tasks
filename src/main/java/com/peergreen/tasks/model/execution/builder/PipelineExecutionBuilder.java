@@ -8,6 +8,8 @@ import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.execution.internal.PipelineExecution;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
+import java.beans.PropertyChangeListener;
+
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume

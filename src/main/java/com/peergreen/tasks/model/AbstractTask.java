@@ -1,9 +1,7 @@
 package com.peergreen.tasks.model;
 
-import com.peergreen.tasks.model.state.State;
-import com.peergreen.tasks.model.state.StateListener;
-import com.peergreen.tasks.model.state.StateSupport;
-
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.UUID;
 
 /**
@@ -16,7 +14,7 @@ import java.util.UUID;
 public class AbstractTask implements Task {
     protected String name;
     private State state = State.WAITING;
-    private StateSupport support = new StateSupport(this);
+    private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     private UUID uuid;
 
@@ -34,21 +32,35 @@ public class AbstractTask implements Task {
         return state;
     }
 
+    protected PropertyChangeSupport propertyChangeSupport() {
+        return support;
+    }
+
     @Override
     public void setState(State state) {
         State previous = this.state;
         this.state = state;
-        support.fireStateChanged(previous, state);
+        support.firePropertyChange("state", previous, state);
     }
 
     @Override
-    public void addStateListener(StateListener listener) {
-        support.addStateListener(listener);
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
     }
 
     @Override
-    public void removeStateListener(StateListener listener) {
-        support.removeStateListener(listener);
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        support.addPropertyChangeListener(propertyName, listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        support.removePropertyChangeListener(propertyName, listener);
     }
 
     @Override

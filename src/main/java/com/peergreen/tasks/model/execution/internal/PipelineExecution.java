@@ -3,10 +3,11 @@ package com.peergreen.tasks.model.execution.internal;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
-import com.peergreen.tasks.model.state.State;
-import com.peergreen.tasks.model.state.StateListener;
+import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Iterator;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class PipelineExecution extends TrackedExecution<Pipeline> implements StateListener {
+public class PipelineExecution extends TrackedExecution<Pipeline> implements PropertyChangeListener {
 
     private Iterator<Task> cursor;
     private ExecutionBuilderManager executionBuilderManager;
@@ -39,7 +40,7 @@ public class PipelineExecution extends TrackedExecution<Pipeline> implements Sta
         if (cursor.hasNext()) {
             // Schedule the next one on the list
             Task next = cursor.next();
-            next.addStateListener(this);
+            next.addPropertyChangeListener("state", this);
             executionBuilderManager.newExecution(next).execute();
         } else {
             // Change Pipeline's state
@@ -48,10 +49,11 @@ public class PipelineExecution extends TrackedExecution<Pipeline> implements Sta
 
     }
 
-
     @Override
-    public void stateChanged(Task source, State previous, State current) {
-        switch (current) {
+    public void propertyChange(PropertyChangeEvent event) {
+        State newValue = (State) event.getNewValue();
+
+        switch (newValue) {
             case FAILED:
                 task().setState(State.FAILED);
                 break;
@@ -59,7 +61,5 @@ public class PipelineExecution extends TrackedExecution<Pipeline> implements Sta
                 // The inner Task has been completed
                 executeNext();
         }
-
     }
-
 }

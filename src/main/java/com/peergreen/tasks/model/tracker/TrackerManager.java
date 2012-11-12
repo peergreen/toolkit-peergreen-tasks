@@ -1,9 +1,10 @@
 package com.peergreen.tasks.model.tracker;
 
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.state.State;
-import com.peergreen.tasks.model.state.StateListener;
+import com.peergreen.tasks.model.State;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * Time: 09:01
  * To change this template use File | Settings | File Templates.
  */
-public class TrackerManager implements StateListener {
+public class TrackerManager implements PropertyChangeListener {
     private List<TaskTracker<?>> trackers = new ArrayList<TaskTracker<?>>();
 
     public void registerTracker(TaskTracker<?> tracker) {
@@ -22,9 +23,13 @@ public class TrackerManager implements StateListener {
     }
 
     @Override
-    public void stateChanged(Task source, State previous, State current) {
+    public void propertyChange(PropertyChangeEvent event) {
+        Task source = (Task) event.getSource();
+        State oldValue = (State) event.getOldValue();
+        State newValue = (State) event.getNewValue();
+
         for (TaskTracker<?> tracker : trackers) {
-            tracker.stateChanged(source, previous, current);
+            tracker.stateChanged(source, oldValue, newValue);
         }
     }
 }

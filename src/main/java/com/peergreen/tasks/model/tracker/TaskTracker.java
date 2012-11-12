@@ -1,8 +1,7 @@
 package com.peergreen.tasks.model.tracker;
 
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.state.State;
-import com.peergreen.tasks.model.state.StateListener;
+import com.peergreen.tasks.model.State;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,7 @@ import java.util.Map;
  * Time: 08:53
  * To change this template use File | Settings | File Templates.
  */
-public class TaskTracker<T> implements StateListener, Tracker<T> {
+public class TaskTracker<T> implements Tracker<T> {
 
     private Map<Task, T> tracked = new HashMap<Task, T>();
     private Tracker<T> tracker;
@@ -28,7 +27,6 @@ public class TaskTracker<T> implements StateListener, Tracker<T> {
         this.tracker = tracker;
     }
 
-    @Override
     public void stateChanged(Task source, State previous, State current) {
 
         // First try if this is a new Task

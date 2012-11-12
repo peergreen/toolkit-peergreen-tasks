@@ -4,14 +4,13 @@ import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.execution.RootExecution;
-import com.peergreen.tasks.model.execution.internal.ParallelExecution;
 import com.peergreen.tasks.model.expect.SleepExpectation;
 import com.peergreen.tasks.model.expect.StateExpectation;
 import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.HolderJob;
-import com.peergreen.tasks.model.state.State;
+import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
