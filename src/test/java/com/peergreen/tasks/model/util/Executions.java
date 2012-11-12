@@ -4,6 +4,7 @@ import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.execution.RootExecution;
+import com.peergreen.tasks.model.execution.builder.ArousableExecutionBuilder;
 import com.peergreen.tasks.model.execution.builder.ParallelExecutionBuilder;
 import com.peergreen.tasks.model.execution.builder.PipelineExecutionBuilder;
 import com.peergreen.tasks.model.execution.builder.UnitOfWorkExecutionBuilder;
@@ -29,8 +30,13 @@ public class Executions {
         root.addExecutionBuilder(newUnitOfWorkExecutionBuilder(executorService, root.getTrackerManager()));
         root.addExecutionBuilder(newPipelineExecutionBuilder(root, root.getTrackerManager()));
         root.addExecutionBuilder(newParallelExecutionBuilder(root, root.getTrackerManager()));
+        root.addExecutionBuilder(newArousableExecutionBuilder(root, root.getTrackerManager()));
 
         return root;
+    }
+
+    private static ExecutionBuilder newArousableExecutionBuilder(ExecutionBuilderManager executionBuilderManager, TrackerManager trackerManager) {
+        return new ArousableExecutionBuilder(executionBuilderManager, trackerManager);
     }
 
     private static ExecutionBuilder newParallelExecutionBuilder(ExecutionBuilderManager executionBuilderManager, TrackerManager trackerManager) {
