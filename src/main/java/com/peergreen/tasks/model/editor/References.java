@@ -26,11 +26,7 @@ public class References {
         };
     }
     public static Reference<Pipeline> pipeline(final String name) {
-        if (name.startsWith("@")) {
-            return new InDepthNameSearchReference<Pipeline>(Pipeline.class, name.substring(1));
-        }
-
-        return new HierarchicalSearchReference<Pipeline>(Pipeline.class, Arrays.asList(name.split("/")));
+        return search(name, Pipeline.class);
     }
 
     public static Reference<Task> task(final Task task) {
@@ -42,11 +38,7 @@ public class References {
         };
     }
     public static Reference<Task> task(final String name) {
-        if (name.startsWith("@")) {
-            return new InDepthNameSearchReference<Task>(Task.class, name.substring(1));
-        }
-
-        return new HierarchicalSearchReference<Task>(Task.class, Arrays.asList(name.split("/")));
+        return search(name, Task.class);
     }
 
     public static Reference<Parallel> parallel(final Parallel parallel) {
@@ -58,11 +50,15 @@ public class References {
         };
     }
     public static Reference<Parallel> parallel(final String name) {
+        return search(name, Parallel.class);
+    }
+
+    private static <T extends Task> Reference<T> search(String name, Class<T> type) {
         if (name.startsWith("@")) {
-            return new InDepthNameSearchReference<Parallel>(Parallel.class, name.substring(1));
+            return new InDepthNameSearchReference<T>(type, name.substring(1));
         }
 
-        return new HierarchicalSearchReference<Parallel>(Parallel.class, Arrays.asList(name.split("/")));
+        return new HierarchicalSearchReference<T>(type, Arrays.asList(name.split("/")));
     }
 
 }
