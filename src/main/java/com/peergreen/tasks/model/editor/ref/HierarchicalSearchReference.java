@@ -1,6 +1,6 @@
 package com.peergreen.tasks.model.editor.ref;
 
-import com.peergreen.tasks.model.ScopingTask;
+import com.peergreen.tasks.model.Scope;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.context.Breadcrumb;
 import com.peergreen.tasks.model.editor.Reference;
@@ -73,9 +73,9 @@ public class HierarchicalSearchReference<T extends Task> implements Reference<T>
 
     private void completeNode(Node<Task> node) {
         Task task = node.getData();
-        if (task instanceof ScopingTask) {
-            ScopingTask scopingTask = (ScopingTask) task;
-            for (Task sub : scopingTask) {
+        if (task instanceof Scope) {
+            Scope scope = (Scope) task;
+            for (Task sub : scope) {
                 Node<Task> child = new Node<Task>(sub);
                 child.setParent(node);
             }

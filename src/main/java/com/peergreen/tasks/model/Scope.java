@@ -9,4 +9,4 @@ import java.util.Iterator;
  * Time: 13:44
  * To change this template use File | Settings | File Templates.
  */
-public interface ScopingTask extends Task, Iterable<Task> { }
+public interface Scope extends Task, Iterable<Task> { }

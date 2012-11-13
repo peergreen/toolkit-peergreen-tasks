@@ -1,6 +1,6 @@
 package com.peergreen.tasks.model.editor.ref;
 
-import com.peergreen.tasks.model.ScopingTask;
+import com.peergreen.tasks.model.Scope;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.context.Breadcrumb;
 import com.peergreen.tasks.model.editor.Reference;
@@ -50,8 +50,8 @@ public class InDepthNameSearchReference<T extends Task> implements Reference<T> 
                 }
 
                 // If not, traverse it's children (if possible)
-                if (task instanceof ScopingTask) {
-                    T found = traverse((ScopingTask) task);
+                if (task instanceof Scope) {
+                    T found = traverse((Scope) task);
                     if (found != null) {
                         return found;
                     }

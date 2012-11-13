@@ -12,7 +12,7 @@ import java.util.Iterator;
  * Time: 16:52
  * To change this template use File | Settings | File Templates.
  */
-public class Parallel extends AbstractTask implements ScopingTask {
+public class Parallel extends AbstractTask implements Scope {
     private Collection<Task> tasks = new HashSet<Task>();
 
     public Parallel() {

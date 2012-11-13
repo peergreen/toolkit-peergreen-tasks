@@ -10,7 +10,7 @@ import java.util.Iterator;
  * Time: 09:45
  * To change this template use File | Settings | File Templates.
  */
-public class WakeUp extends AbstractTask implements ScopingTask {
+public class WakeUp extends AbstractTask implements Scope {
 
     private Task delegate;
     private boolean wakeUp = false;

@@ -12,7 +12,7 @@ import java.util.List;
  * Time: 16:52
  * To change this template use File | Settings | File Templates.
  */
-public class Pipeline extends AbstractTask implements ScopingTask {
+public class Pipeline extends AbstractTask implements Scope {
     private LinkedList<Task> tasks = new LinkedList<Task>();
 
     public Pipeline() {
