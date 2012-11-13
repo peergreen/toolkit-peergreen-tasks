@@ -28,7 +28,9 @@ public class Parallel extends AbstractTask implements ScopingTask {
     }
 
     public void add(Task task) {
-        this.tasks.add(task);
+        if (isModifiable()) {
+            this.tasks.add(task);
+        }
     }
 
     @Override

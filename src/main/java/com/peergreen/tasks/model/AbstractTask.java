@@ -63,6 +63,16 @@ public class AbstractTask implements Task {
         support.removePropertyChangeListener(propertyName, listener);
     }
 
+    protected boolean isModifiable() {
+        switch (state) {
+            case WAITING:
+            case SCHEDULED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,8 +1,10 @@
 package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Parallel;
+import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.RootExecution;
 import com.peergreen.tasks.model.expect.SleepExpectation;
 import com.peergreen.tasks.model.expect.StateExpectation;
@@ -12,12 +14,15 @@ import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.HolderJob;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.util.Executions;
+import com.peergreen.tasks.runtime.Job;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static com.peergreen.tasks.model.editor.References.parallel;
+import static com.peergreen.tasks.model.editor.References.pipeline;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -109,6 +114,61 @@ public class ParallelExecutionTestCase {
         assertEquals(parallel.getState(), State.FAILED);
 
     }
+
+
+    @Test
+    public void testTaskAdditionLive() throws Exception {
+
+        /**
+         * Step 0 (initial):
+         * +-------------------------+
+         * |          +-----------+  |
+         * |  +---+   |   +---+   |  |
+         * |  | a | < |   | b |   |  |
+         * |  +---+   |   +---+   |  |
+         * |          +-----------+  |
+         * +-------------------------+
+         * Step 1 (a add c):
+         * +----------------------------------+
+         * |          +--------------------+  |
+         * |  +---+   |   +---+    +---+   |  |
+         * |  | a | < |   | b | // | c |   |  |
+         * |  +---+   |   +---+    +---+   |  |
+         * |          +--------------------+  |
+         * +----------------------------------+
+         */
+
+        // Prepare objects
+        Pipeline global = new Pipeline();
+        final Parallel master = new Parallel("master");
+
+        final UnitOfWork c = new UnitOfWork(new EmptyJob(), "c");
+
+        UnitOfWork a = new UnitOfWork(new Job() {
+            @Override
+            public void execute(TaskContext context) {
+                context.find(parallel("../master")).add(c);
+            }
+        }, "a");
+
+        UnitOfWork b = new UnitOfWork(new EmptyJob(), "b");
+
+        // Then build Pipelines
+        global.add(a, master);
+        master.add(b);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
+        RootExecution execution = Executions.newRootExecution(executorService, global);
+
+        execution.execute();
+
+        // Wait for some time
+        executorService.awaitTermination(1, TimeUnit.SECONDS);
+
+        assertEquals(c.getState(), State.COMPLETED);
+
+    }
+
 
 }
 

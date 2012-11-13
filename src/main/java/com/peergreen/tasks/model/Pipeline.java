@@ -28,7 +28,14 @@ public class Pipeline extends AbstractTask implements ScopingTask {
     }
 
     public void addFirst(Task task) {
-        tasks.addFirst(task);
+        if (isModifiable()) {
+            Task previous = null;
+            if (!tasks.isEmpty()) {
+                previous = tasks.getFirst();
+            }
+            tasks.addFirst(task);
+            propertyChangeSupport().fireIndexedPropertyChange("tasks", 0, previous, task);
+        }
     }
 
     public void add(Task... tasks) {
@@ -40,17 +47,34 @@ public class Pipeline extends AbstractTask implements ScopingTask {
     }
 
     public void addLast(Task task) {
-        tasks.addLast(task);
+        if (isModifiable()) {
+            tasks.addLast(task);
+            propertyChangeSupport().fireIndexedPropertyChange("tasks", tasks.size() - 1, null, task);
+        }
     }
 
     public void addTaskAfter(Task after, Task added) {
-        int index = tasks.indexOf(after);
-        tasks.add(index + 1, added);
+        if (isModifiable()) {
+            int index = tasks.indexOf(after);
+            Task previous = null;
+            if ((index + 1) < tasks.size()) {
+                previous = tasks.get(index + 1);
+            }
+            tasks.add(index + 1, added);
+            propertyChangeSupport().fireIndexedPropertyChange("tasks", index + 1, previous, added);
+        }
     }
 
     public void addTaskBefore(Task before, Task added) {
-        int index = tasks.indexOf(before);
-        tasks.add(index, added);
+        if (isModifiable()) {
+            int index = tasks.indexOf(before);
+            Task previous = null;
+            if (index > 0) {
+                previous = tasks.get(index);
+            }
+            tasks.add(index, added);
+            propertyChangeSupport().fireIndexedPropertyChange("tasks", index, previous, added);
+        }
     }
 
     @Override
