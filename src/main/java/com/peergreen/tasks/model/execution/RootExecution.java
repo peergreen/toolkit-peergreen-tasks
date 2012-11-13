@@ -22,7 +22,6 @@ import java.util.List;
 public class RootExecution implements Execution, ExecutionBuilderManager {
 
     private List<ExecutionBuilder> builders = new ArrayList<ExecutionBuilder>();
-    private TrackerManager trackerManager = new TrackerManager();
     private Task task;
     private ExecutionContext executionContext = new ExecutionContext();
 
@@ -30,16 +29,13 @@ public class RootExecution implements Execution, ExecutionBuilderManager {
         this.task = task;
     }
 
-    public TrackerManager getTrackerManager() {
-        return trackerManager;
-    }
-
     public ExecutionContext getExecutionContext() {
         return executionContext;
     }
 
     public void addExecutionBuilder(final ExecutionBuilder builder) {
-        builders.add(builder);
+        // Always add
+        builders.add(0, builder);
     }
 
     @Override

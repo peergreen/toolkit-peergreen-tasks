@@ -3,6 +3,7 @@ package com.peergreen.tasks.model.execution.internal;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.context.TaskContext;
+import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.tracker.TrackerManager;
@@ -21,24 +22,24 @@ import java.util.concurrent.locks.ReentrantLock;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class PipelineExecution extends TrackedExecution<Pipeline> implements PropertyChangeListener {
+public class PipelineExecution implements Execution, PropertyChangeListener {
 
     private ListIterator<Task> cursor;
     private ExecutionBuilderManager executionBuilderManager;
     private TaskContext taskContext;
+    private Pipeline pipeline;
     private Lock lock = new ReentrantLock();
 
-    public PipelineExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, Pipeline pipeline) {
-        super(trackerManager, pipeline);
+    public PipelineExecution(ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, Pipeline pipeline) {
         this.executionBuilderManager = executionBuilderManager;
         this.taskContext = taskContext;
-        pipeline.addPropertyChangeListener("tasks", this);
-        this.cursor = task().getTasks().listIterator();
+        this.pipeline = pipeline;
+        this.pipeline.addPropertyChangeListener("tasks", this);
+        this.cursor = pipeline.getTasks().listIterator();
     }
 
     public void execute() {
-        super.execute();
-        task().setState(State.RUNNING);
+        pipeline.setState(State.RUNNING);
 
         // Start execution flow
         executeNext();
@@ -54,7 +55,7 @@ public class PipelineExecution extends TrackedExecution<Pipeline> implements Pro
                 executionBuilderManager.newExecution(taskContext.getBreadcrumb(), next).execute();
             } else {
                 // Change Pipeline's state
-                task().setState(State.COMPLETED);
+                pipeline.setState(State.COMPLETED);
             }
         } finally {
             lock.unlock();
@@ -77,7 +78,7 @@ public class PipelineExecution extends TrackedExecution<Pipeline> implements Pro
         try {
             if (cursor.hasPrevious()) {
                 Task marker = cursor.previous();
-                this.cursor = task().getTasks().listIterator();
+                this.cursor = pipeline.getTasks().listIterator();
 
                 // this algorithm only support 'add' semantic
                 boolean reached = false;
@@ -90,7 +91,7 @@ public class PipelineExecution extends TrackedExecution<Pipeline> implements Pro
             } else {
                 // Execution was not started at that time
                 // Simply creates a new cursor
-                this.cursor = task().getTasks().listIterator();
+                this.cursor = pipeline.getTasks().listIterator();
             }
         } finally {
             lock.unlock();
@@ -102,7 +103,7 @@ public class PipelineExecution extends TrackedExecution<Pipeline> implements Pro
 
         switch (newValue) {
             case FAILED:
-                task().setState(State.FAILED);
+                pipeline.setState(State.FAILED);
                 break;
             case COMPLETED:
                 // The inner Task has been completed

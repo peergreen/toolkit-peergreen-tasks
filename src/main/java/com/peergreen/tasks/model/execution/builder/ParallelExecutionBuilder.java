@@ -9,8 +9,6 @@ import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.execution.internal.ParallelExecution;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
-import java.beans.PropertyChangeListener;
-
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
@@ -21,17 +19,15 @@ import java.beans.PropertyChangeListener;
 public class ParallelExecutionBuilder implements ExecutionBuilder {
 
     private ExecutionBuilderManager executionBuilderManager;
-    private TrackerManager trackerManager;
 
-    public ParallelExecutionBuilder(ExecutionBuilderManager executionBuilderManager, TrackerManager trackerManager) {
+    public ParallelExecutionBuilder(ExecutionBuilderManager executionBuilderManager) {
         this.executionBuilderManager = executionBuilderManager;
-        this.trackerManager = trackerManager;
     }
 
     @Override
     public Execution newExecution(TaskContext taskContext, Task task) {
         if (task instanceof Parallel) {
-            return new ParallelExecution(trackerManager, executionBuilderManager, taskContext, (Parallel) task);
+            return new ParallelExecution(executionBuilderManager, taskContext, (Parallel) task);
         }
         return null;
     }

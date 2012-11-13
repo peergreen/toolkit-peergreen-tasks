@@ -9,8 +9,6 @@ import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.execution.internal.PipelineExecution;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
-import java.beans.PropertyChangeListener;
-
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
@@ -21,17 +19,15 @@ import java.beans.PropertyChangeListener;
 public class PipelineExecutionBuilder implements ExecutionBuilder {
 
     private ExecutionBuilderManager executionBuilderManager;
-    private TrackerManager trackerManager;
 
-    public PipelineExecutionBuilder(ExecutionBuilderManager executionBuilderManager, TrackerManager trackerManager) {
+    public PipelineExecutionBuilder(ExecutionBuilderManager executionBuilderManager) {
         this.executionBuilderManager = executionBuilderManager;
-        this.trackerManager = trackerManager;
     }
 
     @Override
     public Execution newExecution(TaskContext taskContext, Task task) {
         if (task instanceof Pipeline) {
-            return new PipelineExecution(trackerManager, executionBuilderManager, taskContext, (Pipeline) task);
+            return new PipelineExecution(executionBuilderManager, taskContext, (Pipeline) task);
         }
         return null;
     }

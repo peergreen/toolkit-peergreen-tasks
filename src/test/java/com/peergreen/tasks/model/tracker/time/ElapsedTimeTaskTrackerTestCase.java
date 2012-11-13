@@ -4,8 +4,10 @@ import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.execution.RootExecution;
+import com.peergreen.tasks.model.execution.builder.TrackerManagerEnabler;
 import com.peergreen.tasks.model.execution.internal.ParallelExecution;
 import com.peergreen.tasks.model.job.SleepJob;
+import com.peergreen.tasks.model.tracker.TrackerManager;
 import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
@@ -43,6 +45,9 @@ public class ElapsedTimeTaskTrackerTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(executors);
         RootExecution execution = Executions.newRootExecution(executorService, parallel);
 
+        TrackerManager trackerManager = new TrackerManager();
+        execution.addExecutionBuilder(new TrackerManagerEnabler(trackerManager));
+
         final Duration d = new Duration();
 
         TimesVisitor visitor = new TimesVisitor() {
@@ -55,7 +60,7 @@ public class ElapsedTimeTaskTrackerTestCase {
             }
         };
 
-        execution.getTrackerManager().registerTracker(new ElapsedTimeTaskTracker(visitor));
+        trackerManager.registerTracker(new ElapsedTimeTaskTracker(visitor));
 
         execution.execute();
 

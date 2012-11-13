@@ -3,6 +3,7 @@ package com.peergreen.tasks.model.execution.internal;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.context.TaskContext;
+import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.tracker.TrackerManager;
@@ -18,29 +19,29 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class ParallelExecution extends TrackedExecution<Parallel> implements PropertyChangeListener {
+public class ParallelExecution implements Execution, PropertyChangeListener {
 
     private ExecutionBuilderManager executionBuilderManager;
     private AtomicInteger completed = new AtomicInteger(0);
     private State out = State.COMPLETED;
     private TaskContext taskContext;
+    private Parallel parallel;
 
-    public ParallelExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, Parallel parallel) {
-        super(trackerManager, parallel);
+    public ParallelExecution(ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, Parallel parallel) {
         this.executionBuilderManager = executionBuilderManager;
         this.taskContext = taskContext;
+        this.parallel = parallel;
     }
 
     public void execute() {
-        super.execute();
-        task().setState(State.RUNNING);
+        parallel.setState(State.RUNNING);
 
         // Start execution flow
         executeAll();
     }
 
     private void executeAll() {
-        for (Task task : task().getTasks()) {
+        for (Task task : parallel.getTasks()) {
             task.addPropertyChangeListener("state", this);
             executionBuilderManager.newExecution(taskContext.getBreadcrumb(), task).execute();
         }
@@ -55,10 +56,10 @@ public class ParallelExecution extends TrackedExecution<Parallel> implements Pro
                 out = State.FAILED;
             case COMPLETED:
                 // The inner Task has been completed
-                if (completed.incrementAndGet() == task().getTasks().size()) {
+                if (completed.incrementAndGet() == parallel.getTasks().size()) {
                     // All tasks have been executed
                     // The parallel is now either FAILED or COMPLETED
-                    task().setState(out);
+                    parallel.setState(out);
                 }
         }
     }

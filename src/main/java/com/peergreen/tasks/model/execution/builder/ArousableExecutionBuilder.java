@@ -1,14 +1,12 @@
 package com.peergreen.tasks.model.execution.builder;
 
 import com.peergreen.tasks.model.ArousableTask;
-import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.execution.internal.ArousableExecution;
-import com.peergreen.tasks.model.execution.internal.ParallelExecution;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
 /**
@@ -21,17 +19,15 @@ import com.peergreen.tasks.model.tracker.TrackerManager;
 public class ArousableExecutionBuilder implements ExecutionBuilder {
 
     private ExecutionBuilderManager executionBuilderManager;
-    private TrackerManager trackerManager;
 
-    public ArousableExecutionBuilder(ExecutionBuilderManager executionBuilderManager, TrackerManager trackerManager) {
+    public ArousableExecutionBuilder(ExecutionBuilderManager executionBuilderManager) {
         this.executionBuilderManager = executionBuilderManager;
-        this.trackerManager = trackerManager;
     }
 
     @Override
     public Execution newExecution(TaskContext taskContext, Task task) {
         if (task instanceof ArousableTask) {
-            return new ArousableExecution(trackerManager, executionBuilderManager, taskContext, (ArousableTask) task);
+            return new ArousableExecution(executionBuilderManager, taskContext, (ArousableTask) task);
         }
         return null;
     }

@@ -3,6 +3,7 @@ package com.peergreen.tasks.model.execution.internal;
 import com.peergreen.tasks.model.ArousableTask;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.context.TaskContext;
+import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
@@ -16,30 +17,30 @@ import java.beans.PropertyChangeListener;
  * Time: 09:46
  * To change this template use File | Settings | File Templates.
  */
-public class ArousableExecution extends TrackedExecution<ArousableTask> implements PropertyChangeListener {
+public class ArousableExecution implements Execution, PropertyChangeListener {
 
     private ExecutionBuilderManager executionBuilderManager;
     private TaskContext taskContext;
+    private ArousableTask arousableTask;
 
-    public ArousableExecution(TrackerManager trackerManager, ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, ArousableTask task) {
-        super(trackerManager, task);
+    public ArousableExecution(ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, ArousableTask task) {
         this.executionBuilderManager = executionBuilderManager;
         this.taskContext = taskContext;
+        this.arousableTask = task;
         task.addPropertyChangeListener(this);
     }
 
     @Override
     public void execute() {
-        super.execute();
 
-        task().setState(State.SCHEDULED);
+        arousableTask.setState(State.SCHEDULED);
     }
 
     private void reallyExecute() {
-        task().setState(State.RUNNING);
+        arousableTask.setState(State.RUNNING);
 
-        task().getDelegate().addPropertyChangeListener("state", this);
-        executionBuilderManager.newExecution(taskContext.getBreadcrumb(), task().getDelegate()).execute();
+        arousableTask.getDelegate().addPropertyChangeListener("state", this);
+        executionBuilderManager.newExecution(taskContext.getBreadcrumb(), arousableTask.getDelegate()).execute();
 
 
     }
@@ -53,10 +54,10 @@ public class ArousableExecution extends TrackedExecution<ArousableTask> implemen
 
             switch (newValue) {
                 case FAILED:
-                    task().setState(State.FAILED);
+                    arousableTask.setState(State.FAILED);
                     break;
                 case COMPLETED:
-                    task().setState(State.COMPLETED);
+                    arousableTask.setState(State.COMPLETED);
                     break;
             }
 

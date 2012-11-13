@@ -3,6 +3,7 @@ package com.peergreen.tasks.model.execution.internal;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.context.TaskContext;
+import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
 import java.util.concurrent.ExecutorService;
@@ -14,32 +15,32 @@ import java.util.concurrent.ExecutorService;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class UnitOfWorkExecution extends TrackedExecution<UnitOfWork> {
+public class UnitOfWorkExecution implements Execution {
 
     private ExecutorService executorService;
     private TaskContext taskContext;
+    private UnitOfWork unitOfWork;
 
-    public UnitOfWorkExecution(TrackerManager trackerManager, ExecutorService executorService, TaskContext taskContext, UnitOfWork unitOfWork) {
-        super(trackerManager, unitOfWork);
-        this.taskContext = taskContext;
+    public UnitOfWorkExecution(ExecutorService executorService, TaskContext taskContext, UnitOfWork unitOfWork) {
         this.executorService = executorService;
+        this.taskContext = taskContext;
+        this.unitOfWork = unitOfWork;
     }
 
     public void execute() {
-        super.execute();
         // Execute/Schedule the unit of work
-        task().setState(State.SCHEDULED);
+        unitOfWork.setState(State.SCHEDULED);
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                task().setState(State.RUNNING);
+                unitOfWork.setState(State.RUNNING);
                 try {
-                    task().getJob().execute(taskContext);
+                    unitOfWork.getJob().execute(taskContext);
                 } catch (Throwable t) {
-                    task().setState(State.FAILED);
+                    unitOfWork.setState(State.FAILED);
                     return;
                 }
-                task().setState(State.COMPLETED);
+                unitOfWork.setState(State.COMPLETED);
             }
         });
     }

@@ -21,17 +21,15 @@ import java.util.concurrent.ExecutorService;
 public class UnitOfWorkExecutionBuilder implements ExecutionBuilder {
 
     private ExecutorService executorService;
-    private TrackerManager trackerManager;
 
-    public UnitOfWorkExecutionBuilder(ExecutorService executorService, TrackerManager trackerManager) {
+    public UnitOfWorkExecutionBuilder(ExecutorService executorService) {
         this.executorService = executorService;
-        this.trackerManager = trackerManager;
     }
 
     @Override
     public Execution newExecution(TaskContext taskContext, Task task) {
         if (task instanceof UnitOfWork) {
-            return new UnitOfWorkExecution(trackerManager, executorService, taskContext, (UnitOfWork) task);
+            return new UnitOfWorkExecution(executorService, taskContext, (UnitOfWork) task);
         }
         return null;
     }

@@ -9,9 +9,7 @@ import com.peergreen.tasks.model.execution.builder.ParallelExecutionBuilder;
 import com.peergreen.tasks.model.execution.builder.PipelineExecutionBuilder;
 import com.peergreen.tasks.model.execution.builder.UnitOfWorkExecutionBuilder;
 import com.peergreen.tasks.model.tracker.TrackerManager;
-import com.peergreen.tasks.model.tracker.state.StateTaskTracker;
 
-import java.beans.PropertyChangeListener;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -25,29 +23,27 @@ public class Executions {
     public static RootExecution newRootExecution(ExecutorService executorService, Task task) {
         RootExecution root = new RootExecution(task);
 
-        root.getTrackerManager().registerTracker(new StateTaskTracker());
-
-        root.addExecutionBuilder(newUnitOfWorkExecutionBuilder(executorService, root.getTrackerManager()));
-        root.addExecutionBuilder(newPipelineExecutionBuilder(root, root.getTrackerManager()));
-        root.addExecutionBuilder(newParallelExecutionBuilder(root, root.getTrackerManager()));
-        root.addExecutionBuilder(newArousableExecutionBuilder(root, root.getTrackerManager()));
+        root.addExecutionBuilder(newUnitOfWorkExecutionBuilder(executorService));
+        root.addExecutionBuilder(newPipelineExecutionBuilder(root));
+        root.addExecutionBuilder(newParallelExecutionBuilder(root));
+        root.addExecutionBuilder(newArousableExecutionBuilder(root));
 
         return root;
     }
 
-    private static ExecutionBuilder newArousableExecutionBuilder(ExecutionBuilderManager executionBuilderManager, TrackerManager trackerManager) {
-        return new ArousableExecutionBuilder(executionBuilderManager, trackerManager);
+    private static ExecutionBuilder newArousableExecutionBuilder(ExecutionBuilderManager executionBuilderManager) {
+        return new ArousableExecutionBuilder(executionBuilderManager);
     }
 
-    private static ExecutionBuilder newParallelExecutionBuilder(ExecutionBuilderManager executionBuilderManager, TrackerManager trackerManager) {
-        return new ParallelExecutionBuilder(executionBuilderManager, trackerManager);
+    private static ExecutionBuilder newParallelExecutionBuilder(ExecutionBuilderManager executionBuilderManager) {
+        return new ParallelExecutionBuilder(executionBuilderManager);
     }
 
-    private static ExecutionBuilder newPipelineExecutionBuilder(ExecutionBuilderManager executionBuilderManager, TrackerManager trackerManager) {
-        return new PipelineExecutionBuilder(executionBuilderManager, trackerManager);
+    private static ExecutionBuilder newPipelineExecutionBuilder(ExecutionBuilderManager executionBuilderManager) {
+        return new PipelineExecutionBuilder(executionBuilderManager);
     }
 
-    private static ExecutionBuilder newUnitOfWorkExecutionBuilder(ExecutorService executorService, TrackerManager trackerManager) {
-        return new UnitOfWorkExecutionBuilder(executorService, trackerManager);
+    private static ExecutionBuilder newUnitOfWorkExecutionBuilder(ExecutorService executorService) {
+        return new UnitOfWorkExecutionBuilder(executorService);
     }
 }
