@@ -5,7 +5,6 @@ import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.execution.RootExecution;
 import com.peergreen.tasks.model.execution.builder.TrackerManagerEnabler;
-import com.peergreen.tasks.model.execution.internal.ParallelExecution;
 import com.peergreen.tasks.model.job.SleepJob;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 import com.peergreen.tasks.model.util.Executions;

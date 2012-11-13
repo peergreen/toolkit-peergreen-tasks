@@ -1,10 +1,10 @@
 package com.peergreen.tasks.model.editor.ref;
 
-import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.context.Breadcrumb;
 import com.peergreen.tasks.model.job.EmptyJob;
 import org.testng.annotations.BeforeMethod;

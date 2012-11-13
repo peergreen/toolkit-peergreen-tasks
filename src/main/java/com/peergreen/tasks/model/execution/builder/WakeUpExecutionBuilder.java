@@ -1,7 +1,7 @@
 package com.peergreen.tasks.model.execution.builder;
 
-import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;

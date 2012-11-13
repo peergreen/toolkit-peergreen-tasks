@@ -4,8 +4,6 @@ import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.tracker.TrackerManager;
 
-import java.beans.PropertyChangeListener;
-
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume

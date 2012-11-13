@@ -1,9 +1,9 @@
 package com.peergreen.tasks.model.execution.internal;
 
-import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.execution.RootExecution;
 import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.SleepJob;

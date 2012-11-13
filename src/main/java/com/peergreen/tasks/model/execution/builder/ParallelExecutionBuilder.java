@@ -7,7 +7,6 @@ import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.execution.internal.ParallelExecution;
-import com.peergreen.tasks.model.tracker.TrackerManager;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,16 +1,14 @@
 package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Pipeline;
+import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
-import com.peergreen.tasks.model.State;
-import com.peergreen.tasks.model.tracker.TrackerManager;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

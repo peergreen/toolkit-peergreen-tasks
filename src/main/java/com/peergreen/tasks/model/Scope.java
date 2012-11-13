@@ -1,7 +1,5 @@
 package com.peergreen.tasks.model;
 
-import java.util.Iterator;
-
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume

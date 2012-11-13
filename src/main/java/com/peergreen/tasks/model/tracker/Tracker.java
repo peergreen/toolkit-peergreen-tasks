@@ -1,7 +1,7 @@
 package com.peergreen.tasks.model.tracker;
 
-import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.Task;
 
 /**
  * Created with IntelliJ IDEA.

@@ -6,9 +6,7 @@ import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.internal.UnitOfWorkExecution;
-import com.peergreen.tasks.model.tracker.TrackerManager;
 
-import java.beans.PropertyChangeListener;
 import java.util.concurrent.ExecutorService;
 
 /**

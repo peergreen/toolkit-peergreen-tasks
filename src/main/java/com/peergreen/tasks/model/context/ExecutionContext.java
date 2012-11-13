@@ -2,7 +2,6 @@ package com.peergreen.tasks.model.context;
 
 import com.peergreen.tasks.model.Task;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

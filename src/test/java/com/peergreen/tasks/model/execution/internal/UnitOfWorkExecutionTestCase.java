@@ -1,9 +1,9 @@
 package com.peergreen.tasks.model.execution.internal;
 
+import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.execution.RootExecution;
 import com.peergreen.tasks.model.job.SleepJob;
-import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
@@ -12,7 +12,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 /**
  * Created with IntelliJ IDEA.

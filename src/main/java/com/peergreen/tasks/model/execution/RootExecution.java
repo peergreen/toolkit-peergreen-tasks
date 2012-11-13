@@ -4,10 +4,6 @@ import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.context.Breadcrumb;
 import com.peergreen.tasks.model.context.ExecutionContext;
 import com.peergreen.tasks.model.context.TaskContext;
-import com.peergreen.tasks.model.execution.Execution;
-import com.peergreen.tasks.model.execution.ExecutionBuilder;
-import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
-import com.peergreen.tasks.model.tracker.TrackerManager;
 
 import java.util.ArrayList;
 import java.util.List;
