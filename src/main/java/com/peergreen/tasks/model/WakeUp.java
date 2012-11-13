@@ -10,16 +10,16 @@ import java.util.Iterator;
  * Time: 09:45
  * To change this template use File | Settings | File Templates.
  */
-public class ArousableTask extends AbstractTask implements ScopingTask {
+public class WakeUp extends AbstractTask implements ScopingTask {
 
     private Task delegate;
     private boolean wakeUp = false;
 
-    public ArousableTask(Task delegate) {
+    public WakeUp(Task delegate) {
         this(null, delegate);
     }
 
-    public ArousableTask(String name, Task delegate) {
+    public WakeUp(String name, Task delegate) {
         super(name);
         this.delegate = delegate;
     }

@@ -1,6 +1,6 @@
 package com.peergreen.tasks.model.editor.ref;
 
-import com.peergreen.tasks.model.ArousableTask;
+import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
@@ -29,7 +29,7 @@ public class HierarchicalSearchReferenceTestCase {
     private Parallel parallel = new Parallel("parallel");
     private UnitOfWork uow = new UnitOfWork(new EmptyJob(), "uow");
     private UnitOfWork uow2 = new UnitOfWork(new EmptyJob(), "uow2");
-    private ArousableTask arouse = new ArousableTask("arouse", uow2);
+    private WakeUp arouse = new WakeUp("arouse", uow2);
     private Breadcrumb breadcrumb;
 
     @BeforeMethod

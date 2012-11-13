@@ -1,6 +1,5 @@
 package com.peergreen.tasks.model.context;
 
-import com.peergreen.tasks.model.ArousableTask;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.UnitOfWork;
@@ -8,11 +7,9 @@ import com.peergreen.tasks.model.execution.RootExecution;
 import com.peergreen.tasks.model.expect.BreadcrumbExpectation;
 import com.peergreen.tasks.model.expect.ExtensionExpectation;
 import com.peergreen.tasks.model.expect.PropertyExpectation;
-import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.util.Executions;
 import com.peergreen.tasks.runtime.Job;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;

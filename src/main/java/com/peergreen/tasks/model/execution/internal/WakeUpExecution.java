@@ -1,11 +1,10 @@
 package com.peergreen.tasks.model.execution.internal;
 
-import com.peergreen.tasks.model.ArousableTask;
+import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
-import com.peergreen.tasks.model.tracker.TrackerManager;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -17,30 +16,30 @@ import java.beans.PropertyChangeListener;
  * Time: 09:46
  * To change this template use File | Settings | File Templates.
  */
-public class ArousableExecution implements Execution, PropertyChangeListener {
+public class WakeUpExecution implements Execution, PropertyChangeListener {
 
     private ExecutionBuilderManager executionBuilderManager;
     private TaskContext taskContext;
-    private ArousableTask arousableTask;
+    private WakeUp wakeUp;
 
-    public ArousableExecution(ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, ArousableTask task) {
+    public WakeUpExecution(ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, WakeUp task) {
         this.executionBuilderManager = executionBuilderManager;
         this.taskContext = taskContext;
-        this.arousableTask = task;
+        this.wakeUp = task;
         task.addPropertyChangeListener(this);
     }
 
     @Override
     public void execute() {
 
-        arousableTask.setState(State.SCHEDULED);
+        wakeUp.setState(State.SCHEDULED);
     }
 
     private void reallyExecute() {
-        arousableTask.setState(State.RUNNING);
+        wakeUp.setState(State.RUNNING);
 
-        arousableTask.getDelegate().addPropertyChangeListener("state", this);
-        executionBuilderManager.newExecution(taskContext.getBreadcrumb(), arousableTask.getDelegate()).execute();
+        wakeUp.getDelegate().addPropertyChangeListener("state", this);
+        executionBuilderManager.newExecution(taskContext.getBreadcrumb(), wakeUp.getDelegate()).execute();
 
 
     }
@@ -54,10 +53,10 @@ public class ArousableExecution implements Execution, PropertyChangeListener {
 
             switch (newValue) {
                 case FAILED:
-                    arousableTask.setState(State.FAILED);
+                    wakeUp.setState(State.FAILED);
                     break;
                 case COMPLETED:
-                    arousableTask.setState(State.COMPLETED);
+                    wakeUp.setState(State.COMPLETED);
                     break;
             }
 

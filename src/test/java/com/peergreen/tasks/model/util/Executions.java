@@ -4,11 +4,10 @@ import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.execution.RootExecution;
-import com.peergreen.tasks.model.execution.builder.ArousableExecutionBuilder;
+import com.peergreen.tasks.model.execution.builder.WakeUpExecutionBuilder;
 import com.peergreen.tasks.model.execution.builder.ParallelExecutionBuilder;
 import com.peergreen.tasks.model.execution.builder.PipelineExecutionBuilder;
 import com.peergreen.tasks.model.execution.builder.UnitOfWorkExecutionBuilder;
-import com.peergreen.tasks.model.tracker.TrackerManager;
 
 import java.util.concurrent.ExecutorService;
 
@@ -32,7 +31,7 @@ public class Executions {
     }
 
     private static ExecutionBuilder newArousableExecutionBuilder(ExecutionBuilderManager executionBuilderManager) {
-        return new ArousableExecutionBuilder(executionBuilderManager);
+        return new WakeUpExecutionBuilder(executionBuilderManager);
     }
 
     private static ExecutionBuilder newParallelExecutionBuilder(ExecutionBuilderManager executionBuilderManager) {
