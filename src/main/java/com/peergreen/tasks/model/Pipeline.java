@@ -29,12 +29,7 @@ public class Pipeline extends AbstractTask implements Scope {
 
     public void addFirst(Task task) {
         if (isModifiable()) {
-            Task previous = null;
-            if (!tasks.isEmpty()) {
-                previous = tasks.getFirst();
-            }
             tasks.addFirst(task);
-            propertyChangeSupport().fireIndexedPropertyChange("tasks", 0, previous, task);
         }
     }
 
@@ -49,7 +44,6 @@ public class Pipeline extends AbstractTask implements Scope {
     public void addLast(Task task) {
         if (isModifiable()) {
             tasks.addLast(task);
-            propertyChangeSupport().fireIndexedPropertyChange("tasks", tasks.size() - 1, null, task);
         }
     }
 
@@ -57,12 +51,7 @@ public class Pipeline extends AbstractTask implements Scope {
         if (isModifiable()) {
             int index = tasks.indexOf(after);
             if (index != -1) {
-                Task previous = null;
-                if ((index + 1) < tasks.size()) {
-                    previous = tasks.get(index + 1);
-                }
                 tasks.add(index + 1, added);
-                propertyChangeSupport().fireIndexedPropertyChange("tasks", index + 1, previous, added);
             }
         }
     }
@@ -71,12 +60,7 @@ public class Pipeline extends AbstractTask implements Scope {
         if (isModifiable()) {
             int index = tasks.indexOf(before);
             if (index != -1) {
-                Task previous = null;
-                if (index > 0) {
-                    previous = tasks.get(index);
-                }
                 tasks.add(index, added);
-                propertyChangeSupport().fireIndexedPropertyChange("tasks", index, previous, added);
             }
         }
     }
