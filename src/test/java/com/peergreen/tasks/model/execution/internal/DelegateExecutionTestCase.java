@@ -2,6 +2,7 @@ package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Delegate;
 import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.execution.RootExecution;
 import com.peergreen.tasks.model.job.EmptyJob;
@@ -25,7 +26,7 @@ public class DelegateExecutionTestCase {
 
     @Test
     public void testNormalDelegateExecution() throws Exception {
-        Delegate delegate = new Delegate();
+        Delegate<UnitOfWork> delegate = new Delegate<UnitOfWork>();
         delegate.setDelegate(new UnitOfWork(new EmptyJob()));
 
         ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -41,7 +42,7 @@ public class DelegateExecutionTestCase {
 
     @Test
     public void testEmptyDelegateExecution() throws Exception {
-        Delegate delegate = new Delegate();
+        Delegate<?> delegate = new Delegate<Task>();
 
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         RootExecution execution = Executions.newRootExecution(executorService, delegate);

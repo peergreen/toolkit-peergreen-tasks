@@ -7,9 +7,9 @@ package com.peergreen.tasks.model;
  * Time: 14:40
  * To change this template use File | Settings | File Templates.
  */
-public class Delegate extends AbstractTask {
+public class Delegate<T extends Task> extends AbstractTask {
 
-    private Task delegate;
+    private T delegate;
 
     public Delegate() {
         this(null);
@@ -23,7 +23,7 @@ public class Delegate extends AbstractTask {
         return delegate;
     }
 
-    public void setDelegate(Task delegate) {
+    public void setDelegate(T delegate) {
         if (isModifiable()) {
             this.delegate = delegate;
         }

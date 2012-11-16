@@ -28,7 +28,7 @@ public class DelegateExecutionBuilder implements ExecutionBuilder {
     @Override
     public Execution newExecution(TaskContext taskContext, Task task) {
         if (task instanceof Delegate) {
-            return new DelegateExecution(executionBuilderManager, taskContext, (Delegate) task);
+            return new DelegateExecution(executionBuilderManager, taskContext, (Delegate<?>) task);
         }
         return null;
     }

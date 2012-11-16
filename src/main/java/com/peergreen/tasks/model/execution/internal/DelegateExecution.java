@@ -22,9 +22,9 @@ public class DelegateExecution implements Execution, PropertyChangeListener {
 
     private ExecutionBuilderManager executionBuilderManager;
     private TaskContext taskContext;
-    private Delegate delegate;
+    private Delegate<?> delegate;
 
-    public DelegateExecution(ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, Delegate delegate) {
+    public DelegateExecution(ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, Delegate<?> delegate) {
         this.executionBuilderManager = executionBuilderManager;
         this.taskContext = taskContext;
         this.delegate = delegate;
