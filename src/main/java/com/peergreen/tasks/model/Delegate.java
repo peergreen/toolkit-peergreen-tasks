@@ -1,5 +1,8 @@
 package com.peergreen.tasks.model;
 
+import java.util.Collections;
+import java.util.Iterator;
+
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
@@ -7,7 +10,7 @@ package com.peergreen.tasks.model;
  * Time: 14:40
  * To change this template use File | Settings | File Templates.
  */
-public class Delegate<T extends Task> extends AbstractTask {
+public class Delegate<T extends Task> extends AbstractTask implements Scope {
 
     private T delegate;
 
@@ -27,5 +30,10 @@ public class Delegate<T extends Task> extends AbstractTask {
         if (isModifiable()) {
             this.delegate = delegate;
         }
+    }
+
+    @Override
+    public Iterator<Task> iterator() {
+        return Collections.<Task>singleton(delegate).iterator();
     }
 }
