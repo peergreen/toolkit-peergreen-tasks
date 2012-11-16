@@ -2,7 +2,8 @@ Description
 -----------
 
 Tasks Framework.
-This library has to be used to design and run **concurrently** Tasks organized into Pipelines.
+This library has to be used to design and run **concurrently** Tasks
+organized into execution structures.
 
 
 Components
@@ -27,25 +28,26 @@ A Pipeline represents a **sequential** (non parallelizable) set of Tasks.
 
 ### Parallel
     Representation: (), (A, B)
-A Parallele represents an **unordonned** (parallelizable) set of Tasks.
+A Parallel represents an **unordonned** (parallelizable) set of Tasks.
+
+### WakeUp
+    Representation: @[A]
+A WakeUp represents a Task that requires to be awakened before being really executed.
+
+### Delegate
+    Representation: |A|
+A Delegate represents a Task holder. It is useful when the model requires a place
+reservation, but you don't know yet the Task type at this place.
 
 ## Execution
-An Execution is responsible of executing a Pipeline or Parallel.
-It uses a JDK ExecutorService to abstract itself from the ThreadPool.
+An Execution is responsible of executing a Task.
+There is an Execution type per Task type (PipelineExecution, ParallelExecution, ...).
 
 ## TaskTracker
 TaskTrackers are the **extensibility elements** of the Tasks Framework.
 
 Toughts (for the future)
 --------
-
-TBC
-We may rework Pipelines and Parallels because they may lead tounderstanding errors.
-ATM, Pipelines should enforce the 'in-line' execution of its inner Task, and that's not completely the case right now,
-each Task can add a new Requirement on a Task that is out of the scope of the containing Pipeline.
-Maybe an InternalTask API that will hide the Task.requirements properties ?
-Or maybe an upper level API that will construct Pipelines with Tasks ?
-I have to think more about this...
 
 Building
 --------
