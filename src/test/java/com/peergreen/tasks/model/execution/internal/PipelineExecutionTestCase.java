@@ -384,7 +384,7 @@ public class PipelineExecutionTestCase {
 
         UnitOfWork a = new UnitOfWork(new Job() {
             @Override
-            public void execute(TaskContext context) {
+            public void execute(TaskContext context) throws Exception {
                 context.find(pipeline("../master")).add(c);
             }
         }, "a");

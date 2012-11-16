@@ -145,7 +145,7 @@ public class ParallelExecutionTestCase {
 
         UnitOfWork a = new UnitOfWork(new Job() {
             @Override
-            public void execute(TaskContext context) {
+            public void execute(TaskContext context) throws Exception {
                 context.find(parallel("../master")).add(c);
             }
         }, "a");

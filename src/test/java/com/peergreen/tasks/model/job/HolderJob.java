@@ -14,7 +14,7 @@ public class HolderJob implements Job {
     public Job job;
 
     @Override
-    public void execute(TaskContext context) {
+    public void execute(TaskContext context) throws Exception {
         if  (job != null) {
             job.execute(context);
         }

@@ -32,7 +32,7 @@ public class ExpectationsJob implements Job {
     }
 
     @Override
-    public void execute(TaskContext context) {
+    public void execute(TaskContext context) throws Exception {
         passed = true;
         for (Expectation expectation : expectations) {
             if (!expectation.verify(context)) {

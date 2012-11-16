@@ -18,7 +18,7 @@ public class SleepJob implements Job {
     }
 
     @Override
-    public void execute(TaskContext context) {
+    public void execute(TaskContext context) throws Exception {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {

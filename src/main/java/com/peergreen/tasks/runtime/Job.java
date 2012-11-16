@@ -10,5 +10,5 @@ import com.peergreen.tasks.model.context.TaskContext;
  * To change this template use File | Settings | File Templates.
  */
 public interface Job {
-    void execute(TaskContext context);
+    void execute(TaskContext context) throws Exception;
 }

@@ -12,7 +12,7 @@ import com.peergreen.tasks.runtime.Job;
 */
 public class EmptyJob implements Job {
     @Override
-    public void execute(TaskContext context) {
+    public void execute(TaskContext context) throws Exception {
         // do nothing
     }
 }
