@@ -6,11 +6,11 @@ import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.model.tree.task.TaskNodeAdapter;
-import com.peergreen.tasks.model.tree.task.TaskRenderingVisitor;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Iterator;
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -26,6 +26,10 @@ import static org.testng.Assert.assertTrue;
  */
 public class NodeTestCase {
     private Pipeline pipeline = new Pipeline("master");
+    private Parallel parallel;
+    private UnitOfWork unitOfWorkA;
+    private UnitOfWork unitOfWorkB;
+    private UnitOfWork unitOfWorkC;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -36,11 +40,14 @@ public class NodeTestCase {
         //     UnitOfWork [a]
         //   UnitOfWork [c]
 
-        Parallel parallel = new Parallel("parallel");
-        parallel.add(new UnitOfWork(new EmptyJob(), "a"));
-        parallel.add(new UnitOfWork(new EmptyJob(), "b"));
+        parallel = new Parallel("parallel");
+        unitOfWorkA = new UnitOfWork(new EmptyJob(), "a");
+        parallel.add(unitOfWorkA);
+        unitOfWorkB = new UnitOfWork(new EmptyJob(), "b");
+        parallel.add(unitOfWorkB);
         pipeline.add(parallel);
-        pipeline.add(new UnitOfWork(new EmptyJob(), "c"));
+        unitOfWorkC = new UnitOfWork(new EmptyJob(), "c");
+        pipeline.add(unitOfWorkC);
     }
 
     @Test
@@ -48,15 +55,33 @@ public class NodeTestCase {
 
         Node<Task> root = new Node<Task>(new TaskNodeAdapter(), pipeline);
 
-        Node<Task> parallelNode = findChildNode(root, "parallel");
-        assertNotNull(parallelNode);
-        Node<Task> aNode = findChildNode(parallelNode, "a");
-        assertNotNull(aNode);
-        Node<Task> bNode = findChildNode(parallelNode, "b");
-        assertNotNull(bNode);
+        // Children of Pipeline should be ordered
+        Iterator<Node<Task>> i = root.getChildren().iterator();
+        assertEquals(i.next().getData(), parallel);
+        assertEquals(i.next().getData(), unitOfWorkC);
+        assertFalse(i.hasNext());
 
-        Node<Task> cNode = findChildNode(root, "c");
-        assertNotNull(cNode);
+        // Children of Parallel have no order
+        List<Node<Task>> children = root.getChildren().get(0).getChildren();
+        assertEquals(children.size(), 2);
+        assertTrue(children.contains(new Node<Task>(new TaskNodeAdapter(), unitOfWorkA)));
+        assertTrue(children.contains(new Node<Task>(new TaskNodeAdapter(), unitOfWorkB)));
+    }
+
+    @Test
+    public void testNodeCreationInReverse() throws Exception {
+
+        Pipeline p = new Pipeline();
+        UnitOfWork uow = new UnitOfWork(new EmptyJob());
+        p.add(uow);
+
+        Node<Task> child = new Node<Task>(new TaskNodeAdapter(), uow);
+        Node<Task> parent = new Node<Task>(new TaskNodeAdapter(), p);
+        child.setParent(parent);
+
+        Iterator<Node<Task>> i = parent.getChildren().iterator();
+        assertEquals(i.next().getData(), uow);
+        assertFalse(i.hasNext());
     }
 
     @Test

@@ -1,7 +1,9 @@
 package com.peergreen.tasks.model.tree;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,7 +16,7 @@ import java.util.Set;
 public class Node<T> {
     private T data;
     private Node<T> parent;
-    private Set<Node<T>> children;
+    private List<Node<T>> children;
     private NodeAdapter<T> adapter;
 
     public Node(NodeAdapter<T> adapter, T data) {
@@ -28,7 +30,7 @@ public class Node<T> {
 
     public void setParent(Node<T> parent) {
         this.parent = parent;
-        if (parent != null) {
+        if (parent != null && !parent.getChildren().contains(this)) {
             parent.getChildren().add(this);
         }
     }
@@ -37,13 +39,13 @@ public class Node<T> {
         return data;
     }
 
-    public Set<Node<T>> getChildren() {
+    public List<Node<T>> getChildren() {
         if (children == null) {
             // Initialize
             Iterable<T> items = adapter.getChildren(this.getData());
             if ((items != null) && items.iterator().hasNext()) {
                 // Node has children
-                children = new HashSet<Node<T>>();
+                children = new ArrayList<Node<T>>();
                 for (T item : items) {
                     Node<T> child = new Node<T>(adapter, item);
                     child.setParent(this);
@@ -51,7 +53,7 @@ public class Node<T> {
                 }
             } else {
                 // Node has no children
-                children = Collections.emptySet();
+                children = Collections.emptyList();
             }
         }
         return children;
