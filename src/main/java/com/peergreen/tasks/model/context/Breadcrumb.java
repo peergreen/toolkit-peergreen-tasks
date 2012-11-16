@@ -3,6 +3,7 @@ package com.peergreen.tasks.model.context;
 import com.peergreen.tasks.model.Task;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,7 +46,14 @@ public class Breadcrumb implements Iterable<Task> {
 
     @Override
     public Iterator<Task> iterator() {
-        return tasks.iterator();
+        return Collections.unmodifiableList(tasks).iterator();
+    }
+
+    public Iterator<Task> reverseIterator() {
+        List<Task> reversed = new ArrayList<Task>(tasks.size());
+        reversed.addAll(tasks);
+        Collections.reverse(reversed);
+        return reversed.iterator();
     }
 
     @Override
