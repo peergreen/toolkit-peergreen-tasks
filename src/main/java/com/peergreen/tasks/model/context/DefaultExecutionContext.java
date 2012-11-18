@@ -1,7 +1,5 @@
 package com.peergreen.tasks.model.context;
 
-import com.peergreen.tasks.model.Task;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,10 +21,6 @@ public class DefaultExecutionContext implements ExecutionContext {
     public DefaultExecutionContext() {
         this.properties = new ConcurrentHashMap<String, Object>();
         this.objects = new HashSet<Object>();
-    }
-
-    public TaskContext newTaskContext(Breadcrumb breadcrumb, Task child) {
-        return new DefaultTaskContext(this, new Breadcrumb(breadcrumb, child));
     }
 
     @Override

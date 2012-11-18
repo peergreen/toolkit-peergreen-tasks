@@ -42,7 +42,7 @@ public class ParallelExecution implements Execution, PropertyChangeListener {
     private void executeAll() {
         for (Task task : parallel.getTasks()) {
             task.addPropertyChangeListener("state", this);
-            executionBuilderManager.newExecution(taskContext.getBreadcrumb(), task).execute();
+            executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), task).execute();
         }
     }
 

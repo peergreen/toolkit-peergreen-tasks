@@ -24,7 +24,8 @@ public class ParallelExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(TaskContext taskContext, Task task) {
+    public Execution newExecution(TaskContext taskContext) {
+        Task task = taskContext.getBreadcrumb().getCurrent();
         if (task instanceof Parallel) {
             return new ParallelExecution(executionBuilderManager, taskContext, (Parallel) task);
         }

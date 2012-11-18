@@ -39,7 +39,7 @@ public class WakeUpExecution implements Execution, PropertyChangeListener {
         wakeUp.setState(State.RUNNING);
 
         wakeUp.getDelegate().addPropertyChangeListener("state", this);
-        executionBuilderManager.newExecution(taskContext.getBreadcrumb(), wakeUp.getDelegate()).execute();
+        executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), wakeUp.getDelegate()).execute();
 
 
     }

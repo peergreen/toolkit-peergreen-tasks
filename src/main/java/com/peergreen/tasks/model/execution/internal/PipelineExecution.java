@@ -44,7 +44,7 @@ public class PipelineExecution implements Execution, PropertyChangeListener {
             // Schedule the next one on the list
             Task next = cursor.next();
             next.addPropertyChangeListener("state", this);
-            executionBuilderManager.newExecution(taskContext.getBreadcrumb(), next).execute();
+            executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), next).execute();
         } else {
             // Change Pipeline's state
             pipeline.setState(State.COMPLETED);

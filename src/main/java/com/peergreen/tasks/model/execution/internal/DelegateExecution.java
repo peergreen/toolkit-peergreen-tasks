@@ -1,7 +1,6 @@
 package com.peergreen.tasks.model.execution.internal;
 
 import com.peergreen.tasks.model.Delegate;
-import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.context.TaskContext;
@@ -34,7 +33,7 @@ public class DelegateExecution implements Execution, PropertyChangeListener {
         Task delegated = delegate.getDelegate();
         if (delegated != null) {
             delegated.addPropertyChangeListener("state", this);
-            executionBuilderManager.newExecution(taskContext.getBreadcrumb(), delegated).execute();
+            executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), delegated).execute();
         } else {
             // No delegated Task, simply complete
             delegate.setState(State.COMPLETED);

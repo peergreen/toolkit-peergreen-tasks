@@ -30,7 +30,8 @@ public class TrackerManagerEnabler implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(TaskContext taskContext, Task task) {
+    public Execution newExecution(TaskContext taskContext) {
+        Task task = taskContext.getBreadcrumb().getCurrent();
         task.addPropertyChangeListener("state", trackerManager);
 
         // Do not return anything to not break the builder chain

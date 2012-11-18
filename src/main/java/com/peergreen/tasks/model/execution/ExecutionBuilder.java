@@ -11,5 +11,5 @@ import com.peergreen.tasks.model.context.TaskContext;
 * To change this template use File | Settings | File Templates.
 */
 public interface ExecutionBuilder {
-    Execution newExecution(TaskContext taskContext, Task task);
+    Execution newExecution(TaskContext taskContext);
 }

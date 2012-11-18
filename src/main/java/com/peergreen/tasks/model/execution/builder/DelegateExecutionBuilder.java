@@ -1,14 +1,12 @@
 package com.peergreen.tasks.model.execution.builder;
 
 import com.peergreen.tasks.model.Delegate;
-import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilder;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.execution.internal.DelegateExecution;
-import com.peergreen.tasks.model.execution.internal.ParallelExecution;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,7 +24,8 @@ public class DelegateExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(TaskContext taskContext, Task task) {
+    public Execution newExecution(TaskContext taskContext) {
+        Task task = taskContext.getBreadcrumb().getCurrent();
         if (task instanceof Delegate) {
             return new DelegateExecution(executionBuilderManager, taskContext, (Delegate<?>) task);
         }
