@@ -33,23 +33,47 @@ public class DefaultTaskContext implements TaskContext {
     }
 
     @Override
-    public Map<String, Object> getProperties() {
-        return executionContext.getProperties();
+    public void setProperty(String name, Object value) {
+        executionContext.setProperty(name, value);
+    }
+
+    @Override
+    public Object getProperty(String name) {
+        return executionContext.getProperty(name);
+    }
+
+    @Override
+    public Object getProperty(String name, Object defaultValue) {
+        return executionContext.getProperty(name, defaultValue);
+    }
+
+    @Override
+    public <T> T getProperty(String name, Class<T> type) {
+        return executionContext.getProperty(name, type);
+    }
+
+    @Override
+    public <T> T getProperty(String name, Class<T> type, T defaultValue) {
+        return executionContext.getProperty(name, type, defaultValue);
+    }
+
+    @Override
+    public void removeProperty(String name) {
+        executionContext.removeProperty(name);
     }
 
     @Override
     public <T> T get(Class<T> type) {
-        return type.cast(executionContext.getExtensions().get(type));
+        return executionContext.get(type);
     }
 
     @Override
-    public <T> void remove(Class<T> type) {
-        executionContext.getExtensions().remove(type);
+    public void remove(Object instance) {
+        executionContext.remove(instance);
     }
 
     @Override
-    public <T> void add(Class<T> type, T instance) {
-        executionContext.getExtensions().put(type, instance);
+    public void add(Object instance) {
+        executionContext.add(instance);
     }
-
 }

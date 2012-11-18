@@ -1,37 +1,25 @@
 package com.peergreen.tasks.model.context;
 
-import com.peergreen.tasks.model.Task;
-
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
- * Date: 31/10/12
- * Time: 15:20
+ * Date: 17/11/12
+ * Time: 18:06
  * To change this template use File | Settings | File Templates.
  */
-public class ExecutionContext {
-    private Map<Class<?>, Object> extensions;
-    private Map<String, Object> properties;
+public interface ExecutionContext {
 
-    public ExecutionContext() {
-        this.extensions = new ConcurrentHashMap<Class<?>, Object>();
-        this.properties = new ConcurrentHashMap<String, Object>();
-    }
+    void setProperty(String name, Object value);
+    Object getProperty(String name);
+    Object getProperty(String name, Object defaultValue);
+    <T> T getProperty(String name, Class<T> type);
+    <T> T getProperty(String name, Class<T> type, T defaultValue);
+    void removeProperty(String name);
 
-    public Map<Class<?>, Object> getExtensions() {
-        return extensions;
-    }
-
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
-
-
-    public TaskContext newTaskContext(Breadcrumb breadcrumb, Task child) {
-        return new DefaultTaskContext(this, new Breadcrumb(breadcrumb, child));
-    }
+    <T> T get(Class<T> type);
+    void remove(Object instance);
+    void add(Object instance);
 
 }

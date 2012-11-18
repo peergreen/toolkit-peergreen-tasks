@@ -2,6 +2,7 @@ package com.peergreen.tasks.model.execution;
 
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.context.Breadcrumb;
+import com.peergreen.tasks.model.context.DefaultExecutionContext;
 import com.peergreen.tasks.model.context.ExecutionContext;
 import com.peergreen.tasks.model.context.TaskContext;
 
@@ -19,7 +20,7 @@ public class RootExecution implements Execution, ExecutionBuilderManager {
 
     private List<ExecutionBuilder> builders = new ArrayList<ExecutionBuilder>();
     private Task task;
-    private ExecutionContext executionContext = new ExecutionContext();
+    private DefaultExecutionContext executionContext = new DefaultExecutionContext();
 
     public RootExecution(Task task) {
         this.task = task;

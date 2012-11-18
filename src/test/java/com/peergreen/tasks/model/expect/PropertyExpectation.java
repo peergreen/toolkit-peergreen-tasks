@@ -21,7 +21,7 @@ public class PropertyExpectation implements Expectation {
 
     @Override
     public boolean verify(TaskContext context) {
-        Object returned = context.getProperties().get(propertyName);
+        Object returned = context.getProperty(propertyName);
         return returned != null && value.equals(returned);
     }
 }

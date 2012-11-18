@@ -12,14 +12,7 @@ import java.util.Map;
  * Time: 11:28
  * To change this template use File | Settings | File Templates.
  */
-public interface TaskContext {
+public interface TaskContext extends ExecutionContext {
     Breadcrumb getBreadcrumb();
-
     <T extends Task> T find(Reference<T> reference);
-
-    Map<String, Object> getProperties();
-
-    <T> T get(Class<T> type);
-    <T> void remove(Class<T> type);
-    <T> void add(Class<T> type, T instance);
 }

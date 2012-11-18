@@ -33,8 +33,8 @@ public class ExecutionContextTestCase {
         UnitOfWork unitOfWork1 = new UnitOfWork(new Job() {
             @Override
             public void execute(TaskContext context) throws Exception {
-                context.add(String.class, "hello");
-                context.getProperties().put("obiwan", "kenobi");
+                context.add("hello");
+                context.setProperty("obiwan", "kenobi");
                 System.out.printf("%s%n", context.getBreadcrumb());
             }
         });
