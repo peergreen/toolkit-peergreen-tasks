@@ -9,7 +9,7 @@ import com.peergreen.tasks.model.expect.ExtensionExpectation;
 import com.peergreen.tasks.model.expect.PropertyExpectation;
 import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.util.Executions;
-import com.peergreen.tasks.runtime.Job;
+import com.peergreen.tasks.model.Job;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;

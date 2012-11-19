@@ -1,7 +1,5 @@
 package com.peergreen.tasks.model;
 
-import com.peergreen.tasks.runtime.Job;
-
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
