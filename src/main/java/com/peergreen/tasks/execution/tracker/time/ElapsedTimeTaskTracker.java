@@ -1,8 +1,8 @@
-package com.peergreen.tasks.model.tracker.time;
+package com.peergreen.tasks.execution.tracker.time;
 
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.tracker.TaskTracker;
+import com.peergreen.tasks.execution.tracker.TaskTracker;
 
 /**
  * Created with IntelliJ IDEA.

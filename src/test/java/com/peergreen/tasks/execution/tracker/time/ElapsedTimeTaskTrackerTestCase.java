@@ -1,4 +1,4 @@
-package com.peergreen.tasks.model.tracker.time;
+package com.peergreen.tasks.execution.tracker.time;
 
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
@@ -6,7 +6,7 @@ import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.execution.RootExecution;
 import com.peergreen.tasks.execution.builder.TrackerManagerEnabler;
 import com.peergreen.tasks.model.job.SleepJob;
-import com.peergreen.tasks.model.tracker.TrackerManager;
+import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 

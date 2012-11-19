@@ -1,4 +1,4 @@
-package com.peergreen.tasks.model.tracker.time;
+package com.peergreen.tasks.execution.tracker.time;
 
 /**
 * Created with IntelliJ IDEA.

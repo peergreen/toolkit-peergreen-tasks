@@ -1,4 +1,4 @@
-package com.peergreen.tasks.model.tracker;
+package com.peergreen.tasks.execution.tracker;
 
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;

@@ -4,7 +4,7 @@ import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.execution.Execution;
 import com.peergreen.tasks.execution.ExecutionBuilder;
-import com.peergreen.tasks.model.tracker.TrackerManager;
+import com.peergreen.tasks.execution.tracker.TrackerManager;
 
 /**
  * Created with IntelliJ IDEA.

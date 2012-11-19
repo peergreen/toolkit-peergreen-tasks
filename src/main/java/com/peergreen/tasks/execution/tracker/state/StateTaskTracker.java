@@ -1,8 +1,8 @@
-package com.peergreen.tasks.model.tracker.state;
+package com.peergreen.tasks.execution.tracker.state;
 
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.tracker.TaskTracker;
+import com.peergreen.tasks.execution.tracker.TaskTracker;
 
 import java.io.PrintStream;
 
