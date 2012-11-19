@@ -20,7 +20,7 @@ At the end of its execution, the state move to COMPLETED.
 A unitOfWork is a concrete Task with that contains a Job.
 When the Task is executed, its Job is executed too.
 The final Task's State is either FAILED or COMPLETED if the job has, respectively, throw an Exception
-or finished successfuly.
+or finished successfully.
 
 ### Pipeline
     Representation: [], [A, B]
