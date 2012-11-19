@@ -1,7 +1,8 @@
 package com.peergreen.tasks.execution.internal;
 
 import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.execution.RootExecution;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.model.Job;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
@@ -14,7 +15,6 @@ import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.HolderJob;
-import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -76,9 +76,9 @@ public class ParallelExecutionTestCase {
         two.job = twoExpectations;
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, parallel);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(parallel);
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertTrue(zeroExpectations.passed);
@@ -101,9 +101,9 @@ public class ParallelExecutionTestCase {
         parallel.add(c);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, parallel);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(parallel);
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
 
@@ -157,9 +157,9 @@ public class ParallelExecutionTestCase {
         master.add(b);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, global);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(global);
 
         // Wait for some time
         executorService.awaitTermination(1, TimeUnit.SECONDS);

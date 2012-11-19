@@ -1,10 +1,10 @@
 package com.peergreen.tasks.execution.internal;
 
-import com.peergreen.tasks.execution.RootExecution;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.SleepJob;
-import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -29,11 +29,11 @@ public class UnitOfWorkExecutionTestCase {
         UnitOfWork unitOfWork = new UnitOfWork(new SleepJob(500));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, unitOfWork);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
 
         assertEquals(unitOfWork.getState(), State.WAITING);
-        execution.execute();
+        execution.execute(unitOfWork);
         assertEquals(unitOfWork.getState(), State.SCHEDULED);
         executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertEquals(unitOfWork.getState(), State.COMPLETED);

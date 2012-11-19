@@ -1,12 +1,12 @@
 package com.peergreen.tasks.model.group;
 
-import com.peergreen.tasks.execution.RootExecution;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.expect.PropertyExpectation;
 import com.peergreen.tasks.model.expect.PropertyNotSetExpectation;
 import com.peergreen.tasks.model.job.ExpectationsJob;
-import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
@@ -70,16 +70,19 @@ public class SubstituteExecutionContextProviderTestCase {
         a.addTask(p1);
         a.addTask(p2);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
-        RootExecution execution = Executions.newRootExecution(executorService, master);
-
         SubstituteExecutionContextProvider provider = new SubstituteExecutionContextProvider();
         MutableExecutionContext context = new MutableExecutionContext();
         context.setProperty("luke", "is a jedi");
         provider.addGroup(a, context);
-        execution.setTaskContextFactory(new GroupTaskContextFactory(Collections.singleton(a), provider));
 
-        execution.execute();
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        ExecutorServiceBuilderManager manager = new ExecutorServiceBuilderManager(
+                new GroupTaskContextFactory(Collections.singleton(a), provider), executorService
+        );
+        TaskExecutorService execution = new TaskExecutorService(manager);
+
+
+        execution.execute(master);
 
         executorService.awaitTermination(100, TimeUnit.MILLISECONDS);
 

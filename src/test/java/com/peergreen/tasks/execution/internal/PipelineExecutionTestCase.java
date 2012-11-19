@@ -1,7 +1,8 @@
 package com.peergreen.tasks.execution.internal;
 
 import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.execution.RootExecution;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.model.Job;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
@@ -13,7 +14,6 @@ import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.SleepJob;
-import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -65,9 +65,9 @@ public class PipelineExecutionTestCase {
         pipeline.add(task2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, pipeline);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(pipeline);
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertTrue(aExpectations.passed);
@@ -98,9 +98,9 @@ public class PipelineExecutionTestCase {
         pipeline.add(a, b, c);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, pipeline);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(pipeline);
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
 
@@ -152,9 +152,9 @@ public class PipelineExecutionTestCase {
         two.add(taskD);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, master);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(master);
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertTrue(bExpectations.passed);
@@ -204,9 +204,9 @@ public class PipelineExecutionTestCase {
         pipeline.add(stage1, stage2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, pipeline);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(pipeline);
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertTrue(cExpectations.passed);
@@ -222,11 +222,11 @@ public class PipelineExecutionTestCase {
         pipeline.add(new UnitOfWork(new SleepJob(500)));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, pipeline);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
         // Before execution, the pipeline is WAITING
         assertEquals(pipeline.getState(), State.WAITING);
-        execution.execute();
+        execution.execute(pipeline);
         // Just after, it is RUNNING
         assertEquals(pipeline.getState(), State.RUNNING);
 
@@ -336,9 +336,9 @@ public class PipelineExecutionTestCase {
         master.add(a, inner, d);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, master);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(master);
 
         // Wait for some time
         executorService.awaitTermination(1, TimeUnit.SECONDS);
@@ -396,9 +396,9 @@ public class PipelineExecutionTestCase {
         master.add(b);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        RootExecution execution = Executions.newRootExecution(executorService, global);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(global);
 
         // Wait for some time
         executorService.awaitTermination(1, TimeUnit.SECONDS);

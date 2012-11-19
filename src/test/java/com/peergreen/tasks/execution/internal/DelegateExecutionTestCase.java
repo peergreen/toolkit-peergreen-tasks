@@ -1,12 +1,12 @@
 package com.peergreen.tasks.execution.internal;
 
-import com.peergreen.tasks.execution.RootExecution;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.model.Delegate;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.EmptyJob;
-import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -30,9 +30,9 @@ public class DelegateExecutionTestCase {
         delegate.setDelegate(new UnitOfWork(new EmptyJob()));
 
         ExecutorService executorService = Executors.newFixedThreadPool(1);
-        RootExecution execution = Executions.newRootExecution(executorService, delegate);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(delegate);
 
         executorService.awaitTermination(100, TimeUnit.MILLISECONDS);
 
@@ -45,9 +45,9 @@ public class DelegateExecutionTestCase {
         Delegate<?> delegate = new Delegate<Task>();
 
         ExecutorService executorService = Executors.newFixedThreadPool(1);
-        RootExecution execution = Executions.newRootExecution(executorService, delegate);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(delegate);
 
         assertEquals(delegate.getState(), State.COMPLETED);
     }

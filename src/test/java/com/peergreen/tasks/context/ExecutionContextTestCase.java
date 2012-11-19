@@ -1,6 +1,7 @@
 package com.peergreen.tasks.context;
 
-import com.peergreen.tasks.execution.RootExecution;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.model.Job;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
@@ -9,7 +10,6 @@ import com.peergreen.tasks.model.expect.BreadcrumbExpectation;
 import com.peergreen.tasks.model.expect.ExtensionExpectation;
 import com.peergreen.tasks.model.expect.PropertyExpectation;
 import com.peergreen.tasks.model.job.ExpectationsJob;
-import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -48,9 +48,9 @@ public class ExecutionContextTestCase {
         pipeline.add(unitOfWork1, unitOfWork2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
-        RootExecution execution = Executions.newRootExecution(executorService, pipeline);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(pipeline);
 
         executorService.awaitTermination(200, TimeUnit.MILLISECONDS);
         assertTrue(job.passed);
@@ -76,9 +76,9 @@ public class ExecutionContextTestCase {
         parallel.add(uow2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
-        RootExecution execution = Executions.newRootExecution(executorService, master);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute();
+        execution.execute(master);
 
         executorService.awaitTermination(200, TimeUnit.MILLISECONDS);
         assertTrue(first.passed);

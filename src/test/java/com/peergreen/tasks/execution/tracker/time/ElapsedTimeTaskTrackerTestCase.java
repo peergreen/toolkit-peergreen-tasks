@@ -1,13 +1,13 @@
 package com.peergreen.tasks.execution.tracker.time;
 
-import com.peergreen.tasks.execution.RootExecution;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
 import com.peergreen.tasks.execution.builder.TrackerManagerEnabler;
+import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.SleepJob;
-import com.peergreen.tasks.model.util.Executions;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -42,10 +42,11 @@ public class ElapsedTimeTaskTrackerTestCase {
 
     private Duration execute(Parallel parallel, int executors) throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(executors);
-        RootExecution execution = Executions.newRootExecution(executorService, parallel);
+        ExecutorServiceBuilderManager manager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(manager);
 
         TrackerManager trackerManager = new TrackerManager();
-        execution.addExecutionBuilder(new TrackerManagerEnabler(trackerManager));
+        manager.addExecutionBuilder(new TrackerManagerEnabler(trackerManager));
 
         final Duration d = new Duration();
 
@@ -61,7 +62,7 @@ public class ElapsedTimeTaskTrackerTestCase {
 
         trackerManager.registerTracker(new ElapsedTimeTaskTracker(visitor));
 
-        execution.execute();
+        execution.execute(parallel);
 
         executorService.awaitTermination(1, TimeUnit.SECONDS);
         return d;
