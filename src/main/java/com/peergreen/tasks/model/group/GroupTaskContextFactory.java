@@ -5,7 +5,7 @@ import com.peergreen.tasks.context.Breadcrumb;
 import com.peergreen.tasks.context.DefaultTaskContextFactory;
 import com.peergreen.tasks.context.ExecutionContext;
 import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.model.execution.TaskContextFactory;
+import com.peergreen.tasks.execution.TaskContextFactory;
 
 import java.util.HashSet;
 import java.util.Set;

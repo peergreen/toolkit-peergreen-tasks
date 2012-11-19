@@ -1,11 +1,11 @@
-package com.peergreen.tasks.model.execution.builder;
+package com.peergreen.tasks.execution.builder;
 
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.model.execution.Execution;
-import com.peergreen.tasks.model.execution.ExecutionBuilder;
-import com.peergreen.tasks.model.execution.internal.UnitOfWorkExecution;
+import com.peergreen.tasks.execution.Execution;
+import com.peergreen.tasks.execution.ExecutionBuilder;
+import com.peergreen.tasks.execution.internal.UnitOfWorkExecution;
 
 import java.util.concurrent.ExecutorService;
 

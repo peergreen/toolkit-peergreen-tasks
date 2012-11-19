@@ -1,7 +1,7 @@
 package com.peergreen.tasks.context;
 
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.execution.TaskContextFactory;
+import com.peergreen.tasks.execution.TaskContextFactory;
 
 public class DefaultTaskContextFactory implements TaskContextFactory {
     @Override

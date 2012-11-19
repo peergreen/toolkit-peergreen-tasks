@@ -1,4 +1,4 @@
-package com.peergreen.tasks.model.execution;
+package com.peergreen.tasks.execution;
 
 import com.peergreen.tasks.context.TaskContext;
 

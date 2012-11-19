@@ -3,7 +3,7 @@ package com.peergreen.tasks.context;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.UnitOfWork;
-import com.peergreen.tasks.model.execution.RootExecution;
+import com.peergreen.tasks.execution.RootExecution;
 import com.peergreen.tasks.model.expect.BreadcrumbExpectation;
 import com.peergreen.tasks.model.expect.ExtensionExpectation;
 import com.peergreen.tasks.model.expect.PropertyExpectation;

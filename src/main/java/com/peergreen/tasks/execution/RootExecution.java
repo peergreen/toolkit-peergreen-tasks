@@ -1,4 +1,4 @@
-package com.peergreen.tasks.model.execution;
+package com.peergreen.tasks.execution;
 
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.context.Breadcrumb;
