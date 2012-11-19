@@ -1,11 +1,11 @@
 package com.peergreen.tasks.execution.internal;
 
-import com.peergreen.tasks.model.Pipeline;
-import com.peergreen.tasks.model.State;
-import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.execution.Execution;
 import com.peergreen.tasks.execution.ExecutionBuilderManager;
+import com.peergreen.tasks.model.Pipeline;
+import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.Task;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

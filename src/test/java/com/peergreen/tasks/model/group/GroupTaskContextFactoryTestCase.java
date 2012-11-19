@@ -1,8 +1,8 @@
 package com.peergreen.tasks.model.group;
 
-import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.context.ExecutionContext;
 import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.model.Task;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;

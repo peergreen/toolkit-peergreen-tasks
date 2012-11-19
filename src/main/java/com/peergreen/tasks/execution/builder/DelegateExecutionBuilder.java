@@ -1,12 +1,12 @@
 package com.peergreen.tasks.execution.builder;
 
-import com.peergreen.tasks.model.Delegate;
-import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.execution.Execution;
 import com.peergreen.tasks.execution.ExecutionBuilder;
 import com.peergreen.tasks.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.execution.internal.DelegateExecution;
+import com.peergreen.tasks.model.Delegate;
+import com.peergreen.tasks.model.Task;
 
 /**
  * Created with IntelliJ IDEA.

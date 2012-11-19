@@ -1,7 +1,6 @@
 package com.peergreen.tasks.context;
 
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.context.Breadcrumb;
 
 /**
  * Created with IntelliJ IDEA.

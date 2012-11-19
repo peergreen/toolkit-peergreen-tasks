@@ -1,11 +1,11 @@
 package com.peergreen.tasks.model.group;
 
-import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.context.Breadcrumb;
 import com.peergreen.tasks.context.DefaultTaskContextFactory;
 import com.peergreen.tasks.context.ExecutionContext;
 import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.execution.TaskContextFactory;
+import com.peergreen.tasks.model.Task;
 
 import java.util.HashSet;
 import java.util.Set;

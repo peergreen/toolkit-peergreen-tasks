@@ -1,9 +1,9 @@
 package com.peergreen.tasks.context.internal;
 
-import com.peergreen.tasks.model.Scope;
-import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.context.Breadcrumb;
 import com.peergreen.tasks.context.Reference;
+import com.peergreen.tasks.model.Scope;
+import com.peergreen.tasks.model.Task;
 
 import java.util.HashSet;
 import java.util.List;

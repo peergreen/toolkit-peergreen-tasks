@@ -1,8 +1,8 @@
 package com.peergreen.tasks.model.job;
 
 import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.model.expect.Expectation;
 import com.peergreen.tasks.model.Job;
+import com.peergreen.tasks.model.expect.Expectation;
 
 import java.util.Arrays;
 import java.util.Collection;

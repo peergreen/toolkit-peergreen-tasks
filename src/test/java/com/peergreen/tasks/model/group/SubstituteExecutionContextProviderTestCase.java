@@ -1,8 +1,8 @@
 package com.peergreen.tasks.model.group;
 
+import com.peergreen.tasks.execution.RootExecution;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.UnitOfWork;
-import com.peergreen.tasks.execution.RootExecution;
 import com.peergreen.tasks.model.expect.PropertyExpectation;
 import com.peergreen.tasks.model.expect.PropertyNotSetExpectation;
 import com.peergreen.tasks.model.job.ExpectationsJob;

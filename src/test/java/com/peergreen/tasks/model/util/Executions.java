@@ -1,6 +1,5 @@
 package com.peergreen.tasks.model.util;
 
-import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.execution.ExecutionBuilder;
 import com.peergreen.tasks.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.execution.RootExecution;
@@ -9,6 +8,7 @@ import com.peergreen.tasks.execution.builder.ParallelExecutionBuilder;
 import com.peergreen.tasks.execution.builder.PipelineExecutionBuilder;
 import com.peergreen.tasks.execution.builder.UnitOfWorkExecutionBuilder;
 import com.peergreen.tasks.execution.builder.WakeUpExecutionBuilder;
+import com.peergreen.tasks.model.Task;
 
 import java.util.concurrent.ExecutorService;
 

@@ -1,11 +1,11 @@
 package com.peergreen.tasks.execution;
 
-import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.context.Breadcrumb;
 import com.peergreen.tasks.context.DefaultExecutionContext;
 import com.peergreen.tasks.context.DefaultTaskContextFactory;
 import com.peergreen.tasks.context.ExecutionContext;
 import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;

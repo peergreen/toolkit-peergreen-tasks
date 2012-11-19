@@ -1,12 +1,13 @@
 package com.peergreen.tasks.execution.internal;
 
+import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.execution.RootExecution;
+import com.peergreen.tasks.model.Job;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
-import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.execution.RootExecution;
 import com.peergreen.tasks.model.expect.SleepExpectation;
 import com.peergreen.tasks.model.expect.StateExpectation;
 import com.peergreen.tasks.model.job.EmptyJob;
@@ -14,7 +15,6 @@ import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.HolderJob;
 import com.peergreen.tasks.model.util.Executions;
-import com.peergreen.tasks.model.Job;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
