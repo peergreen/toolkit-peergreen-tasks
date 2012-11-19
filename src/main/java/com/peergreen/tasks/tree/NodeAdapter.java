@@ -1,12 +1,12 @@
-package com.peergreen.tasks.model.tree;
+package com.peergreen.tasks.tree;
 
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
  * Date: 15/11/12
- * Time: 11:05
+ * Time: 10:49
  * To change this template use File | Settings | File Templates.
  */
-public interface NodeVisitor<T> {
-    void visit(Node<T> node);
+public interface NodeAdapter<T> {
+    Iterable<T> getChildren(T object);
 }

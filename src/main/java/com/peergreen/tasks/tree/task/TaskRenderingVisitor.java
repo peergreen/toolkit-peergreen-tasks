@@ -1,8 +1,8 @@
-package com.peergreen.tasks.model.tree.task;
+package com.peergreen.tasks.tree.task;
 
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.tree.Node;
-import com.peergreen.tasks.model.tree.NodeVisitor;
+import com.peergreen.tasks.tree.Node;
+import com.peergreen.tasks.tree.NodeVisitor;
 
 import java.io.PrintStream;
 

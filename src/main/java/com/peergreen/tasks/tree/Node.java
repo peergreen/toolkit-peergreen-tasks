@@ -1,10 +1,8 @@
-package com.peergreen.tasks.model.tree;
+package com.peergreen.tasks.tree;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.

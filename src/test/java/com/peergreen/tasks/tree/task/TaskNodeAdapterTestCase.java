@@ -1,4 +1,4 @@
-package com.peergreen.tasks.model.tree.task;
+package com.peergreen.tasks.tree.task;
 
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;

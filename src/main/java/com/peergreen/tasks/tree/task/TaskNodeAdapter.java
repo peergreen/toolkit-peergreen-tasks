@@ -1,8 +1,8 @@
-package com.peergreen.tasks.model.tree.task;
+package com.peergreen.tasks.tree.task;
 
 import com.peergreen.tasks.model.Scope;
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.tree.NodeAdapter;
+import com.peergreen.tasks.tree.NodeAdapter;
 
 /**
  * Created with IntelliJ IDEA.

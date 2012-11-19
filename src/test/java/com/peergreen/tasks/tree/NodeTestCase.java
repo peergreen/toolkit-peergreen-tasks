@@ -1,11 +1,11 @@
-package com.peergreen.tasks.model.tree;
+package com.peergreen.tasks.tree;
 
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.EmptyJob;
-import com.peergreen.tasks.model.tree.task.TaskNodeAdapter;
+import com.peergreen.tasks.tree.task.TaskNodeAdapter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
