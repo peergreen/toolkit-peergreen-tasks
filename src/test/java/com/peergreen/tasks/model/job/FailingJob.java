@@ -1,6 +1,6 @@
 package com.peergreen.tasks.model.job;
 
-import com.peergreen.tasks.model.context.TaskContext;
+import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.runtime.Job;
 
 /**

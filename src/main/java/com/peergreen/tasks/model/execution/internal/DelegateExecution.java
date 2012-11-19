@@ -3,7 +3,7 @@ package com.peergreen.tasks.model.execution.internal;
 import com.peergreen.tasks.model.Delegate;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.context.TaskContext;
+import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.model.execution.Execution;
 import com.peergreen.tasks.model.execution.ExecutionBuilderManager;
 

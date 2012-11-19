@@ -3,7 +3,7 @@ package com.peergreen.tasks.model.editor;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.context.Breadcrumb;
+import com.peergreen.tasks.context.Breadcrumb;
 import com.peergreen.tasks.model.editor.ref.HierarchicalSearchReference;
 import com.peergreen.tasks.model.editor.ref.InDepthNameSearchReference;
 

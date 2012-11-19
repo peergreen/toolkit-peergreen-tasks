@@ -1,4 +1,4 @@
-package com.peergreen.tasks.model.context;
+package com.peergreen.tasks.context;
 
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;

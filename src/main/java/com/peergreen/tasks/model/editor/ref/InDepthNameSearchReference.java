@@ -2,7 +2,7 @@ package com.peergreen.tasks.model.editor.ref;
 
 import com.peergreen.tasks.model.Scope;
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.context.Breadcrumb;
+import com.peergreen.tasks.context.Breadcrumb;
 import com.peergreen.tasks.model.editor.Reference;
 
 import java.util.HashSet;

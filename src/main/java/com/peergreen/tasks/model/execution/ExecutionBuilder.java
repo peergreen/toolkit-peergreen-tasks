@@ -1,7 +1,6 @@
 package com.peergreen.tasks.model.execution;
 
-import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.context.TaskContext;
+import com.peergreen.tasks.context.TaskContext;
 
 /**
 * Created with IntelliJ IDEA.

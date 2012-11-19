@@ -1,6 +1,6 @@
 package com.peergreen.tasks.runtime;
 
-import com.peergreen.tasks.model.context.TaskContext;
+import com.peergreen.tasks.context.TaskContext;
 
 /**
  * Created with IntelliJ IDEA.

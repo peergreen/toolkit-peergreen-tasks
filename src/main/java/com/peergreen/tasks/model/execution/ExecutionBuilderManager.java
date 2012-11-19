@@ -1,8 +1,8 @@
 package com.peergreen.tasks.model.execution;
 
 import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.context.Breadcrumb;
-import com.peergreen.tasks.model.context.ExecutionContext;
+import com.peergreen.tasks.context.Breadcrumb;
+import com.peergreen.tasks.context.ExecutionContext;
 
 /**
  * Created with IntelliJ IDEA.

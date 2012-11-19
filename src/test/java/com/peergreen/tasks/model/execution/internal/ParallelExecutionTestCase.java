@@ -5,7 +5,7 @@ import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
-import com.peergreen.tasks.model.context.TaskContext;
+import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.model.execution.RootExecution;
 import com.peergreen.tasks.model.expect.SleepExpectation;
 import com.peergreen.tasks.model.expect.StateExpectation;

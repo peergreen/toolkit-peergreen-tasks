@@ -1,6 +1,6 @@
 package com.peergreen.tasks.model.group;
 
-import com.peergreen.tasks.model.context.ExecutionContext;
+import com.peergreen.tasks.context.ExecutionContext;
 
 /**
  * Created with IntelliJ IDEA.

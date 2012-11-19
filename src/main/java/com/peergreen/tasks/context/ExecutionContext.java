@@ -1,6 +1,4 @@
-package com.peergreen.tasks.model.context;
-
-import java.util.Map;
+package com.peergreen.tasks.context;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,4 +1,4 @@
-package com.peergreen.tasks.model.context;
+package com.peergreen.tasks.context;
 
 import java.util.ArrayList;
 import java.util.Collection;
