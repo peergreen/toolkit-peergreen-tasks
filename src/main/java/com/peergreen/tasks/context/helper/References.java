@@ -1,11 +1,12 @@
-package com.peergreen.tasks.model.editor;
+package com.peergreen.tasks.context.helper;
 
+import com.peergreen.tasks.context.Reference;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.context.Breadcrumb;
-import com.peergreen.tasks.model.editor.ref.HierarchicalSearchReference;
-import com.peergreen.tasks.model.editor.ref.InDepthNameSearchReference;
+import com.peergreen.tasks.context.internal.HierarchicalSearchReference;
+import com.peergreen.tasks.context.internal.InDepthNameSearchReference;
 
 import java.util.Arrays;
 

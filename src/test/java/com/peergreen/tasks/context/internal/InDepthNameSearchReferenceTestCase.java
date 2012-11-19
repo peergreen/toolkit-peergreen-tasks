@@ -1,4 +1,4 @@
-package com.peergreen.tasks.model.editor.ref;
+package com.peergreen.tasks.context.internal;
 
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
@@ -10,19 +10,17 @@ import com.peergreen.tasks.model.job.EmptyJob;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.testng.Assert.assertSame;
+import static junit.framework.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
  * Date: 12/11/12
- * Time: 15:31
+ * Time: 15:16
  * To change this template use File | Settings | File Templates.
  */
-public class HierarchicalSearchReferenceTestCase {
+public class InDepthNameSearchReferenceTestCase {
 
     private Pipeline master = new Pipeline("master");
     private Pipeline pipeline = new Pipeline("pipeline");
@@ -44,41 +42,33 @@ public class HierarchicalSearchReferenceTestCase {
 
         // master
         //   +- pipeline
-        //   |     +- uow (*)
+        //   |     +- uow
         //   +- parallel
         //         +- arouse
         //              +- uow2
     }
 
     @Test
-    public void testParentResolution() throws Exception {
-        HierarchicalSearchReference<Task> search = new HierarchicalSearchReference<Task>(Task.class, Collections.singletonList(".."));
-        Task found = search.resolve(breadcrumb);
-        assertSame(found, pipeline);
-
+    public void testLookingForPipeline() throws Exception {
+        InDepthNameSearchReference<Pipeline> search = new InDepthNameSearchReference<Pipeline>(Pipeline.class, "pipeline");
+        Pipeline found = search.resolve(breadcrumb);
+        assertNotNull(found);
+        assertEquals(found, pipeline);
     }
 
     @Test
-    public void testDoubleParentResolution() throws Exception {
-        HierarchicalSearchReference<Task> search = new HierarchicalSearchReference<Task>(Task.class, Arrays.asList("..", ".."));
-        Task found = search.resolve(breadcrumb);
-        assertSame(found, master);
-
+    public void testLookingForMasterPipeline() throws Exception {
+        InDepthNameSearchReference<Pipeline> search = new InDepthNameSearchReference<Pipeline>(Pipeline.class, "master");
+        Pipeline found = search.resolve(breadcrumb);
+        assertNotNull(found);
+        assertEquals(found, master);
     }
 
     @Test
-    public void testMixedResolution() throws Exception {
-        HierarchicalSearchReference<Task> search = new HierarchicalSearchReference<Task>(Task.class, Arrays.asList("..", "..", "parallel"));
+    public void testLookingForTask() throws Exception {
+        InDepthNameSearchReference<Task> search = new InDepthNameSearchReference<Task>(Task.class, "uow");
         Task found = search.resolve(breadcrumb);
-        assertSame(found, parallel);
-
-    }
-
-    @Test
-    public void testMixedResolution2() throws Exception {
-        HierarchicalSearchReference<Task> search = new HierarchicalSearchReference<Task>(Task.class, Arrays.asList("..", "uow", "..", "..", "parallel", "arouse", ".."));
-        Task found = search.resolve(breadcrumb);
-        assertSame(found, parallel);
-
+        assertNotNull(found);
+        assertEquals(found, uow);
     }
 }

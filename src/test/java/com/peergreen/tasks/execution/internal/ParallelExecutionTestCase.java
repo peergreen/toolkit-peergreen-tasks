@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.peergreen.tasks.model.editor.References.parallel;
+import static com.peergreen.tasks.context.helper.References.parallel;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 

@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.peergreen.tasks.model.editor.References.pipeline;
+import static com.peergreen.tasks.context.helper.References.pipeline;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
