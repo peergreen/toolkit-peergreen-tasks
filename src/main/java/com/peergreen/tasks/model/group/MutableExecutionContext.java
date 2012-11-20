@@ -10,9 +10,9 @@ import com.peergreen.tasks.context.ExecutionContext;
 * Time: 11:17
 * To change this template use File | Settings | File Templates.
 */
-class MutableExecutionContext implements ExecutionContext {
+public class MutableExecutionContext implements ExecutionContext {
     private ExecutionContext delegate;
-    private ExecutionContext local = new DefaultExecutionContext();
+    private final ExecutionContext local = new DefaultExecutionContext();
 
     public void setDelegate(ExecutionContext delegate) {
         this.delegate = delegate;
