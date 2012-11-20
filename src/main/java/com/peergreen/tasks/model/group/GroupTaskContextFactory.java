@@ -21,7 +21,6 @@ import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.execution.TaskContextFactory;
 import com.peergreen.tasks.model.Task;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -33,11 +32,11 @@ import java.util.Set;
  */
 public class GroupTaskContextFactory implements TaskContextFactory {
 
-    private Set<Group> groups = new HashSet<Group>();
+    private Iterable<Group> groups;
     private ExecutionContextProvider provider;
     private TaskContextFactory delegate = new DefaultTaskContextFactory();
 
-    public GroupTaskContextFactory(Set<Group> groups, ExecutionContextProvider provider) {
+    public GroupTaskContextFactory(Iterable<Group> groups, ExecutionContextProvider provider) {
         this.groups = groups;
         this.provider = provider;
     }
