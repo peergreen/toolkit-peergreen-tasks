@@ -17,6 +17,7 @@ package com.peergreen.tasks.tree.task;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.group.Group;
 import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.tree.Node;
 import org.testng.Assert;
@@ -25,6 +26,8 @@ import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+
+import static java.util.Collections.singleton;
 
 /**
  * Created with IntelliJ IDEA.
@@ -66,6 +69,26 @@ public class TaskRenderingVisitorTestCase {
 
         String expected = "Pipeline [master, WAITING]\n" +
                 "`-- UnitOfWork [uow, WAITING]\n";
+        Assert.assertEquals(baos.toString(), expected);
+    }
+
+    @Test
+    public void testPipelineNodeRenderingWithGroup() throws Exception {
+        Pipeline master = new Pipeline("master");
+        UnitOfWork unitOfWork = new UnitOfWork(new EmptyJob(), "uow");
+        master.add(unitOfWork);
+
+        Group group = new Group("test");
+        group.addTask(unitOfWork);
+
+        visitor.setGroups(singleton(group));
+
+        Node<Task> node = new Node<Task>(new TaskNodeAdapter(), master);
+
+        node.walk(visitor);
+
+        String expected = "Pipeline [master, WAITING]\n" +
+                "`-- UnitOfWork [uow, WAITING] @test\n";
         Assert.assertEquals(baos.toString(), expected);
     }
 

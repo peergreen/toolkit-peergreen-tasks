@@ -19,6 +19,7 @@ import com.peergreen.tasks.model.Task;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,7 +29,25 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class Group implements Iterable<Task> {
+    private String name;
     private Set<Task> tasks = new HashSet<Task>();
+
+
+    public Group() {
+        this(null);
+    }
+
+    public Group(String name) {
+        if (name != null) {
+            this.name = name;
+        } else {
+            this.name = UUID.randomUUID().toString();
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public void addTask(Task task) {
         tasks.add(task);

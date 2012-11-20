@@ -15,6 +15,7 @@
 package com.peergreen.tasks.tree.task;
 
 import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.group.Group;
 import com.peergreen.tasks.tree.Node;
 import com.peergreen.tasks.tree.NodeVisitor;
 
@@ -22,6 +23,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static java.util.Collections.emptySet;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,6 +57,7 @@ public class TaskRenderingVisitor implements NodeVisitor<Task> {
     }
 
     private PrintStream stream ;
+    private Iterable<Group> groups = emptySet();
 
     public TaskRenderingVisitor() {
         this(System.out);
@@ -61,6 +65,10 @@ public class TaskRenderingVisitor implements NodeVisitor<Task> {
 
     public TaskRenderingVisitor(PrintStream stream) {
         this.stream = stream;
+    }
+
+    public void setGroups(Iterable<Group> groups) {
+        this.groups = groups;
     }
 
     @Override
@@ -99,10 +107,18 @@ public class TaskRenderingVisitor implements NodeVisitor<Task> {
 
         // Print Task info
         Task task = node.getData();
-        stream.printf("%s [%s, %S]%n",
+        stream.printf("%s [%s, %S]",
                 task.getClass().getSimpleName(),
                 task.getName(),
                 task.getState());
+
+        for (Group group : groups) {
+            if (group.contains(task)) {
+                stream.printf(" @%s", group.getName());
+            }
+        }
+
+        stream.println();
     }
 
     private boolean isLastChild(Node<?> node) {
