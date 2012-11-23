@@ -182,6 +182,21 @@ public class ParallelExecutionTestCase {
 
     }
 
+    @Test
+    public void testEmptyParallelExecution() throws Exception {
+
+        // Prepare objects
+        Parallel master = new Parallel();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
+        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+
+        execution.execute(master);
+
+        assertEquals(master.getState(), State.COMPLETED);
+
+    }
+
 
 }
 

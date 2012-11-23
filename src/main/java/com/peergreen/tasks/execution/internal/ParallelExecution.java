@@ -49,8 +49,12 @@ public class ParallelExecution implements Execution, PropertyChangeListener {
     public void execute() {
         parallel.setState(State.RUNNING);
 
-        // Start execution flow
-        executeAll();
+        if (!parallel.getTasks().isEmpty()) {
+            // Start execution flow
+            executeAll();
+        } else {
+            parallel.setState(State.COMPLETED);
+        }
     }
 
     private void executeAll() {
