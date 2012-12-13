@@ -31,6 +31,7 @@ public class AbstractTask implements Task {
     private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     private UUID uuid;
+    private Integer hashCode;
 
     public AbstractTask(String name) {
         this.uuid = UUID.randomUUID();
@@ -94,13 +95,15 @@ public class AbstractTask implements Task {
 
         AbstractTask that = (AbstractTask) o;
 
-        if (!uuid.equals(that.uuid)) return false;
+        return uuid.equals(that.uuid);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        return uuid.hashCode();
+        if (hashCode == null) {
+            hashCode = uuid.hashCode();
+        }
+        return hashCode;
     }
 }
