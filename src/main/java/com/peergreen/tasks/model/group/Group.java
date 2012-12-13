@@ -51,6 +51,9 @@ public class Group implements Iterable<Task> {
 
     public void addTask(Task task) {
         tasks.add(task);
+        if (task instanceof GroupReference) {
+            ((GroupReference) task).setGroup(this);
+        }
     }
 
     @Override
@@ -59,6 +62,30 @@ public class Group implements Iterable<Task> {
     }
 
     public boolean contains(Task task) {
+        if (task instanceof GroupReference) {
+            Group other = ((GroupReference) task).getGroup();
+            return equals(other);
+        }
         return tasks.contains(task);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Group)) {
+            return false;
+        }
+
+        Group group = (Group) o;
+
+        return name.equals(group.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }

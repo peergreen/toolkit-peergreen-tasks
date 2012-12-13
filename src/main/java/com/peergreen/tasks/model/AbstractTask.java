@@ -14,6 +14,9 @@
 
 package com.peergreen.tasks.model;
 
+import com.peergreen.tasks.model.group.Group;
+import com.peergreen.tasks.model.group.GroupReference;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.UUID;
@@ -25,9 +28,10 @@ import java.util.UUID;
  * Time: 14:43
  * To change this template use File | Settings | File Templates.
  */
-public class AbstractTask implements Task {
+public class AbstractTask implements Task, GroupReference {
     protected String name;
     private State state = State.WAITING;
+    private Group group;
     private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     private UUID uuid;
@@ -105,5 +109,15 @@ public class AbstractTask implements Task {
             hashCode = uuid.hashCode();
         }
         return hashCode;
+    }
+
+    @Override
+    public Group getGroup() {
+        return group;
+    }
+
+    @Override
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }
