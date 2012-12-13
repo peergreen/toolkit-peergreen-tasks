@@ -43,20 +43,34 @@ public class GroupTaskContextFactory implements TaskContextFactory {
 
     @Override
     public TaskContext createTaskContext(ExecutionContext parent, Breadcrumb breadcrumb, Task task) {
-        ExecutionContext context = parent;
-        for (Group group : groups) {
-            if (group.contains(task)) {
-                // Overload the ExecutionContext
-                // If Task is contained in multiple Groups, chain the last produced ExecutionContext
-                ExecutionContext current = context;
-                context = provider.getExecutionContext(group, context);
 
-                // Re-use last ExecutionContext if provider returned null
-                if (context == null) {
-                    context = current;
+        // Find if the task is contained in a Group
+        Group container = null;
+        if (task instanceof GroupReference) {
+            // Fast finder
+            GroupReference reference = (GroupReference) task;
+            container = reference.getGroup();
+        } else {
+            // Old school finder
+            for (Group group : groups) {
+                if (group.contains(task)) {
+                    container = group;
                 }
             }
         }
+
+        ExecutionContext context = parent;
+        if (container != null) {
+            // Overload the ExecutionContext
+            ExecutionContext current = context;
+            context = provider.getExecutionContext(container, context);
+
+            // Re-use last ExecutionContext if provider returned null
+            if (context == null) {
+                context = current;
+            }
+        }
+
         return delegate.createTaskContext(context, breadcrumb, task);
     }
 }

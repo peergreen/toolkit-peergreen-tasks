@@ -52,7 +52,16 @@ public class Group implements Iterable<Task> {
     public void addTask(Task task) {
         tasks.add(task);
         if (task instanceof GroupReference) {
-            ((GroupReference) task).setGroup(this);
+            GroupReference reference = (GroupReference) task;
+            if (equals(reference.getGroup())) {
+                throw new IllegalStateException(
+                        String.format("Cannot add Task '%s' in Group '%s', Task already in another Group ('%s')",
+                                      task.getName(),
+                                      name,
+                                      reference.getGroup().getName())
+                );
+            }
+            reference.setGroup(this);
         }
     }
 
