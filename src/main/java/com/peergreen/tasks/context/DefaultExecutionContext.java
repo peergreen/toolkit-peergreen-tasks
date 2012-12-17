@@ -15,10 +15,11 @@
 package com.peergreen.tasks.context;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,11 +31,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DefaultExecutionContext implements ExecutionContext {
     private Map<String, Object> properties;
-    private Collection<Object> objects;
+    private Map<Class<?>, List<Object>> objects2;
 
     public DefaultExecutionContext() {
         this.properties = new ConcurrentHashMap<String, Object>();
-        this.objects = new HashSet<Object>();
+        this.objects2 = new HashMap<Class<?>, List<Object>>();
     }
 
     @Override
@@ -78,31 +79,72 @@ public class DefaultExecutionContext implements ExecutionContext {
 
     @Override
     public <T> T get(Class<T> type) {
-        List<T> candidates = new ArrayList<T>();
-        for (Object object : objects) {
-            if (type.isInstance(object)) {
-                candidates.add(type.cast(object));
-            }
-        }
+        List<Object> candidates = getCandidates(type);
 
         if (candidates.isEmpty()) {
             return null;
         } else if (candidates.size() == 1) {
-            return candidates.iterator().next();
+            return type.cast(candidates.iterator().next());
         } else {
             // multiple candidates
             // TODO Need sorting to select the closer instance
-            return candidates.iterator().next();
+            return type.cast(candidates.iterator().next());
         }
     }
 
     @Override
     public void remove(Object instance) {
-        objects.remove(instance);
+        Set<Class<?>> types = findTypes(instance);
+        for (Class<?> type : types) {
+            getCandidates(type).remove(instance);
+        }
     }
 
     @Override
     public void add(Object instance) {
-        objects.add(instance);
+        Set<Class<?>> types = findTypes(instance);
+        for (Class<?> type : types) {
+            getCandidates(type).add(instance);
+        }
+    }
+
+    private List<Object> getCandidates(Class<?> type) {
+        List<Object> candidates = objects2.get(type);
+        if (candidates == null) {
+            candidates = new ArrayList<Object>();
+            objects2.put(type, candidates);
+        }
+        return candidates;
+    }
+
+    private  Set<Class<?>> findTypes(Object o) {
+        Set<Class<?>> types = new HashSet<Class<?>>();
+
+        types.add(o.getClass());
+        types.addAll(findTypes(o.getClass()));
+
+        return types;
+    }
+
+    private Set<Class<?>> findTypes(Class<?> type) {
+        Set<Class<?>> types = new HashSet<Class<?>>();
+
+        // register super class
+        Class<?> superClass = type.getSuperclass();
+        if (superClass != null) {
+            types.add(superClass);
+            Set<Class<?>> superTypes = findTypes(superClass);
+            types.addAll(superTypes);
+        }
+
+        // register each interface
+        Class<?>[] interfaces = type.getInterfaces();
+        for (Class<?> anInterface : interfaces) {
+            types.add(anInterface);
+            Set<Class<?>> superInterfaces = findTypes(anInterface);
+            types.addAll(superInterfaces);
+        }
+
+        return types;
     }
 }
