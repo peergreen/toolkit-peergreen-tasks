@@ -14,12 +14,12 @@
 
 package com.peergreen.tasks.model;
 
-import com.peergreen.tasks.model.group.Group;
-import com.peergreen.tasks.model.group.GroupReference;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.UUID;
+
+import com.peergreen.tasks.model.group.Group;
+import com.peergreen.tasks.model.group.GroupReference;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,16 +32,18 @@ public class AbstractTask implements Task, GroupReference {
     protected String name;
     private State state = State.WAITING;
     private Group group;
-    private PropertyChangeSupport support = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-    private UUID uuid;
-    private Integer hashCode;
+    private final UUID uuid;
+    private final int hashCode;
 
     public AbstractTask(String name) {
         this.uuid = UUID.randomUUID();
+        this.hashCode = uuid.hashCode();
         this.name = (name == null) ? this.uuid.toString() : name;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -105,9 +107,6 @@ public class AbstractTask implements Task, GroupReference {
 
     @Override
     public int hashCode() {
-        if (hashCode == null) {
-            hashCode = uuid.hashCode();
-        }
         return hashCode;
     }
 
