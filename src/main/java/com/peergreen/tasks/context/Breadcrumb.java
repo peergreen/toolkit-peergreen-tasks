@@ -36,11 +36,14 @@ public class Breadcrumb implements Iterable<Task> {
     }
 
     public Breadcrumb(Breadcrumb parent, Task next) {
-        this.tasks = new ArrayList<Task>();
         if (parent != null) {
+            this.tasks = new ArrayList<Task>(parent.tasks.size() + 1);
             this.tasks.addAll(parent.tasks);
+            this.tasks.add(next);
+        } else {
+            this.tasks = Collections.singletonList(next);
         }
-        this.tasks.add(next);
+
     }
 
     public Task getRoot() {
