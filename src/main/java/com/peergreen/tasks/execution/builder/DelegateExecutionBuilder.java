@@ -29,7 +29,7 @@ import com.peergreen.tasks.model.Task;
  * Time: 14:53
  * To change this template use File | Settings | File Templates.
  */
-public class DelegateExecutionBuilder implements ExecutionBuilder {
+public class DelegateExecutionBuilder implements ExecutionBuilder<Delegate<?>> {
 
     private ExecutionBuilderManager executionBuilderManager;
 
@@ -38,8 +38,7 @@ public class DelegateExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(TaskContext taskContext) {
-        Task task = taskContext.getBreadcrumb().getCurrent();
-        return new DelegateExecution(executionBuilderManager, taskContext, (Delegate<?>) task);
+    public Execution newExecution(TaskContext taskContext, Delegate<?> task) {
+        return new DelegateExecution(executionBuilderManager, taskContext, task);
     }
 }

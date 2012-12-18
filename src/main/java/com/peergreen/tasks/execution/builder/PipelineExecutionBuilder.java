@@ -29,7 +29,7 @@ import com.peergreen.tasks.model.Task;
  * Time: 14:53
  * To change this template use File | Settings | File Templates.
  */
-public class PipelineExecutionBuilder implements ExecutionBuilder {
+public class PipelineExecutionBuilder implements ExecutionBuilder<Pipeline> {
 
     private ExecutionBuilderManager executionBuilderManager;
 
@@ -38,8 +38,7 @@ public class PipelineExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(TaskContext taskContext) {
-        Task task = taskContext.getBreadcrumb().getCurrent();
-        return new PipelineExecution(executionBuilderManager, taskContext, (Pipeline) task);
+    public Execution newExecution(TaskContext taskContext, Pipeline task) {
+        return new PipelineExecution(executionBuilderManager, taskContext, task);
     }
 }

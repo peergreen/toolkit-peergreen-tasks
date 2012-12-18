@@ -29,7 +29,7 @@ import com.peergreen.tasks.model.WakeUp;
  * Time: 14:53
  * To change this template use File | Settings | File Templates.
  */
-public class WakeUpExecutionBuilder implements ExecutionBuilder {
+public class WakeUpExecutionBuilder implements ExecutionBuilder<WakeUp> {
 
     private ExecutionBuilderManager executionBuilderManager;
 
@@ -38,8 +38,7 @@ public class WakeUpExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(TaskContext taskContext) {
-        Task task = taskContext.getBreadcrumb().getCurrent();
-        return new WakeUpExecution(executionBuilderManager, taskContext, (WakeUp) task);
+    public Execution newExecution(TaskContext taskContext, WakeUp task) {
+        return new WakeUpExecution(executionBuilderManager, taskContext, task);
     }
 }

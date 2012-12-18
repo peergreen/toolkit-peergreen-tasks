@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultExecutionBuilderManager implements ExecutionBuilderManager {
-    private Map<Class<? extends Task>, ExecutionBuilder> builders = new HashMap<Class<? extends Task>, ExecutionBuilder>();
+    private Map<Class<? extends Task>, InternalExecutionBuilder> builders = new HashMap<Class<? extends Task>, InternalExecutionBuilder>();
     private TaskContextFactory taskContextFactory;
     private TrackerManager trackerManager;
 
@@ -50,10 +50,10 @@ public class DefaultExecutionBuilderManager implements ExecutionBuilderManager {
         this.trackerManager = trackerManager;
     }
 
-    public void addExecutionBuilder(final Class<? extends Task> taskType,
-                                    final ExecutionBuilder builder) {
+    public <T extends Task> void addExecutionBuilder(final Class<? extends T> taskType,
+                                                     final ExecutionBuilder<T> builder) {
         // TODO Generate a warning if an ExecutionBuilder is already registered for the given type
-        builders.put(taskType, builder);
+        builders.put(taskType, new InternalExecutionBuilder<T>(taskType, builder));
     }
 
     @Override
@@ -72,10 +72,10 @@ public class DefaultExecutionBuilderManager implements ExecutionBuilderManager {
         while (type != null) {
 
             // Find a compatible Builder
-            ExecutionBuilder builder = builders.get(type);
+            InternalExecutionBuilder builder = builders.get(type);
             if (builder != null) {
                 // Try to create an Execution
-                Execution execution = builder.newExecution(context);
+                Execution execution = builder.newExecution(context, task);
                 if (execution != null) {
                     return execution;
                 }
@@ -91,5 +91,19 @@ public class DefaultExecutionBuilderManager implements ExecutionBuilderManager {
 
         throw new IllegalStateException("Cannot find any ExecutionBuilder supporting " + task.getClass());
 
+    }
+
+    private static class InternalExecutionBuilder<T extends Task> {
+        private Class<? extends T> type;
+        private ExecutionBuilder<T> builder;
+
+        private InternalExecutionBuilder(Class<? extends T> type, ExecutionBuilder<T> builder) {
+            this.type = type;
+            this.builder = builder;
+        }
+
+        public Execution newExecution(TaskContext context, Task task) {
+            return builder.newExecution(context, type.cast(task));
+        }
     }
 }

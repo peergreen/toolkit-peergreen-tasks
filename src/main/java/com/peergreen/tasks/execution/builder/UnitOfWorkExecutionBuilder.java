@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutorService;
  * Time: 14:53
  * To change this template use File | Settings | File Templates.
  */
-public class UnitOfWorkExecutionBuilder implements ExecutionBuilder {
+public class UnitOfWorkExecutionBuilder implements ExecutionBuilder<UnitOfWork> {
 
     private ExecutorService executorService;
 
@@ -39,8 +39,7 @@ public class UnitOfWorkExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(TaskContext taskContext) {
-        Task task = taskContext.getBreadcrumb().getCurrent();
-        return new UnitOfWorkExecution(executorService, taskContext, (UnitOfWork) task);
+    public Execution newExecution(TaskContext taskContext, UnitOfWork task) {
+        return new UnitOfWorkExecution(executorService, taskContext, task);
     }
 }

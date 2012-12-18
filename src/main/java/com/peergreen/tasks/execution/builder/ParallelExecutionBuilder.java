@@ -29,7 +29,7 @@ import com.peergreen.tasks.model.Task;
  * Time: 14:53
  * To change this template use File | Settings | File Templates.
  */
-public class ParallelExecutionBuilder implements ExecutionBuilder {
+public class ParallelExecutionBuilder implements ExecutionBuilder<Parallel> {
 
     private ExecutionBuilderManager executionBuilderManager;
 
@@ -38,8 +38,7 @@ public class ParallelExecutionBuilder implements ExecutionBuilder {
     }
 
     @Override
-    public Execution newExecution(TaskContext taskContext) {
-        Task task = taskContext.getBreadcrumb().getCurrent();
-        return new ParallelExecution(executionBuilderManager, taskContext, (Parallel) task);
+    public Execution newExecution(TaskContext taskContext, Parallel task) {
+        return new ParallelExecution(executionBuilderManager, taskContext, task);
     }
 }

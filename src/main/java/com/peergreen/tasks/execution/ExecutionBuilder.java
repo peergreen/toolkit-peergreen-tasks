@@ -15,6 +15,7 @@
 package com.peergreen.tasks.execution;
 
 import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.model.Task;
 
 /**
 * Created with IntelliJ IDEA.
@@ -23,6 +24,6 @@ import com.peergreen.tasks.context.TaskContext;
 * Time: 14:44
 * To change this template use File | Settings | File Templates.
 */
-public interface ExecutionBuilder {
-    Execution newExecution(TaskContext taskContext);
+public interface ExecutionBuilder<T extends Task> {
+    Execution newExecution(TaskContext taskContext, T task);
 }
