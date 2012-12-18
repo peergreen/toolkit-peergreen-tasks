@@ -41,9 +41,6 @@ public class UnitOfWorkExecutionBuilder implements ExecutionBuilder {
     @Override
     public Execution newExecution(TaskContext taskContext) {
         Task task = taskContext.getBreadcrumb().getCurrent();
-        if (task instanceof UnitOfWork) {
-            return new UnitOfWorkExecution(executorService, taskContext, (UnitOfWork) task);
-        }
-        return null;
+        return new UnitOfWorkExecution(executorService, taskContext, (UnitOfWork) task);
     }
 }

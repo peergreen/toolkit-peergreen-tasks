@@ -40,9 +40,6 @@ public class DelegateExecutionBuilder implements ExecutionBuilder {
     @Override
     public Execution newExecution(TaskContext taskContext) {
         Task task = taskContext.getBreadcrumb().getCurrent();
-        if (task instanceof Delegate) {
-            return new DelegateExecution(executionBuilderManager, taskContext, (Delegate<?>) task);
-        }
-        return null;
+        return new DelegateExecution(executionBuilderManager, taskContext, (Delegate<?>) task);
     }
 }

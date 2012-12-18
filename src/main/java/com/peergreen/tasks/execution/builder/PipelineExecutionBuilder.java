@@ -40,9 +40,6 @@ public class PipelineExecutionBuilder implements ExecutionBuilder {
     @Override
     public Execution newExecution(TaskContext taskContext) {
         Task task = taskContext.getBreadcrumb().getCurrent();
-        if (task instanceof Pipeline) {
-            return new PipelineExecution(executionBuilderManager, taskContext, (Pipeline) task);
-        }
-        return null;
+        return new PipelineExecution(executionBuilderManager, taskContext, (Pipeline) task);
     }
 }

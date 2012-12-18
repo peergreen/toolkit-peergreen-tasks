@@ -40,9 +40,6 @@ public class WakeUpExecutionBuilder implements ExecutionBuilder {
     @Override
     public Execution newExecution(TaskContext taskContext) {
         Task task = taskContext.getBreadcrumb().getCurrent();
-        if (task instanceof WakeUp) {
-            return new WakeUpExecution(executionBuilderManager, taskContext, (WakeUp) task);
-        }
-        return null;
+        return new WakeUpExecution(executionBuilderManager, taskContext, (WakeUp) task);
     }
 }
