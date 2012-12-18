@@ -92,9 +92,8 @@ public class ParallelExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(parallel);
+        execution.execute(parallel).get();
 
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertTrue(zeroExpectations.passed);
         assertTrue(oneExpectations.passed);
         assertTrue(twoExpectations.passed);
@@ -117,9 +116,7 @@ public class ParallelExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(parallel);
-
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        execution.execute(parallel).get();
 
         assertEquals(a.getState(), State.COMPLETED);
         assertEquals(b.getState(), State.FAILED);
@@ -173,10 +170,7 @@ public class ParallelExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(global);
-
-        // Wait for some time
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        execution.execute(global).get();
 
         assertEquals(c.getState(), State.COMPLETED);
 
@@ -191,7 +185,7 @@ public class ParallelExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(master);
+        execution.execute(master).get();
 
         assertEquals(master.getState(), State.COMPLETED);
 

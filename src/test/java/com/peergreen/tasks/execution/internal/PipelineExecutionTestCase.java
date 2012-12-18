@@ -32,6 +32,7 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static com.peergreen.tasks.context.helper.References.pipeline;
@@ -81,9 +82,8 @@ public class PipelineExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(pipeline);
+        execution.execute(pipeline).get();
 
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertTrue(aExpectations.passed);
         assertTrue(bExpectations.passed);
 
@@ -114,9 +114,7 @@ public class PipelineExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(pipeline);
-
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        execution.execute(pipeline).get();
 
         assertEquals(a.getState(), State.COMPLETED);
         assertEquals(b.getState(), State.FAILED);
@@ -168,9 +166,8 @@ public class PipelineExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(master);
+        execution.execute(master).get();
 
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertTrue(bExpectations.passed);
         assertTrue(cExpectations.passed);
         assertTrue(dExpectations.passed);
@@ -220,9 +217,8 @@ public class PipelineExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(pipeline);
+        execution.execute(pipeline).get();
 
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
         assertTrue(cExpectations.passed);
         assertTrue(dExpectations.passed);
 
@@ -240,12 +236,12 @@ public class PipelineExecutionTestCase {
 
         // Before execution, the pipeline is WAITING
         assertEquals(pipeline.getState(), State.WAITING);
-        execution.execute(pipeline);
+        Future<State> future = execution.execute(pipeline);
         // Just after, it is RUNNING
         assertEquals(pipeline.getState(), State.RUNNING);
 
         // Wait 1 second, the sleep task should have been executed
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        future.get();
 
         // When tasks have been executed, the new state is COMPLETED
         assertEquals(pipeline.getState(), State.COMPLETED);
@@ -352,10 +348,7 @@ public class PipelineExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(master);
-
-        // Wait for some time
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        execution.execute(master).get();
 
         assertEquals(inner.getState(), State.COMPLETED);
         assertEquals(master.getState(), State.COMPLETED);
@@ -412,10 +405,7 @@ public class PipelineExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(global);
-
-        // Wait for some time
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        execution.execute(global).get();
 
         assertEquals(c.getState(), State.COMPLETED);
 

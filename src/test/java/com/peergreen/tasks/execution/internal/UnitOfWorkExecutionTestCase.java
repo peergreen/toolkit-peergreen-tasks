@@ -23,6 +23,7 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertEquals;
@@ -40,16 +41,16 @@ public class UnitOfWorkExecutionTestCase {
 
     @Test
     public void testSimpleExecution() throws Exception {
-        UnitOfWork unitOfWork = new UnitOfWork(new SleepJob(500));
+        UnitOfWork unitOfWork = new UnitOfWork(new SleepJob(100));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
 
         assertEquals(unitOfWork.getState(), State.WAITING);
-        execution.execute(unitOfWork);
+        Future<?> future = execution.execute(unitOfWork);
         assertEquals(unitOfWork.getState(), State.SCHEDULED);
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        future.get();
         assertEquals(unitOfWork.getState(), State.COMPLETED);
 
     }

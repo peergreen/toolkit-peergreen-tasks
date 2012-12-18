@@ -23,6 +23,7 @@ import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.SleepJob;
 import org.testng.annotations.Test;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +54,7 @@ public class ElapsedTimeTaskTrackerTestCase {
 
     }
 
-    private Duration execute(Parallel parallel, int executors) throws InterruptedException {
+    private Duration execute(Parallel parallel, int executors) throws InterruptedException, ExecutionException {
         ExecutorService executorService = Executors.newFixedThreadPool(executors);
         ExecutorServiceBuilderManager manager = new ExecutorServiceBuilderManager(executorService);
         TaskExecutorService execution = new TaskExecutorService(manager);
@@ -75,9 +76,8 @@ public class ElapsedTimeTaskTrackerTestCase {
 
         trackerManager.registerTracker(new ElapsedTimeTaskTracker(visitor));
 
-        execution.execute(parallel);
+        execution.execute(parallel).get();
 
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
         return d;
     }
 

@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertEquals;
@@ -51,7 +52,7 @@ public class WakeUpExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(arousable);
+        Future<?> future = execution.execute(arousable);
 
         assertEquals(arousable.getState(), State.SCHEDULED);
         assertEquals(delayedTask.getState(), State.WAITING);
@@ -63,7 +64,7 @@ public class WakeUpExecutionTestCase {
         assertEquals(arousable.getState(), State.RUNNING);
         assertTrue((delayedTask.getState() == State.SCHEDULED) || (delayedTask.getState() == State.RUNNING));
 
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        future.get();
 
         assertEquals(arousable.getState(), State.COMPLETED);
         assertEquals(delayedTask.getState(), State.COMPLETED);
@@ -79,7 +80,7 @@ public class WakeUpExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(arousable);
+        Future<?> future = execution.execute(arousable);
 
         assertEquals(arousable.getState(), State.SCHEDULED);
         assertEquals(delayedTask.getState(), State.WAITING);
@@ -91,7 +92,7 @@ public class WakeUpExecutionTestCase {
         assertEquals(arousable.getState(), State.RUNNING);
         assertTrue((delayedTask.getState() == State.SCHEDULED) || (delayedTask.getState() == State.RUNNING));
 
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        future.get();
 
         assertEquals(arousable.getState(), State.FAILED);
         assertEquals(delayedTask.getState(), State.FAILED);

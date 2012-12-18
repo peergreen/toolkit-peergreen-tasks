@@ -46,9 +46,7 @@ public class DelegateExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(delegate);
-
-        executorService.awaitTermination(100, TimeUnit.MILLISECONDS);
+        execution.execute(delegate).get();
 
         assertEquals(delegate.getState(), State.COMPLETED);
         assertEquals(delegate.getDelegate().getState(), State.COMPLETED);
@@ -61,7 +59,7 @@ public class DelegateExecutionTestCase {
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
 
-        execution.execute(delegate);
+        execution.execute(delegate).get();
 
         assertEquals(delegate.getState(), State.COMPLETED);
     }
