@@ -15,7 +15,6 @@
 package com.peergreen.tasks.execution.tracker.time;
 
 import com.peergreen.tasks.execution.helper.TaskExecutorService;
-import com.peergreen.tasks.execution.builder.TrackerManagerEnabler;
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.Parallel;
@@ -60,7 +59,7 @@ public class ElapsedTimeTaskTrackerTestCase {
         TaskExecutorService execution = new TaskExecutorService(manager);
 
         TrackerManager trackerManager = new TrackerManager();
-        manager.addExecutionBuilder(new TrackerManagerEnabler(trackerManager));
+        manager.setTrackerManager(trackerManager);
 
         final Duration d = new Duration();
 

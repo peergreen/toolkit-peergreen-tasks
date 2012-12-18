@@ -22,14 +22,17 @@ import com.peergreen.tasks.execution.Execution;
 import com.peergreen.tasks.execution.ExecutionBuilder;
 import com.peergreen.tasks.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.execution.TaskContextFactory;
+import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DefaultExecutionBuilderManager implements ExecutionBuilderManager {
-    private List<ExecutionBuilder> builders = new ArrayList<ExecutionBuilder>();
+    private Map<Class<? extends Task>, ExecutionBuilder> builders = new HashMap<Class<? extends Task>, ExecutionBuilder>();
     private TaskContextFactory taskContextFactory;
+    private TrackerManager trackerManager;
+
 
     public DefaultExecutionBuilderManager() {
         this(new DefaultTaskContextFactory());
@@ -39,9 +42,18 @@ public class DefaultExecutionBuilderManager implements ExecutionBuilderManager {
         this.taskContextFactory = taskContextFactory;
     }
 
-    public void addExecutionBuilder(final ExecutionBuilder builder) {
-        // Always add in first place to simulate interception
-        builders.add(0, builder);
+    public TrackerManager getTrackerManager() {
+        return trackerManager;
+    }
+
+    public void setTrackerManager(TrackerManager trackerManager) {
+        this.trackerManager = trackerManager;
+    }
+
+    public void addExecutionBuilder(final Class<? extends Task> taskType,
+                                    final ExecutionBuilder builder) {
+        // TODO Generate a warning if an ExecutionBuilder is already registered for the given type
+        builders.put(taskType, builder);
     }
 
     @Override
@@ -50,14 +62,34 @@ public class DefaultExecutionBuilderManager implements ExecutionBuilderManager {
         // Create a dedicated TaskContext for the new Task to be executed
         TaskContext context = taskContextFactory.createTaskContext(executionContext, breadcrumb, task);
 
+        // Register the manager into the Task
+        if (trackerManager != null) {
+            task.addPropertyChangeListener("state", trackerManager);
+        }
+
         // Then find a compatible ExecutionBuilder
-        for (ExecutionBuilder builder : builders) {
-            Execution execution = builder.newExecution(context);
-            if (execution != null) {
-                return execution;
+        Class<? extends Task> type = task.getClass();
+        while (type != null) {
+
+            // Find a compatible Builder
+            ExecutionBuilder builder = builders.get(type);
+            if (builder != null) {
+                // Try to create an Execution
+                Execution execution = builder.newExecution(context);
+                if (execution != null) {
+                    return execution;
+                }
+            }
+
+            Class<?> superType = type.getSuperclass();
+            if (Task.class.isAssignableFrom(superType)) {
+                type = superType.asSubclass(Task.class);
+            } else {
+                type = null;
             }
         }
 
         throw new IllegalStateException("Cannot find any ExecutionBuilder supporting " + task.getClass());
+
     }
 }

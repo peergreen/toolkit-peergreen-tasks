@@ -21,6 +21,11 @@ import com.peergreen.tasks.execution.builder.ParallelExecutionBuilder;
 import com.peergreen.tasks.execution.builder.PipelineExecutionBuilder;
 import com.peergreen.tasks.execution.builder.UnitOfWorkExecutionBuilder;
 import com.peergreen.tasks.execution.builder.WakeUpExecutionBuilder;
+import com.peergreen.tasks.model.Delegate;
+import com.peergreen.tasks.model.Parallel;
+import com.peergreen.tasks.model.Pipeline;
+import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.WakeUp;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,10 +55,10 @@ public class ExecutorServiceBuilderManager extends DefaultExecutionBuilderManage
 
     public ExecutorServiceBuilderManager(TaskContextFactory taskContextFactory, ExecutorService executorService) {
         super(taskContextFactory);
-        addExecutionBuilder(new UnitOfWorkExecutionBuilder(executorService));
-        addExecutionBuilder(new PipelineExecutionBuilder(this));
-        addExecutionBuilder(new ParallelExecutionBuilder(this));
-        addExecutionBuilder(new WakeUpExecutionBuilder(this));
-        addExecutionBuilder(new DelegateExecutionBuilder(this));
+        addExecutionBuilder(UnitOfWork.class, new UnitOfWorkExecutionBuilder(executorService));
+        addExecutionBuilder(Pipeline.class, new PipelineExecutionBuilder(this));
+        addExecutionBuilder(Parallel.class, new ParallelExecutionBuilder(this));
+        addExecutionBuilder(WakeUp.class, new WakeUpExecutionBuilder(this));
+        addExecutionBuilder(Delegate.class, new DelegateExecutionBuilder(this));
     }
 }
