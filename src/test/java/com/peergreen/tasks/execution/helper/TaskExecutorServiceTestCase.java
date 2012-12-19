@@ -33,9 +33,9 @@ public class TaskExecutorServiceTestCase {
 
         Pipeline pipeline = new Pipeline();
 
-        Task task0 = new UnitOfWork(new SleepJob(2000), "task-0");
-        Task task1 = new UnitOfWork(new SleepJob(2000), "task-1");
-        Task task2 = new UnitOfWork(new SleepJob(2000), "task-2");
+        Task task0 = new UnitOfWork(new SleepJob(50), "task-0");
+        Task task1 = new UnitOfWork(new SleepJob(50), "task-1");
+        Task task2 = new UnitOfWork(new SleepJob(50), "task-2");
 
         pipeline.add(task0, task1, task2);
 

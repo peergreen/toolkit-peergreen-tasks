@@ -229,7 +229,7 @@ public class PipelineExecutionTestCase {
         Pipeline pipeline = new Pipeline();
 
         // Add a sleep task
-        pipeline.add(new UnitOfWork(new SleepJob(500)));
+        pipeline.add(new UnitOfWork(new SleepJob(100)));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
         TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
