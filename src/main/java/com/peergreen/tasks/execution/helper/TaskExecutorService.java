@@ -62,7 +62,7 @@ public class TaskExecutorService {
 
         private Task task;
         private boolean done = false;
-        private final Object monitor = new Object();
+        private Lock lock = new Lock();
 
         public ExecutionFuture(Task task) {
             this.task = task;
@@ -87,9 +87,7 @@ public class TaskExecutorService {
         @Override
         public State get() throws InterruptedException, ExecutionException {
             if (!isDone()) {
-                synchronized (monitor) {
-                    monitor.wait();
-                }
+                lock.lock();
             }
             return task.getState();
         }
@@ -97,9 +95,7 @@ public class TaskExecutorService {
         @Override
         public State get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             if (!isDone()) {
-                synchronized (monitor) {
-                    monitor.wait(unit.toMillis(timeout));
-                }
+                lock.lock(unit.toMillis(timeout));
             }
             return task.getState();
         }
@@ -111,11 +107,24 @@ public class TaskExecutorService {
                 case COMPLETED:
                 case FAILED:
                     done = true;
-                    synchronized (monitor) {
-                        monitor.notifyAll();
-                    }
+                    lock.unlock();
                 default:
             }
+        }
+    }
+
+    /**
+     * Simple lock implementation.
+     */
+    private class Lock {
+        public synchronized void lock() throws InterruptedException {
+            wait();
+        }
+        public synchronized void lock(long millis) throws InterruptedException {
+            wait(millis);
+        }
+        public synchronized void unlock() {
+            notifyAll();
         }
     }
 }
