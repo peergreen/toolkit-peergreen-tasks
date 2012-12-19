@@ -248,59 +248,6 @@ public class PipelineExecutionTestCase {
 
     }
 
-    /*
-    @Test
-    public void testTaskIsExecutedWhenPreviousIsFailed() throws Exception {
-
-//        *
-//         *           ok  +---+
-//         *             --| b |
-//         *   +---+    /  +---+
-//         *   | a | <--
-//         *   +---+    \  +---+
-//         *             --| c |
-//         *           ko  +---+
-
-        Parallel master = new Parallel("master");
-
-        UnitOfWork a = new UnitOfWork(job, "a");
-
-        ExpectationsJob bJob = new ExpectationsJob(
-                new StateExpectation(a, State.COMPLETED)
-        );
-        UnitOfWork b = new UnitOfWork(bJob, "b");
-
-        ExpectationsJob cJob = new ExpectationsJob(
-                new StateExpectation(a, State.FAILED)
-        );
-        UnitOfWork c = new UnitOfWork(cJob, "c");
-
-        master.addTask(a);
-        master.addTask(b);
-        master.addTask(c);
-
-        // Manually manage links
-        b.getRequirements().add(completed(a));
-        c.getRequirements().add(failed(a));
-
-        doThrow(new RuntimeException(""))
-                .when(job).execute(null);
-
-        ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        Execution execution = new Execution(executorService, master);
-
-        execution.start();
-
-        // Wait for some time
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
-
-        assertTrue(cJob.passed);
-        assertEquals(master.getState(), State.FAILED);
-        assertEquals(a.getState(), State.FAILED);
-        assertEquals(b.getState(), State.WAITING);
-        assertEquals(c.getState(), State.COMPLETED);
-    }  */
-
     @Test
     public void testPipelineInPipeline() throws Exception {
         /**
