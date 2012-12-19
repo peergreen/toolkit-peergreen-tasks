@@ -31,6 +31,10 @@
     Framework for concurrency programming.
   </description>
 
+  <properties>
+    <maven-surefire-plugin.suiteXmlFile>src/test/resources/testng.xml</maven-surefire-plugin.suiteXmlFile>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.testng</groupId>
@@ -44,7 +48,35 @@
       <version>1.9.5</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.caliper</groupId>
+      <artifactId>caliper</artifactId>
+      <version>0.5-rc1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <suiteXmlFiles>
+            <suiteXmlFile>${maven-surefire-plugin.suiteXmlFile}</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>caliper</id>
+      <properties>
+        <maven-surefire-plugin.suiteXmlFile>src/test/resources/testng-caliper.xml</maven-surefire-plugin.suiteXmlFile>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>

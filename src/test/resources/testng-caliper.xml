@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="CaliperTestSuite" verbose="1" >
+  <test name="Caliper">
+    <groups>
+      <run>
+        <include name="caliper"  />
+      </run>
+    </groups>
+    <packages>
+      <package name="com.peergreen.tasks.*" />
+    </packages>
+  </test>
+</suite>
