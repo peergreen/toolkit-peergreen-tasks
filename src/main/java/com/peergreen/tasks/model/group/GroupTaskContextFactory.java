@@ -21,8 +21,6 @@ import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.execution.TaskContextFactory;
 import com.peergreen.tasks.model.Task;
 
-import java.util.Set;
-
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume

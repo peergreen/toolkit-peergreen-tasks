@@ -20,7 +20,6 @@ import com.peergreen.tasks.execution.ExecutionBuilder;
 import com.peergreen.tasks.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.execution.internal.PipelineExecution;
 import com.peergreen.tasks.model.Pipeline;
-import com.peergreen.tasks.model.Task;
 
 /**
  * Created with IntelliJ IDEA.
