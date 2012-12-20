@@ -15,28 +15,25 @@
 package com.peergreen.tasks.execution.internal;
 
 import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.execution.helper.TaskExecutorService;
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.Job;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
-import com.peergreen.tasks.model.expect.StateExpectation;
+import com.peergreen.tasks.model.expect.NotExecutedTracker;
+import com.peergreen.tasks.model.expect.SequenceTracker;
 import com.peergreen.tasks.model.job.EmptyJob;
-import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.job.FailingJob;
-import com.peergreen.tasks.model.job.SleepJob;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import static com.peergreen.tasks.context.helper.References.pipeline;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -63,30 +60,30 @@ public class PipelineExecutionTestCase {
 
         Pipeline pipeline = new Pipeline();
 
-        final Task task0 = new UnitOfWork(new EmptyJob(), "task-0");
-
-        ExpectationsJob aExpectations = new ExpectationsJob(
-                new StateExpectation(task0, State.COMPLETED)
-        );
-        final Task task1 = new UnitOfWork(aExpectations, "task-1");
-
-        ExpectationsJob bExpectations = new ExpectationsJob(
-                new StateExpectation(task1, State.COMPLETED)
-        );
-        Task task2 = new UnitOfWork(bExpectations, "task-2");
+        Task task0 = new UnitOfWork(new EmptyJob(), "task-0");
+        Task task1 = new UnitOfWork(new EmptyJob(), "task-1");
+        Task task2 = new UnitOfWork(new EmptyJob(), "task-2");
 
         pipeline.add(task0);
         pipeline.add(task1);
         pipeline.add(task2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        SequenceTracker tracker = new SequenceTracker();
+        manager.registerTracker(tracker);
+        tracker.addStep(task0, State.COMPLETED);
+        tracker.addStep(task1, State.COMPLETED);
+        tracker.addStep(task2, State.COMPLETED);
 
         execution.execute(pipeline).get();
 
-        assertTrue(aExpectations.passed);
-        assertTrue(bExpectations.passed);
-
+        assertTrue(tracker.verify());
     }
 
     @Test
@@ -112,14 +109,25 @@ public class PipelineExecutionTestCase {
         pipeline.add(a, b, c);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        SequenceTracker tracker = new SequenceTracker();
+        manager.registerTracker(tracker);
+        tracker.addStep(a, State.COMPLETED);
+        tracker.addStep(b, State.FAILED);
+        tracker.addStep(pipeline, State.FAILED);
+
+        NotExecutedTracker tracker2 = new NotExecutedTracker(c);
+        manager.registerTracker(tracker2);
 
         execution.execute(pipeline).get();
 
-        assertEquals(a.getState(), State.COMPLETED);
-        assertEquals(b.getState(), State.FAILED);
-        assertEquals(c.getState(), State.WAITING);
-        assertEquals(pipeline.getState(), State.FAILED);
+        assertTrue(tracker.verify());
+        assertTrue(tracker2.verify());
 
     }
 
@@ -140,37 +148,38 @@ public class PipelineExecutionTestCase {
         Pipeline two = new Pipeline("pipeline-two");
         master.add(one, two);
 
-        final Task taskA = new UnitOfWork(new EmptyJob(), "task-a");
-
-        ExpectationsJob bExpectations = new ExpectationsJob(
-                new StateExpectation(taskA, State.COMPLETED)
-        );
-        final Task taskB = new UnitOfWork(bExpectations, "task-b");
+        Task taskA = new UnitOfWork(new EmptyJob(), "task-a");
+        Task taskB = new UnitOfWork(new EmptyJob(), "task-b");
 
         one.add(taskA);
         one.add(taskB);
 
-        ExpectationsJob cExpectations = new ExpectationsJob(
-                new StateExpectation(one, State.COMPLETED)
-        );
-        final Task taskC = new UnitOfWork(cExpectations, "task-c");
-
-        ExpectationsJob dExpectations = new ExpectationsJob(
-                new StateExpectation(taskC, State.COMPLETED)
-        );
-        final Task taskD = new UnitOfWork(dExpectations, "task-d");
+        Task taskC = new UnitOfWork(new EmptyJob(), "task-c");
+        Task taskD = new UnitOfWork(new EmptyJob(), "task-d");
 
         two.add(taskC);
         two.add(taskD);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        SequenceTracker tracker = new SequenceTracker();
+        manager.registerTracker(tracker);
+        tracker.addStep(taskA, State.COMPLETED);
+        tracker.addStep(taskB, State.COMPLETED);
+        tracker.addStep(one, State.COMPLETED);
+        tracker.addStep(taskC, State.COMPLETED);
+        tracker.addStep(taskD, State.COMPLETED);
+        tracker.addStep(two, State.COMPLETED);
+        tracker.addStep(master, State.COMPLETED);
 
         execution.execute(master).get();
 
-        assertTrue(bExpectations.passed);
-        assertTrue(cExpectations.passed);
-        assertTrue(dExpectations.passed);
+        assertTrue(tracker.verify());
 
     }
 
@@ -194,17 +203,8 @@ public class PipelineExecutionTestCase {
         Task a = new UnitOfWork(new EmptyJob(), "task-a");
         Task b = new UnitOfWork(new EmptyJob(), "task-b");
 
-        ExpectationsJob cExpectations = new ExpectationsJob(
-                new StateExpectation(stage1, State.COMPLETED)
-        );
-
-        Task c = new UnitOfWork(cExpectations, "task-c");
-
-        ExpectationsJob dExpectations = new ExpectationsJob(
-                new StateExpectation(stage1, State.COMPLETED)
-        );
-
-        Task d = new UnitOfWork(dExpectations, "task-d");
+        Task c = new UnitOfWork(new EmptyJob(), "task-c");
+        Task d = new UnitOfWork(new EmptyJob(), "task-d");
 
         stage1.add(a);
         stage1.add(b);
@@ -215,36 +215,21 @@ public class PipelineExecutionTestCase {
         pipeline.add(stage1, stage2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        SequenceTracker tracker = new SequenceTracker();
+        manager.registerTracker(tracker);
+        tracker.addStep(stage1, State.COMPLETED);
+        tracker.addStep(stage2, State.COMPLETED);
+        tracker.addStep(pipeline, State.COMPLETED);
 
         execution.execute(pipeline).get();
 
-        assertTrue(cExpectations.passed);
-        assertTrue(dExpectations.passed);
-
-    }
-
-    @Test
-    public void testPipelineStateIsUpdated() throws Exception {
-        Pipeline pipeline = new Pipeline();
-
-        // Add a sleep task
-        pipeline.add(new UnitOfWork(new SleepJob(100)));
-
-        ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
-
-        // Before execution, the pipeline is WAITING
-        assertEquals(pipeline.getState(), State.WAITING);
-        Future<State> future = execution.execute(pipeline);
-        // Just after, it is RUNNING
-        assertEquals(pipeline.getState(), State.RUNNING);
-
-        // Wait 1 second, the sleep task should have been executed
-        future.get();
-
-        // When tasks have been executed, the new state is COMPLETED
-        assertEquals(pipeline.getState(), State.COMPLETED);
+        assertTrue(tracker.verify());
 
     }
 
@@ -264,27 +249,10 @@ public class PipelineExecutionTestCase {
         Pipeline master = new Pipeline("master");
         Pipeline inner = new Pipeline("inner");
 
-        ExpectationsJob aJob = new ExpectationsJob(
-                new StateExpectation(master, State.RUNNING)
-        );
-        UnitOfWork a = new UnitOfWork(aJob, "a");
-
-        ExpectationsJob bJob = new ExpectationsJob(
-                new StateExpectation(inner, State.RUNNING),
-                new StateExpectation(a, State.COMPLETED)
-        );
-        UnitOfWork b = new UnitOfWork(bJob, "b");
-
-        ExpectationsJob cJob = new ExpectationsJob(
-                new StateExpectation(inner, State.RUNNING),
-                new StateExpectation(b, State.COMPLETED)
-        );
-        UnitOfWork c = new UnitOfWork(cJob, "c");
-
-        ExpectationsJob dJob = new ExpectationsJob(
-                new StateExpectation(inner, State.COMPLETED)
-        );
-        UnitOfWork d = new UnitOfWork(dJob, "d");
+        UnitOfWork a = new UnitOfWork(new EmptyJob(), "a");
+        UnitOfWork b = new UnitOfWork(new EmptyJob(), "b");
+        UnitOfWork c = new UnitOfWork(new EmptyJob(), "c");
+        UnitOfWork d = new UnitOfWork(new EmptyJob(), "d");
 
         // Build inner pipeline first
         inner.add(b, c);
@@ -293,18 +261,24 @@ public class PipelineExecutionTestCase {
         master.add(a, inner, d);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        SequenceTracker tracker = new SequenceTracker();
+        manager.registerTracker(tracker);
+        tracker.addStep(a, State.COMPLETED);
+        tracker.addStep(b, State.COMPLETED);
+        tracker.addStep(c, State.COMPLETED);
+        tracker.addStep(inner, State.COMPLETED);
+        tracker.addStep(d, State.COMPLETED);
+        tracker.addStep(master, State.COMPLETED);
 
         execution.execute(master).get();
 
-        assertEquals(inner.getState(), State.COMPLETED);
-        assertEquals(master.getState(), State.COMPLETED);
-
-        // Assertions verification
-        assertTrue(aJob.passed);
-        assertTrue(bJob.passed);
-        assertTrue(cJob.passed);
-        assertTrue(dJob.passed);
+        assertTrue(tracker.verify());
 
     }
 
@@ -350,11 +324,19 @@ public class PipelineExecutionTestCase {
         master.add(b);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        SequenceTracker tracker = new SequenceTracker();
+        manager.registerTracker(tracker);
+        tracker.addStep(c, State.COMPLETED);
 
         execution.execute(global).get();
 
-        assertEquals(c.getState(), State.COMPLETED);
+        assertTrue(tracker.verify());
 
     }
 

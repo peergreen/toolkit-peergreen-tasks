@@ -14,9 +14,9 @@
 
 package com.peergreen.tasks.execution.tracker.time;
 
+import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.tracker.TaskTracker;
 import com.peergreen.tasks.model.State;
-import com.peergreen.tasks.model.Task;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,12 +38,12 @@ public class ElapsedTimeTaskTracker extends TaskTracker<Times> {
     }
 
     @Override
-    public Times newSource(Task source) {
+    public Times newSource(LiveTask source) {
         return new Times();
     }
 
     @Override
-    public void sourceChanged(Task source, State previous, Times times) {
+    public void sourceChanged(LiveTask source, State previous, Times times) {
         switch (source.getState()) {
             case RUNNING:
                 times.setBeginTimestamp(System.currentTimeMillis());
@@ -56,9 +56,9 @@ public class ElapsedTimeTaskTracker extends TaskTracker<Times> {
 
     private static class SystemTimesVisitor implements TimesVisitor {
         @Override
-        public void visitDuration(Task task, long duration) {
+        public void visitDuration(LiveTask task, long duration) {
             System.out.printf("Task %s executed in %d milliseconds%n",
-                    task.getName(),
+                    task.getModel().getName(),
                     duration);
         }
     }

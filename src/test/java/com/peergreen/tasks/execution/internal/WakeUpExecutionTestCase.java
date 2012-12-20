@@ -14,12 +14,14 @@
 
 package com.peergreen.tasks.execution.internal;
 
-import com.peergreen.tasks.execution.helper.TaskExecutorService;
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.WakeUp;
+import com.peergreen.tasks.model.expect.StateTracker;
 import com.peergreen.tasks.model.job.FailingJob;
 import com.peergreen.tasks.model.job.SleepJob;
 import org.testng.annotations.Test;
@@ -27,9 +29,9 @@ import org.testng.annotations.Test;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -50,24 +52,31 @@ public class WakeUpExecutionTestCase {
         WakeUp arousable = new WakeUp(delayedTask);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        StateTracker tracker = new StateTracker();
+        manager.registerTracker(tracker);
 
         Future<?> future = execution.execute(arousable);
 
-        assertEquals(arousable.getState(), State.SCHEDULED);
-        assertEquals(delayedTask.getState(), State.WAITING);
+        assertEquals(tracker.getState(arousable), State.SCHEDULED);
+        assertNull(tracker.getState(delayedTask));
 
-        Thread.sleep(200);
+        Thread.sleep(50);
 
         arousable.wakeUp();
 
-        assertEquals(arousable.getState(), State.RUNNING);
-        assertTrue((delayedTask.getState() == State.SCHEDULED) || (delayedTask.getState() == State.RUNNING));
+        assertEquals(tracker.getState(arousable), State.RUNNING);
+        assertTrue((tracker.getState(delayedTask) == State.SCHEDULED) || (tracker.getState(delayedTask) == State.RUNNING));
 
         future.get();
 
-        assertEquals(arousable.getState(), State.COMPLETED);
-        assertEquals(delayedTask.getState(), State.COMPLETED);
+        assertEquals(tracker.getState(arousable), State.COMPLETED);
+        assertEquals(tracker.getState(delayedTask), State.COMPLETED);
 
     }
 
@@ -78,24 +87,31 @@ public class WakeUpExecutionTestCase {
         WakeUp arousable = new WakeUp(delayedTask);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        StateTracker tracker = new StateTracker();
+        manager.registerTracker(tracker);
 
         Future<?> future = execution.execute(arousable);
 
-        assertEquals(arousable.getState(), State.SCHEDULED);
-        assertEquals(delayedTask.getState(), State.WAITING);
+        assertEquals(tracker.getState(arousable), State.SCHEDULED);
+        assertNull(tracker.getState(delayedTask));
 
-        Thread.sleep(200);
+        Thread.sleep(50);
 
         arousable.wakeUp();
 
-        assertEquals(arousable.getState(), State.RUNNING);
-        assertTrue((delayedTask.getState() == State.SCHEDULED) || (delayedTask.getState() == State.RUNNING));
+        assertEquals(tracker.getState(arousable), State.RUNNING);
+        assertTrue((tracker.getState(delayedTask) == State.SCHEDULED) || (tracker.getState(delayedTask) == State.RUNNING));
 
         future.get();
 
-        assertEquals(arousable.getState(), State.FAILED);
-        assertEquals(delayedTask.getState(), State.FAILED);
+        assertEquals(tracker.getState(arousable), State.FAILED);
+        assertEquals(tracker.getState(delayedTask), State.FAILED);
 
     }
 }

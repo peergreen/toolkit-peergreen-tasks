@@ -12,17 +12,38 @@
  * limitations under the License.
  */
 
-package com.peergreen.tasks.execution.tracker.time;
+package com.peergreen.tasks.model.expect;
 
 import com.peergreen.tasks.execution.LiveTask;
+import com.peergreen.tasks.execution.tracker.TaskTracker;
+import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.Task;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
- * Date: 28/10/12
- * Time: 13:11
+ * Date: 20/12/12
+ * Time: 09:53
  * To change this template use File | Settings | File Templates.
  */
-public interface TimesVisitor {
-    void visitDuration(LiveTask task, long duration);
+public class StateTracker extends TaskTracker<Task> {
+
+    private Map<Task, State> states = new HashMap<Task, State>();
+
+    @Override
+    public Task newSource(LiveTask source) {
+        return source.getModel();
+    }
+
+    @Override
+    public void sourceChanged(LiveTask source, State previous, Task task) {
+        states.put(task, source.getState());
+    }
+
+    public State getState(Task task) {
+        return states.get(task);
+    }
 }

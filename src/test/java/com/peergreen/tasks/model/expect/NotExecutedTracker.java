@@ -12,17 +12,37 @@
  * limitations under the License.
  */
 
-package com.peergreen.tasks.execution.tracker.time;
+package com.peergreen.tasks.model.expect;
 
 import com.peergreen.tasks.execution.LiveTask;
+import com.peergreen.tasks.execution.tracker.TaskTracker;
+import com.peergreen.tasks.model.Task;
 
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
- * Date: 28/10/12
- * Time: 13:11
+ * Date: 19/12/12
+ * Time: 17:40
  * To change this template use File | Settings | File Templates.
  */
-public interface TimesVisitor {
-    void visitDuration(LiveTask task, long duration);
+public class NotExecutedTracker extends TaskTracker<Object> {
+    private Task absent;
+    private boolean found = false;
+
+    public NotExecutedTracker(Task absent) {
+        this.absent = absent;
+    }
+
+    @Override
+    public Object newSource(LiveTask source) {
+        if (absent.equals(source.getModel())) {
+            found = true;
+        }
+        return null;
+    }
+
+    public boolean verify() {
+        return !found;
+    }
+
 }

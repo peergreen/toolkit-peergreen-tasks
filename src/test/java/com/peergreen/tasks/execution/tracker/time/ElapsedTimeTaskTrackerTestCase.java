@@ -14,11 +14,11 @@
 
 package com.peergreen.tasks.execution.tracker.time;
 
-import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
 import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.Parallel;
-import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.SleepJob;
 import org.testng.annotations.Test;
@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertTrue;
 
@@ -66,8 +65,8 @@ public class ElapsedTimeTaskTrackerTestCase {
 
         TimesVisitor visitor = new TimesVisitor() {
             @Override
-            public void visitDuration(Task task, long duration) {
-                if ("pipeline".equals(task.getName())) {
+            public void visitDuration(LiveTask task, long duration) {
+                if ("pipeline".equals(task.getModel().getName())) {
                     d.value = duration;
                     //System.out.printf("Terminated in %d%n", d.value);
                 }

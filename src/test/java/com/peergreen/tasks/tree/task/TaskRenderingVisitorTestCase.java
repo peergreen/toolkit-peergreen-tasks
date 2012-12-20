@@ -14,9 +14,13 @@
 
 package com.peergreen.tasks.tree.task;
 
+import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.group.Group;
 import com.peergreen.tasks.model.job.EmptyJob;
 import com.peergreen.tasks.tree.Node;
@@ -26,6 +30,7 @@ import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.concurrent.Future;
 
 import static java.util.Collections.singleton;
 
@@ -55,7 +60,7 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        Assert.assertEquals(baos.toString(), "UnitOfWork [uow, WAITING]\n");
+        Assert.assertEquals(baos.toString(), "UnitOfWork [uow, UNKNOWN]\n");
     }
 
     @Test
@@ -67,8 +72,8 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, WAITING]\n" +
-                "`-- UnitOfWork [uow, WAITING]\n";
+        String expected = "Pipeline [master, UNKNOWN]\n" +
+                "`-- UnitOfWork [uow, UNKNOWN]\n";
         Assert.assertEquals(baos.toString(), expected);
     }
 
@@ -87,8 +92,8 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, WAITING]\n" +
-                "`-- UnitOfWork [uow, WAITING] @test\n";
+        String expected = "Pipeline [master, UNKNOWN]\n" +
+                "`-- UnitOfWork [uow, UNKNOWN] @test\n";
         Assert.assertEquals(baos.toString(), expected);
     }
 
@@ -102,9 +107,9 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, WAITING]\n" +
-                "|-- UnitOfWork [uow, WAITING]\n" +
-                "`-- UnitOfWork [uow2, WAITING]\n";
+        String expected = "Pipeline [master, UNKNOWN]\n" +
+                "|-- UnitOfWork [uow, UNKNOWN]\n" +
+                "`-- UnitOfWork [uow2, UNKNOWN]\n";
         Assert.assertEquals(baos.toString(), expected);
     }
 
@@ -121,10 +126,10 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, WAITING]\n" +
-                "|-- UnitOfWork [uow, WAITING]\n" +
-                "`-- Pipeline [sub, WAITING]\n" +
-                "    `-- UnitOfWork [task, WAITING]\n";
+        String expected = "Pipeline [master, UNKNOWN]\n" +
+                "|-- UnitOfWork [uow, UNKNOWN]\n" +
+                "`-- Pipeline [sub, UNKNOWN]\n" +
+                "    `-- UnitOfWork [task, UNKNOWN]\n";
         Assert.assertEquals(baos.toString(), expected);
     }
 
@@ -143,11 +148,52 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, WAITING]\n" +
-                "|-- Pipeline [pipeline, WAITING]\n" +
-                "|   `-- UnitOfWork [uow, WAITING]\n" +
-                "`-- Pipeline [sub, WAITING]\n" +
-                "    `-- UnitOfWork [task, WAITING]\n";
+        String expected = "Pipeline [master, UNKNOWN]\n" +
+                "|-- Pipeline [pipeline, UNKNOWN]\n" +
+                "|   `-- UnitOfWork [uow, UNKNOWN]\n" +
+                "`-- Pipeline [sub, UNKNOWN]\n" +
+                "    `-- UnitOfWork [task, UNKNOWN]\n";
         Assert.assertEquals(baos.toString(), expected);
     }
+
+    @Test
+    public void testNodeRenderingWithTaskTrackingEnabled() throws Exception {
+        Pipeline master = new Pipeline("master");
+        UnitOfWork unitOfWork = new UnitOfWork(new EmptyJob(), "uow");
+        WakeUp wakeUp = new WakeUp("wake", unitOfWork);
+
+        master.add(wakeUp);
+        Node<Task> node = new Node<Task>(new TaskNodeAdapter(), master);
+
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager();
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+        manager.registerTracker(visitor);
+
+        Future<?> future = execution.execute(master);
+
+        node.walk(visitor);
+
+        String expected = "Pipeline [master, RUNNING]\n" +
+                "`-- WakeUp [wake, SCHEDULED]\n" +
+                "    `-- UnitOfWork [uow, UNKNOWN]\n";
+        Assert.assertEquals(baos.toString(), expected);
+
+        // unblock the execution flow and wait for completion
+        wakeUp.wakeUp();
+        future.get();
+
+        baos.reset();
+        node.walk(visitor);
+
+        String expected2 = "Pipeline [master, COMPLETED]\n" +
+                "`-- WakeUp [wake, COMPLETED]\n" +
+                "    `-- UnitOfWork [uow, COMPLETED]\n";
+        Assert.assertEquals(baos.toString(), expected2);
+
+
+    }
+
 }

@@ -14,7 +14,7 @@
 
 package com.peergreen.tasks.model.expect;
 
-import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.execution.LiveTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,6 +27,7 @@ public class ExtensionExpectation implements Expectation {
 
     private Class<?> type;
     private Object value;
+    private Object found;
 
     public ExtensionExpectation(Class<?> type, Object value) {
         this.type = type;
@@ -34,8 +35,12 @@ public class ExtensionExpectation implements Expectation {
     }
 
     @Override
-    public boolean verify(TaskContext context) {
-        Object returned = context.get(type);
-        return returned != null && value.equals(returned);
+    public void record(LiveTask live) {
+        found = live.getContext().get(type);
+    }
+
+    @Override
+    public boolean verify() {
+        return value.equals(found);
     }
 }

@@ -14,7 +14,7 @@
 
 package com.peergreen.tasks.model.expect;
 
-import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.execution.LiveTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,6 +27,7 @@ public class PropertyExpectation implements Expectation {
 
     private String propertyName;
     private Object value;
+    private Object returned;
 
     public PropertyExpectation(String propertyName, Object value) {
         this.propertyName = propertyName;
@@ -34,8 +35,13 @@ public class PropertyExpectation implements Expectation {
     }
 
     @Override
-    public boolean verify(TaskContext context) {
-        Object returned = context.getProperty(propertyName);
-        return returned != null && value.equals(returned);
+    public void record(LiveTask live) {
+        returned = live.getContext().getProperty(propertyName);
     }
+
+    @Override
+    public boolean verify() {
+        return value.equals(returned);
+    }
+
 }

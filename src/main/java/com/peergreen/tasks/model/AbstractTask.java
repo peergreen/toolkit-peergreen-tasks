@@ -14,12 +14,10 @@
 
 package com.peergreen.tasks.model;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.util.UUID;
-
 import com.peergreen.tasks.model.group.Group;
 import com.peergreen.tasks.model.group.GroupReference;
+
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,12 +28,11 @@ import com.peergreen.tasks.model.group.GroupReference;
  */
 public class AbstractTask implements Task, GroupReference {
     protected String name;
-    private State state = State.WAITING;
     private Group group;
-    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     private final UUID uuid;
     private final int hashCode;
+    private boolean readOnly = false;
 
     public AbstractTask(String name) {
         this.uuid = UUID.randomUUID();
@@ -49,49 +46,12 @@ public class AbstractTask implements Task, GroupReference {
     }
 
     @Override
-    public State getState() {
-        return state;
-    }
-
-    protected PropertyChangeSupport propertyChangeSupport() {
-        return support;
-    }
-
-    @Override
-    public void setState(State state) {
-        State previous = this.state;
-        this.state = state;
-        support.firePropertyChange("state", previous, state);
-    }
-
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        support.addPropertyChangeListener(listener);
-    }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        support.removePropertyChangeListener(listener);
-    }
-
-    @Override
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        support.addPropertyChangeListener(propertyName, listener);
-    }
-
-    @Override
-    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        support.removePropertyChangeListener(propertyName, listener);
+    public void setReadOnly() {
+        readOnly = true;
     }
 
     protected boolean isModifiable() {
-        switch (state) {
-            case WAITING:
-            case SCHEDULED:
-                return true;
-            default:
-                return false;
-        }
+        return !readOnly;
     }
 
     @Override

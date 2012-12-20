@@ -69,27 +69,13 @@ public class PipelineTestCase {
     }
 
     @Test
-    public void testUnmodifiableWhenRunning() throws Exception {
-        assertPipelineIsUnmodifiable(State.RUNNING);
-    }
-
-    @Test
-    public void testUnmodifiableWhenCompleted() throws Exception {
-        assertPipelineIsUnmodifiable(State.COMPLETED);
-    }
-
-    @Test
-    public void testUnmodifiableWhenFAILED() throws Exception {
-        assertPipelineIsUnmodifiable(State.FAILED);
-    }
-
-    private void assertPipelineIsUnmodifiable(State state) {
+    private void testPipelineIsUnmodifiableAfterReadOnly() {
         Pipeline pipeline = new Pipeline();
 
         pipeline.add(task0);
         pipeline.add(task1);
 
-        pipeline.setState(state);
+        pipeline.setReadOnly();
 
         pipeline.add(task2);
         assertPipelineOrder(pipeline, task0, task1);

@@ -12,19 +12,36 @@
  * limitations under the License.
  */
 
-package com.peergreen.tasks.execution.tracker;
+package com.peergreen.tasks.execution;
 
-import com.peergreen.tasks.execution.LiveTask;
+import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.Task;
+
+import java.beans.PropertyChangeListener;
 
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
- * Date: 27/10/12
- * Time: 20:13
+ * Date: 19/12/12
+ * Time: 13:30
  * To change this template use File | Settings | File Templates.
  */
-public interface Tracker<T> {
-    T newSource(LiveTask source);
-    void sourceChanged(LiveTask source, State previous, T bag);
+public interface LiveTask {
+
+    Task getModel();
+
+    TaskContext getContext();
+
+    State getState();
+
+    void setState(State state);
+
+    void addPropertyChangeListener(PropertyChangeListener listener);
+
+    void removePropertyChangeListener(PropertyChangeListener listener);
+
+    void addPropertyChangeListener(String propertyName, PropertyChangeListener listener);
+
+    void removePropertyChangeListener(String propertyName, PropertyChangeListener listener);
 }

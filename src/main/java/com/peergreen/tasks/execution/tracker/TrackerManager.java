@@ -14,8 +14,8 @@
 
 package com.peergreen.tasks.execution.tracker;
 
+import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.model.State;
-import com.peergreen.tasks.model.Task;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -38,7 +38,7 @@ public class TrackerManager implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
-        Task source = (Task) event.getSource();
+        LiveTask source = (LiveTask) event.getSource();
         State oldValue = (State) event.getOldValue();
         State newValue = (State) event.getNewValue();
 

@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class ParallelExecution implements Execution, PropertyChangeListener {
+public class ParallelExecution extends AbstractExecution implements PropertyChangeListener {
 
     private ExecutionBuilderManager executionBuilderManager;
     private AtomicInteger completed = new AtomicInteger(0);
@@ -47,20 +47,22 @@ public class ParallelExecution implements Execution, PropertyChangeListener {
     }
 
     public void execute() {
-        parallel.setState(State.RUNNING);
+        parallel.setReadOnly();
+        setState(State.RUNNING);
 
         if (!parallel.getTasks().isEmpty()) {
             // Start execution flow
             executeAll();
         } else {
-            parallel.setState(State.COMPLETED);
+            setState(State.COMPLETED);
         }
     }
 
     private void executeAll() {
         for (Task task : parallel.getTasks()) {
-            task.addPropertyChangeListener("state", this);
-            executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), task).execute();
+            Execution execution = executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), task);
+            execution.addPropertyChangeListener("state", this);
+            execution.execute();
         }
     }
 
@@ -76,8 +78,18 @@ public class ParallelExecution implements Execution, PropertyChangeListener {
                 if (completed.incrementAndGet() == parallel.getTasks().size()) {
                     // All tasks have been executed
                     // The parallel is now either FAILED or COMPLETED
-                    parallel.setState(out);
+                    setState(out);
                 }
         }
+    }
+
+    @Override
+    public Task getModel() {
+        return parallel;
+    }
+
+    @Override
+    public TaskContext getContext() {
+        return taskContext;
     }
 }

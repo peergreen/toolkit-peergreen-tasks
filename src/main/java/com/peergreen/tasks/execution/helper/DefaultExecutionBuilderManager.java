@@ -62,11 +62,6 @@ public class DefaultExecutionBuilderManager implements ExecutionBuilderManager {
         // Create a dedicated TaskContext for the new Task to be executed
         TaskContext context = taskContextFactory.createTaskContext(executionContext, breadcrumb, task);
 
-        // Register the manager into the Task
-        if (trackerManager != null) {
-            task.addPropertyChangeListener("state", trackerManager);
-        }
-
         // Then find a compatible ExecutionBuilder
         Class<? extends Task> type = task.getClass();
         while (type != null) {
@@ -77,6 +72,10 @@ public class DefaultExecutionBuilderManager implements ExecutionBuilderManager {
                 // Try to create an Execution
                 Execution execution = builder.newExecution(context, task);
                 if (execution != null) {
+                    // Register the manager into the Task
+                    if (trackerManager != null) {
+                        execution.addPropertyChangeListener("state", trackerManager);
+                    }
                     return execution;
                 }
             }

@@ -14,9 +14,9 @@
 
 package com.peergreen.tasks.execution.tracker.state;
 
+import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.tracker.TaskTracker;
 import com.peergreen.tasks.model.State;
-import com.peergreen.tasks.model.Task;
 
 import java.io.PrintStream;
 
@@ -40,18 +40,18 @@ public class StateTaskTracker extends TaskTracker<Object> {
     }
 
     @Override
-    public Object newSource(Task source) {
+    public Object newSource(LiveTask source) {
         return new Object();
     }
 
     @Override
-    public void sourceChanged(Task source, State previous, Object bag) {
+    public void sourceChanged(LiveTask source, State previous, Object bag) {
         stream.printf(
                 "%15s - %9S - %s[%s]%n",
                 Thread.currentThread().getName(),
                 source.getState().name(),
                 source.getClass().getSimpleName(),
-                source.getName()
+                source.getModel().getName()
         );
     }
 }

@@ -14,19 +14,20 @@
 
 package com.peergreen.tasks.model.group;
 
-import com.peergreen.tasks.execution.helper.TaskExecutorService;
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.expect.ExpectationTracker;
 import com.peergreen.tasks.model.expect.PropertyExpectation;
 import com.peergreen.tasks.model.expect.PropertyNotSetExpectation;
-import com.peergreen.tasks.model.job.ExpectationsJob;
+import com.peergreen.tasks.model.job.EmptyJob;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertTrue;
 
@@ -51,30 +52,14 @@ public class SubstituteExecutionContextProviderTestCase {
         //     |-- UnitOfWork #4
         //     `-- UnitOfWork #5
 
-        ExpectationsJob j1 = new ExpectationsJob(
-                new PropertyExpectation("luke", "is a jedi")
-        );
-        ExpectationsJob j2 = new ExpectationsJob(
-                new PropertyExpectation("luke", "is a jedi")
-        );
-        ExpectationsJob j3 = new ExpectationsJob(
-                new PropertyNotSetExpectation("luke")
-        );
-        ExpectationsJob j4 = new ExpectationsJob(
-                new PropertyExpectation("luke", "is a jedi")
-        );
-        ExpectationsJob j5 = new ExpectationsJob(
-                new PropertyExpectation("luke", "is a jedi")
-        );
-
         Pipeline master = new Pipeline();
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();
-        UnitOfWork u1 = new UnitOfWork(j1);
-        UnitOfWork u2 = new UnitOfWork(j2);
-        UnitOfWork u3 = new UnitOfWork(j3);
-        UnitOfWork u4 = new UnitOfWork(j4);
-        UnitOfWork u5 = new UnitOfWork(j5);
+        UnitOfWork u1 = new UnitOfWork(new EmptyJob());
+        UnitOfWork u2 = new UnitOfWork(new EmptyJob());
+        UnitOfWork u3 = new UnitOfWork(new EmptyJob());
+        UnitOfWork u4 = new UnitOfWork(new EmptyJob());
+        UnitOfWork u5 = new UnitOfWork(new EmptyJob());
 
         p2.add(u4, u5);
         p1.add(u1, u2);
@@ -90,21 +75,25 @@ public class SubstituteExecutionContextProviderTestCase {
         provider.addGroup(a, context);
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
-        ExecutorServiceBuilderManager manager = new ExecutorServiceBuilderManager(
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(
                 new GroupTaskContextFactory(Collections.singleton(a), provider), executorService
         );
-        TaskExecutorService execution = new TaskExecutorService(manager);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
 
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
 
-        execution.execute(master);
+        ExpectationTracker tracker = new ExpectationTracker();
+        manager.registerTracker(tracker);
+        tracker.addExpectation(u1, new PropertyExpectation("luke", "is a jedi"));
+        tracker.addExpectation(u2, new PropertyExpectation("luke", "is a jedi"));
+        tracker.addExpectation(u3, new PropertyNotSetExpectation("luke"));
+        tracker.addExpectation(u4, new PropertyExpectation("luke", "is a jedi"));
+        tracker.addExpectation(u5, new PropertyExpectation("luke", "is a jedi"));
 
-        executorService.awaitTermination(100, TimeUnit.MILLISECONDS);
+        execution.execute(master).get();
 
-        assertTrue(j1.passed);
-        assertTrue(j2.passed);
-        assertTrue(j3.passed);
-        assertTrue(j4.passed);
-        assertTrue(j5.passed);
+        assertTrue(tracker.verify());
 
     }
 }

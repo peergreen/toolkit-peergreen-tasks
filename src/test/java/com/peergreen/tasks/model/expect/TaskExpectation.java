@@ -12,25 +12,17 @@
  * limitations under the License.
  */
 
-package com.peergreen.tasks.model.job;
+package com.peergreen.tasks.model.expect;
 
-import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.model.Job;
+import com.peergreen.tasks.model.Task;
 
 /**
-* Created with IntelliJ IDEA.
-* User: guillaume
-* Date: 28/10/12
-* Time: 08:24
-* To change this template use File | Settings | File Templates.
-*/
-public class HolderJob implements Job {
-    public Job job;
-
-    @Override
-    public void execute(TaskContext context) throws Exception {
-        if  (job != null) {
-            job.execute(context);
-        }
-    }
+ * Created with IntelliJ IDEA.
+ * User: guillaume
+ * Date: 19/12/12
+ * Time: 16:14
+ * To change this template use File | Settings | File Templates.
+ */
+public interface TaskExpectation extends Expectation {
+    Task getTask();
 }

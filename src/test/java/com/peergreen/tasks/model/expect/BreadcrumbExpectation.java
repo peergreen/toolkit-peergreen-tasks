@@ -14,7 +14,7 @@
 
 package com.peergreen.tasks.model.expect;
 
-import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.execution.LiveTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,13 +26,19 @@ import com.peergreen.tasks.context.TaskContext;
 public class BreadcrumbExpectation implements Expectation {
 
     private String expected;
+    private String latest;
 
     public BreadcrumbExpectation(String expected) {
         this.expected = expected;
     }
 
     @Override
-    public boolean verify(TaskContext context) {
-        return context.getBreadcrumb().toString().contains(expected);
+    public void record(LiveTask live) {
+        latest = live.getContext().getBreadcrumb().toString();
+    }
+
+    @Override
+    public boolean verify() {
+        return latest.contains(expected);
     }
 }

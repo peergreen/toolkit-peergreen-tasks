@@ -14,8 +14,6 @@
 
 package com.peergreen.tasks.model;
 
-import java.beans.PropertyChangeListener;
-
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
@@ -27,15 +25,11 @@ public interface Task {
 
     String getName();
 
-    State getState();
-
-    void setState(State state);
-
-    void addPropertyChangeListener(PropertyChangeListener listener);
-
-    void removePropertyChangeListener(PropertyChangeListener listener);
-
-    void addPropertyChangeListener(String propertyName, PropertyChangeListener listener);
-
-    void removePropertyChangeListener(String propertyName, PropertyChangeListener listener);
+    /**
+     * This method is for use of the Task execution engine only.
+     * Once executed, the Task is considered read-only and no further structural
+     * modifications (such as additional Tasks in a Pipeline) can be applied.
+     * This method is called by the execution when it reach the {@literal RUNNING} {@link State}.
+     */
+    void setReadOnly();
 }

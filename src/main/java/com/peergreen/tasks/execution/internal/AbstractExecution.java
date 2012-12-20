@@ -12,66 +12,55 @@
  * limitations under the License.
  */
 
-package com.peergreen.tasks.model;
+package com.peergreen.tasks.execution.internal;
+
+import com.peergreen.tasks.execution.Execution;
+import com.peergreen.tasks.model.State;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * Created with IntelliJ IDEA.
  * User: guillaume
- * Date: 12/11/12
- * Time: 09:45
+ * Date: 19/12/12
+ * Time: 13:48
  * To change this template use File | Settings | File Templates.
  */
-public class WakeUp extends AbstractTask implements Scope {
+public abstract class AbstractExecution implements Execution {
 
-    private Task delegate;
-    private boolean wakeUp = false;
+    private State state = State.WAITING;
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-    public WakeUp(Task delegate) {
-        this(null, delegate);
-    }
-
-    public WakeUp(String name, Task delegate) {
-        super(name);
-        this.delegate = delegate;
-    }
-
-    public Task getDelegate() {
-        return delegate;
-    }
-
-    public void wakeUp() {
-        // Do not wake-up the Task more than 1 time
-        if (!wakeUp) {
-            wakeUp = true;
-            support.firePropertyChange("wakeUp", false, true);
-        }
+    @Override
+    public State getState() {
+        return state;
     }
 
     @Override
-    public Iterator<Task> iterator() {
-        return Collections.singleton(delegate).iterator();
+    public void setState(State state) {
+        State previous = this.state;
+        this.state = state;
+        support.firePropertyChange("state", previous, state);
     }
 
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
 
+    @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         support.removePropertyChangeListener(listener);
     }
 
+    @Override
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         support.addPropertyChangeListener(propertyName, listener);
     }
 
+    @Override
     public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         support.removePropertyChangeListener(propertyName, listener);
     }
-
 }

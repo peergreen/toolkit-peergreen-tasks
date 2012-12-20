@@ -32,7 +32,7 @@ import java.util.Iterator;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class PipelineExecution implements Execution, PropertyChangeListener {
+public class PipelineExecution extends AbstractExecution implements PropertyChangeListener {
 
     private Iterator<Task> cursor;
     private ExecutionBuilderManager executionBuilderManager;
@@ -47,7 +47,8 @@ public class PipelineExecution implements Execution, PropertyChangeListener {
     }
 
     public void execute() {
-        pipeline.setState(State.RUNNING);
+        pipeline.setReadOnly();
+        setState(State.RUNNING);
 
         // Start execution flow
         executeNext();
@@ -57,11 +58,12 @@ public class PipelineExecution implements Execution, PropertyChangeListener {
         if (cursor.hasNext()) {
             // Schedule the next one on the list
             Task next = cursor.next();
-            next.addPropertyChangeListener("state", this);
-            executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), next).execute();
+            Execution execution = executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), next);
+            execution.addPropertyChangeListener("state", this);
+            execution.execute();
         } else {
             // Change Pipeline's state
-            pipeline.setState(State.COMPLETED);
+            setState(State.COMPLETED);
         }
     }
 
@@ -71,11 +73,21 @@ public class PipelineExecution implements Execution, PropertyChangeListener {
 
         switch (newValue) {
             case FAILED:
-                pipeline.setState(State.FAILED);
+                setState(State.FAILED);
                 break;
             case COMPLETED:
                 // The inner Task has been completed
                 executeNext();
         }
+    }
+
+    @Override
+    public Task getModel() {
+        return pipeline;
+    }
+
+    @Override
+    public TaskContext getContext() {
+        return taskContext;
     }
 }

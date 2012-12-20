@@ -14,7 +14,7 @@
 
 package com.peergreen.tasks.model.expect;
 
-import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.execution.LiveTask;
 
 /**
 * Created with IntelliJ IDEA.
@@ -24,5 +24,6 @@ import com.peergreen.tasks.context.TaskContext;
 * To change this template use File | Settings | File Templates.
 */
 public interface Expectation {
-    boolean verify(TaskContext context);
+    void record(LiveTask live);
+    boolean verify();
 }

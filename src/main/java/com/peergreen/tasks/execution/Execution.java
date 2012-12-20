@@ -21,6 +21,6 @@ package com.peergreen.tasks.execution;
  * Time: 14:44
  * To change this template use File | Settings | File Templates.
  */
-public interface Execution {
+public interface Execution extends LiveTask {
     void execute();
 }

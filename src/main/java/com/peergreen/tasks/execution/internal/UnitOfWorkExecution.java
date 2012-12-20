@@ -15,8 +15,8 @@
 package com.peergreen.tasks.execution.internal;
 
 import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.execution.Execution;
 import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 
 import java.util.concurrent.ExecutorService;
@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutorService;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class UnitOfWorkExecution implements Execution {
+public class UnitOfWorkExecution extends AbstractExecution {
 
     private ExecutorService executorService;
     private TaskContext taskContext;
@@ -42,19 +42,30 @@ public class UnitOfWorkExecution implements Execution {
 
     public void execute() {
         // Execute/Schedule the unit of work
-        unitOfWork.setState(State.SCHEDULED);
+        setState(State.SCHEDULED);
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                unitOfWork.setState(State.RUNNING);
+                unitOfWork.setReadOnly();
+                setState(State.RUNNING);
                 try {
                     unitOfWork.getJob().execute(taskContext);
                 } catch (Throwable t) {
-                    unitOfWork.setState(State.FAILED);
+                    setState(State.FAILED);
                     return;
                 }
-                unitOfWork.setState(State.COMPLETED);
+                setState(State.COMPLETED);
             }
         });
+    }
+
+    @Override
+    public Task getModel() {
+        return unitOfWork;
+    }
+
+    @Override
+    public TaskContext getContext() {
+        return taskContext;
     }
 }

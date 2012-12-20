@@ -14,6 +14,9 @@
 
 package com.peergreen.tasks.tree.task;
 
+import com.peergreen.tasks.execution.LiveTask;
+import com.peergreen.tasks.execution.tracker.TaskTracker;
+import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.group.Group;
 import com.peergreen.tasks.tree.Node;
@@ -21,8 +24,10 @@ import com.peergreen.tasks.tree.NodeVisitor;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.emptySet;
 
@@ -44,7 +49,17 @@ import static java.util.Collections.emptySet;
  *     `-- UnitOfWork #5
  * </pre>
  */
-public class TaskRenderingVisitor implements NodeVisitor<Task> {
+public class TaskRenderingVisitor extends TaskTracker<Object> implements NodeVisitor<Task> {
+
+    @Override
+    public Object newSource(LiveTask source) {
+        return this;
+    }
+
+    @Override
+    public void sourceChanged(LiveTask source, State previous, Object bag) {
+        states.put(source.getModel(), source.getState());
+    }
 
     private enum Element {
         TEE("|-- "), BAR("|   "), LAST("`-- "), BLANK("    ");
@@ -57,7 +72,8 @@ public class TaskRenderingVisitor implements NodeVisitor<Task> {
     }
 
     private PrintStream stream ;
-    private Iterable<Group> groups = emptySet();
+    private Iterable<Group> groups;
+    private Map<Task, State> states;
 
     public TaskRenderingVisitor() {
         this(System.out);
@@ -65,6 +81,8 @@ public class TaskRenderingVisitor implements NodeVisitor<Task> {
 
     public TaskRenderingVisitor(PrintStream stream) {
         this.stream = stream;
+        this.states = new HashMap<Task, State>();
+        this.groups = emptySet();
     }
 
     public void setGroups(Iterable<Group> groups) {
@@ -107,10 +125,11 @@ public class TaskRenderingVisitor implements NodeVisitor<Task> {
 
         // Print Task info
         Task task = node.getData();
+        State state = states.get(task);
         stream.printf("%s [%s, %S]",
                 task.getClass().getSimpleName(),
                 task.getName(),
-                task.getState());
+                (state!= null) ? state : "unknown");
 
         for (Group group : groups) {
             if (group.contains(task)) {

@@ -14,19 +14,20 @@
 
 package com.peergreen.tasks.execution.internal;
 
-import com.peergreen.tasks.execution.helper.TaskExecutorService;
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.expect.SequenceTracker;
 import com.peergreen.tasks.model.job.SleepJob;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,15 +45,22 @@ public class UnitOfWorkExecutionTestCase {
         UnitOfWork unitOfWork = new UnitOfWork(new SleepJob(100));
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
 
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
 
-        assertEquals(unitOfWork.getState(), State.WAITING);
+        SequenceTracker tracker = new SequenceTracker();
+        manager.registerTracker(tracker);
+        tracker.addStep(unitOfWork, State.SCHEDULED);
+        tracker.addStep(unitOfWork, State.RUNNING);
+        tracker.addStep(unitOfWork, State.COMPLETED);
+
         Future<?> future = execution.execute(unitOfWork);
-        assertEquals(unitOfWork.getState(), State.SCHEDULED);
         future.get();
-        assertEquals(unitOfWork.getState(), State.COMPLETED);
 
+        assertTrue(tracker.verify());
     }
 
 }

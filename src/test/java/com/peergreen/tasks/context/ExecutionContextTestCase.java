@@ -14,21 +14,22 @@
 
 package com.peergreen.tasks.context;
 
-import com.peergreen.tasks.execution.helper.TaskExecutorService;
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.Job;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.expect.BreadcrumbExpectation;
+import com.peergreen.tasks.model.expect.ExpectationTracker;
 import com.peergreen.tasks.model.expect.ExtensionExpectation;
 import com.peergreen.tasks.model.expect.PropertyExpectation;
-import com.peergreen.tasks.model.job.ExpectationsJob;
+import com.peergreen.tasks.model.job.EmptyJob;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertTrue;
 
@@ -53,21 +54,25 @@ public class ExecutionContextTestCase {
             }
         });
 
-        ExpectationsJob job = new ExpectationsJob(
-                new PropertyExpectation("obiwan", "kenobi"),
-                new ExtensionExpectation(String.class, "hello")
-        );
-        UnitOfWork unitOfWork2 = new UnitOfWork(job);
+        UnitOfWork unitOfWork2 = new UnitOfWork(new EmptyJob());
 
         pipeline.add(unitOfWork1, unitOfWork2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
 
-        execution.execute(pipeline);
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
 
-        executorService.awaitTermination(200, TimeUnit.MILLISECONDS);
-        assertTrue(job.passed);
+        ExpectationTracker tracker = new ExpectationTracker();
+        manager.registerTracker(tracker);
+        tracker.addExpectation(unitOfWork2, new PropertyExpectation("obiwan", "kenobi"));
+        tracker.addExpectation(unitOfWork2, new ExtensionExpectation(String.class, "hello"));
+
+        execution.execute(pipeline).get();
+
+        assertTrue(tracker.verify());
 
     }
 
@@ -76,27 +81,28 @@ public class ExecutionContextTestCase {
         Pipeline master = new Pipeline("master");
         Pipeline pipeline = new Pipeline("pipeline");
         Parallel parallel = new Parallel("parallel");
-        ExpectationsJob first = new ExpectationsJob(
-                new BreadcrumbExpectation("/master/pipeline/uow")
-        );
-        UnitOfWork uow = new UnitOfWork(first, "uow");
-        ExpectationsJob second = new ExpectationsJob(
-                new BreadcrumbExpectation("/master/parallel/uow2")
-        );
-        UnitOfWork uow2 = new UnitOfWork(second, "uow2");
+        UnitOfWork uow = new UnitOfWork(new EmptyJob(), "uow");
+        UnitOfWork uow2 = new UnitOfWork(new EmptyJob(), "uow2");
 
         master.add(pipeline, parallel);
         pipeline.add(uow);
         parallel.add(uow2);
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
 
-        execution.execute(master);
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
 
-        executorService.awaitTermination(200, TimeUnit.MILLISECONDS);
-        assertTrue(first.passed);
-        assertTrue(second.passed);
+        ExpectationTracker tracker = new ExpectationTracker();
+        manager.registerTracker(tracker);
+        tracker.addExpectation(uow, new BreadcrumbExpectation("/master/pipeline/uow"));
+        tracker.addExpectation(uow2, new BreadcrumbExpectation("/master/parallel/uow2"));
+
+        execution.execute(master).get();
+
+        assertTrue(tracker.verify());
 
     }
 }

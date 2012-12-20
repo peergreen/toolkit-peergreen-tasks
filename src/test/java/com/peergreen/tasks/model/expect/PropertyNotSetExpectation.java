@@ -14,7 +14,7 @@
 
 package com.peergreen.tasks.model.expect;
 
-import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.execution.LiveTask;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,13 +26,19 @@ import com.peergreen.tasks.context.TaskContext;
 public class PropertyNotSetExpectation implements Expectation {
 
     private String propertyName;
+    private boolean exist = true;
 
     public PropertyNotSetExpectation(String propertyName) {
         this.propertyName = propertyName;
     }
 
     @Override
-    public boolean verify(TaskContext context) {
-        return context.getProperty(propertyName) == null;
+    public void record(LiveTask live) {
+        exist = live.getContext().getProperty(propertyName) != null;
+    }
+
+    @Override
+    public boolean verify() {
+        return !exist;
     }
 }

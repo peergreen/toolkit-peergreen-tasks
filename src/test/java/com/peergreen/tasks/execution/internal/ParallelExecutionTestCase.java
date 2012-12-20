@@ -15,25 +15,24 @@
 package com.peergreen.tasks.execution.internal;
 
 import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.execution.helper.TaskExecutorService;
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
+import com.peergreen.tasks.execution.helper.TaskExecutorService;
+import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.Job;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
-import com.peergreen.tasks.model.expect.SleepExpectation;
-import com.peergreen.tasks.model.expect.StateExpectation;
+import com.peergreen.tasks.model.expect.StateTracker;
 import com.peergreen.tasks.model.job.EmptyJob;
-import com.peergreen.tasks.model.job.ExpectationsJob;
 import com.peergreen.tasks.model.job.FailingJob;
-import com.peergreen.tasks.model.job.HolderJob;
+import com.peergreen.tasks.model.job.SleepJob;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 
 import static com.peergreen.tasks.context.helper.References.parallel;
 import static org.testng.Assert.assertEquals;
@@ -55,48 +54,37 @@ public class ParallelExecutionTestCase {
     public void testConcurrentExecution() throws Exception {
         Parallel parallel = new Parallel();
 
-        HolderJob zero = new HolderJob();
-        HolderJob one = new HolderJob();
-        HolderJob two = new HolderJob();
-        final Task task0 = new UnitOfWork(zero, "task-0");
-        final Task task1 = new UnitOfWork(one, "task-1");
-        final Task task2 = new UnitOfWork(two, "task-2");
+        final Task task0 = new UnitOfWork(new SleepJob(20), "task-0");
+        final Task task1 = new UnitOfWork(new SleepJob(20), "task-1");
+        final Task task2 = new UnitOfWork(new SleepJob(20), "task-2");
 
         parallel.add(task0);
         parallel.add(task1);
         parallel.add(task2);
 
-        ExpectationsJob zeroExpectations = new ExpectationsJob(
-                new SleepExpectation(100),
-                new StateExpectation(task1, State.RUNNING),
-                new StateExpectation(task2, State.RUNNING),
-                new SleepExpectation(400)
-        );
-        ExpectationsJob oneExpectations = new ExpectationsJob(
-                new SleepExpectation(100),
-                new StateExpectation(task0, State.RUNNING),
-                new StateExpectation(task2, State.RUNNING),
-                new SleepExpectation(400)
-        );
-        ExpectationsJob twoExpectations = new ExpectationsJob(
-                new SleepExpectation(100),
-                new StateExpectation(task0, State.RUNNING),
-                new StateExpectation(task1, State.RUNNING),
-                new SleepExpectation(400)
-        );
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
 
-        zero.job = zeroExpectations;
-        one.job = oneExpectations;
-        two.job = twoExpectations;
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        StateTracker tracker = new StateTracker();
+        manager.registerTracker(tracker);
 
-        execution.execute(parallel).get();
+        Future<State> future = execution.execute(parallel);
 
-        assertTrue(zeroExpectations.passed);
-        assertTrue(oneExpectations.passed);
-        assertTrue(twoExpectations.passed);
+        // Tasks should be running/scheduled at this point
+        assertTrue((State.RUNNING.equals(tracker.getState(task0))) || (State.SCHEDULED.equals(tracker.getState(task0))));
+        assertTrue((State.RUNNING.equals(tracker.getState(task1))) || (State.SCHEDULED.equals(tracker.getState(task1))));
+        assertTrue((State.RUNNING.equals(tracker.getState(task2))) || (State.SCHEDULED.equals(tracker.getState(task2))));
+
+        // Wait completion
+        future.get();
+
+        assertEquals(tracker.getState(task0), State.COMPLETED);
+        assertEquals(tracker.getState(task1), State.COMPLETED);
+        assertEquals(tracker.getState(task2), State.COMPLETED);
 
     }
 
@@ -114,14 +102,21 @@ public class ParallelExecutionTestCase {
         parallel.add(c);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        StateTracker tracker = new StateTracker();
+        manager.registerTracker(tracker);
 
         execution.execute(parallel).get();
 
-        assertEquals(a.getState(), State.COMPLETED);
-        assertEquals(b.getState(), State.FAILED);
-        assertEquals(c.getState(), State.COMPLETED);
-        assertEquals(parallel.getState(), State.FAILED);
+        assertEquals(tracker.getState(a), State.COMPLETED);
+        assertEquals(tracker.getState(b), State.FAILED);
+        assertEquals(tracker.getState(c), State.COMPLETED);
+        assertEquals(tracker.getState(parallel), State.FAILED);
 
     }
 
@@ -168,11 +163,18 @@ public class ParallelExecutionTestCase {
         master.add(b);
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        StateTracker tracker = new StateTracker();
+        manager.registerTracker(tracker);
 
         execution.execute(global).get();
 
-        assertEquals(c.getState(), State.COMPLETED);
+        assertEquals(tracker.getState(c), State.COMPLETED);
 
     }
 
@@ -183,11 +185,19 @@ public class ParallelExecutionTestCase {
         Parallel master = new Parallel();
 
         ExecutorService executorService = Executors.newFixedThreadPool(N_THREADS);
-        TaskExecutorService execution = new TaskExecutorService(new ExecutorServiceBuilderManager(executorService));
+        ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager(executorService);
+        TaskExecutorService execution = new TaskExecutorService(builderManager);
+
+        TrackerManager manager = new TrackerManager();
+        builderManager.setTrackerManager(manager);
+
+        StateTracker tracker = new StateTracker();
+        manager.registerTracker(tracker);
 
         execution.execute(master).get();
 
-        assertEquals(master.getState(), State.COMPLETED);
+        assertEquals(tracker.getState(master), State.COMPLETED);
+
 
     }
 

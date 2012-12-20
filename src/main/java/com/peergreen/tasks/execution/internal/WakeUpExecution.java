@@ -18,6 +18,7 @@ import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.execution.Execution;
 import com.peergreen.tasks.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.WakeUp;
 
 import java.beans.PropertyChangeEvent;
@@ -30,50 +31,61 @@ import java.beans.PropertyChangeListener;
  * Time: 09:46
  * To change this template use File | Settings | File Templates.
  */
-public class WakeUpExecution implements Execution, PropertyChangeListener {
+public class WakeUpExecution extends AbstractExecution implements PropertyChangeListener {
 
     private ExecutionBuilderManager executionBuilderManager;
     private TaskContext taskContext;
     private WakeUp wakeUp;
+    private Execution execution;
 
     public WakeUpExecution(ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, WakeUp task) {
         this.executionBuilderManager = executionBuilderManager;
         this.taskContext = taskContext;
         this.wakeUp = task;
-        task.addPropertyChangeListener(this);
+
+        // React to the Task's wake up event
+        task.addPropertyChangeListener("wakeUp", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                reallyExecute();
+            }
+        });
     }
 
     @Override
     public void execute() {
-
-        wakeUp.setState(State.SCHEDULED);
+        execution = executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), wakeUp.getDelegate());
+        setState(State.SCHEDULED);
     }
 
     private void reallyExecute() {
-        wakeUp.setState(State.RUNNING);
-
-        wakeUp.getDelegate().addPropertyChangeListener("state", this);
-        executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), wakeUp.getDelegate()).execute();
-
-
+        wakeUp.setReadOnly();
+        setState(State.RUNNING);
+        execution.addPropertyChangeListener("state", this);
+        execution.execute();
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
-        if ("wakeUp".equals(event.getPropertyName())) {
-            reallyExecute();
-        } else if ("state".equals(event.getPropertyName())) {
-            State newValue = (State) event.getNewValue();
+        State newValue = (State) event.getNewValue();
 
-            switch (newValue) {
-                case FAILED:
-                    wakeUp.setState(State.FAILED);
-                    break;
-                case COMPLETED:
-                    wakeUp.setState(State.COMPLETED);
-                    break;
-            }
-
+        switch (newValue) {
+            case FAILED:
+                setState(State.FAILED);
+                break;
+            case COMPLETED:
+                setState(State.COMPLETED);
+                break;
         }
+    }
+
+    @Override
+    public Task getModel() {
+        return wakeUp;
+    }
+
+    @Override
+    public TaskContext getContext() {
+        return taskContext;
     }
 }

@@ -16,6 +16,7 @@ package com.peergreen.tasks.execution.helper;
 
 import com.peergreen.tasks.context.DefaultExecutionContext;
 import com.peergreen.tasks.context.ExecutionContext;
+import com.peergreen.tasks.execution.Execution;
 import com.peergreen.tasks.execution.ExecutionBuilderManager;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
@@ -52,21 +53,21 @@ public class TaskExecutorService {
     }
 
     public Future<State> execute(ExecutionContext executionContext, Task task) {
-        Future<State> future = new ExecutionFuture(task);
-        executionBuilderManager.newExecution(executionContext, null, task)
-                               .execute();
+        Execution execution = executionBuilderManager.newExecution(executionContext, null, task);
+        Future<State> future = new ExecutionFuture(execution);
+        execution.execute();
         return future;
     }
 
     private class ExecutionFuture implements Future<State>, PropertyChangeListener {
 
-        private Task task;
+        private Execution execution;
         private boolean done = false;
         private Lock lock = new Lock();
 
-        public ExecutionFuture(Task task) {
-            this.task = task;
-            this.task.addPropertyChangeListener("state", this);
+        public ExecutionFuture(Execution execution) {
+            this.execution = execution;
+            this.execution.addPropertyChangeListener("state", this);
         }
 
         @Override
@@ -89,7 +90,7 @@ public class TaskExecutorService {
             if (!isDone()) {
                 lock.lock();
             }
-            return task.getState();
+            return execution.getState();
         }
 
         @Override
@@ -97,7 +98,7 @@ public class TaskExecutorService {
             if (!isDone()) {
                 lock.lock(unit.toMillis(timeout));
             }
-            return task.getState();
+            return execution.getState();
         }
 
         @Override

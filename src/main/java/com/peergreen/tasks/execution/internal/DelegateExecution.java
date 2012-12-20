@@ -31,7 +31,7 @@ import java.beans.PropertyChangeListener;
  * Time: 17:26
  * To change this template use File | Settings | File Templates.
  */
-public class DelegateExecution implements Execution, PropertyChangeListener {
+public class DelegateExecution extends AbstractExecution implements PropertyChangeListener {
 
     private ExecutionBuilderManager executionBuilderManager;
     private TaskContext taskContext;
@@ -43,14 +43,16 @@ public class DelegateExecution implements Execution, PropertyChangeListener {
         this.delegate = delegate;
     }
     public void execute() {
-        delegate.setState(State.RUNNING);
+        delegate.setReadOnly();
+        setState(State.RUNNING);
         Task delegated = delegate.getDelegate();
         if (delegated != null) {
-            delegated.addPropertyChangeListener("state", this);
-            executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), delegated).execute();
+            Execution execution = executionBuilderManager.newExecution(taskContext, taskContext.getBreadcrumb(), delegated);
+            execution.addPropertyChangeListener("state", this);
+            execution.execute();
         } else {
             // No delegated Task, simply complete
-            delegate.setState(State.COMPLETED);
+            setState(State.COMPLETED);
         }
     }
 
@@ -61,10 +63,20 @@ public class DelegateExecution implements Execution, PropertyChangeListener {
         switch (newValue) {
             case FAILED:
             case COMPLETED:
-                delegate.setState(newValue);
+                setState(newValue);
                 break;
             default:
         }
 
+    }
+
+    @Override
+    public Task getModel() {
+        return delegate;
+    }
+
+    @Override
+    public TaskContext getContext() {
+        return taskContext;
     }
 }
