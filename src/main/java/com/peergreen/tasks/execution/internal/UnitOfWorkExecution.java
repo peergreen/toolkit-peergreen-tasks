@@ -54,8 +54,8 @@ public class UnitOfWorkExecution extends AbstractExecution {
                 try {
                     unitOfWork.getJob().execute(taskContext);
                 } catch (Throwable t) {
-                    setState(State.FAILED);
                     errorHandler.onError(UnitOfWorkExecution.this, t);
+                    setState(State.FAILED);
                     return;
                 }
                 setState(State.COMPLETED);
