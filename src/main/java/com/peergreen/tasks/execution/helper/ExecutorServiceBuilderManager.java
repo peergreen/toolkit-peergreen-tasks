@@ -15,6 +15,7 @@
 package com.peergreen.tasks.execution.helper;
 
 import com.peergreen.tasks.context.DefaultTaskContextFactory;
+import com.peergreen.tasks.execution.ErrorHandler;
 import com.peergreen.tasks.execution.TaskContextFactory;
 import com.peergreen.tasks.execution.builder.DelegateExecutionBuilder;
 import com.peergreen.tasks.execution.builder.ParallelExecutionBuilder;
@@ -50,12 +51,20 @@ public class ExecutorServiceBuilderManager extends DefaultExecutionBuilderManage
     }
 
     public ExecutorServiceBuilderManager(ExecutorService executorService) {
-        this(new DefaultTaskContextFactory(), executorService);
+        this(new DefaultTaskContextFactory(), executorService, new UnitOfWorkExecutionBuilder.DefaultErrorHandler());
     }
 
     public ExecutorServiceBuilderManager(TaskContextFactory taskContextFactory, ExecutorService executorService) {
+        this(taskContextFactory, executorService, new UnitOfWorkExecutionBuilder.DefaultErrorHandler());
+    }
+
+    public ExecutorServiceBuilderManager(ExecutorService executorService, ErrorHandler errorHandler) {
+        this(new DefaultTaskContextFactory(), executorService, errorHandler);
+    }
+
+    public ExecutorServiceBuilderManager(TaskContextFactory taskContextFactory, ExecutorService executorService, ErrorHandler errorHandler) {
         super(taskContextFactory);
-        addExecutionBuilder(UnitOfWork.class, new UnitOfWorkExecutionBuilder(executorService));
+        addExecutionBuilder(UnitOfWork.class, new UnitOfWorkExecutionBuilder(executorService, errorHandler));
         addExecutionBuilder(Pipeline.class, new PipelineExecutionBuilder(this));
         addExecutionBuilder(Parallel.class, new ParallelExecutionBuilder(this));
         addExecutionBuilder(WakeUp.class, new WakeUpExecutionBuilder(this));

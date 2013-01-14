@@ -15,8 +15,10 @@
 package com.peergreen.tasks.execution.builder;
 
 import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.execution.ErrorHandler;
 import com.peergreen.tasks.execution.Execution;
 import com.peergreen.tasks.execution.ExecutionBuilder;
+import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.internal.UnitOfWorkExecution;
 import com.peergreen.tasks.model.UnitOfWork;
 
@@ -32,13 +34,29 @@ import java.util.concurrent.ExecutorService;
 public class UnitOfWorkExecutionBuilder implements ExecutionBuilder<UnitOfWork> {
 
     private ExecutorService executorService;
+    private ErrorHandler errorhandler;
 
     public UnitOfWorkExecutionBuilder(ExecutorService executorService) {
+        this(executorService, new DefaultErrorHandler());
+    }
+
+    public UnitOfWorkExecutionBuilder(ExecutorService executorService, ErrorHandler errorhandler) {
         this.executorService = executorService;
+        this.errorhandler = errorhandler;
     }
 
     @Override
     public Execution newExecution(TaskContext taskContext, UnitOfWork task) {
-        return new UnitOfWorkExecution(executorService, taskContext, task);
+        return new UnitOfWorkExecution(executorService, errorhandler, taskContext, task);
+    }
+
+    public static class DefaultErrorHandler implements ErrorHandler {
+
+        @Override
+        public void onError(LiveTask liveTask, Throwable throwable) {
+            System.out.printf("Task '%s' failed with %s.%n",
+                              liveTask.getModel().getName(),
+                              throwable.getMessage());
+        }
     }
 }
