@@ -12,12 +12,13 @@
  * limitations under the License.
  */
 
-package com.peergreen.tasks.tree.task;
+package com.peergreen.tasks.tree;
 
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.EmptyJob;
+import com.peergreen.tasks.tree.TaskNodeAdapter;
 import org.testng.annotations.Test;
 
 import java.util.Iterator;

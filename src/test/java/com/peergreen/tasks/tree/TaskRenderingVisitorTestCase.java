@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package com.peergreen.tasks.tree.task;
+package com.peergreen.tasks.tree;
 
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.execution.helper.TaskExecutorService;
@@ -23,7 +23,9 @@ import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.group.Group;
 import com.peergreen.tasks.model.job.EmptyJob;
-import com.peergreen.tasks.tree.Node;
+import com.peergreen.tasks.tree.TaskNodeAdapter;
+import com.peergreen.tasks.tree.TaskRenderingVisitor;
+import com.peergreen.tree.Node;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

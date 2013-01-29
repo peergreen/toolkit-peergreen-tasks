@@ -12,15 +12,15 @@
  * limitations under the License.
  */
 
-package com.peergreen.tasks.tree.task;
+package com.peergreen.tasks.tree;
 
 import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.tracker.TaskTracker;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.group.Group;
-import com.peergreen.tasks.tree.Node;
-import com.peergreen.tasks.tree.NodeVisitor;
+import com.peergreen.tree.Node;
+import com.peergreen.tree.NodeVisitor;
 
 import java.io.PrintStream;
 import java.util.ArrayList;

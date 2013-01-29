@@ -19,7 +19,9 @@ import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.EmptyJob;
-import com.peergreen.tasks.tree.task.TaskNodeAdapter;
+import com.peergreen.tasks.tree.TaskNodeAdapter;
+import com.peergreen.tree.Node;
+import com.peergreen.tree.NodeVisitor;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
