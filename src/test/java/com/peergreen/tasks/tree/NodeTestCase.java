@@ -14,23 +14,24 @@
 
 package com.peergreen.tasks.tree;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+import java.util.Iterator;
+import java.util.List;
+
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.EmptyJob;
-import com.peergreen.tasks.tree.TaskNodeAdapter;
 import com.peergreen.tree.Node;
 import com.peergreen.tree.NodeVisitor;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import java.util.Iterator;
-import java.util.List;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import com.peergreen.tree.node.LazyNode;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,7 +41,7 @@ import static org.testng.Assert.assertTrue;
  * To change this template use File | Settings | File Templates.
  */
 public class NodeTestCase {
-    private Pipeline pipeline = new Pipeline("master");
+    private final Pipeline pipeline = new Pipeline("master");
     private Parallel parallel;
     private UnitOfWork unitOfWorkA;
     private UnitOfWork unitOfWorkB;
@@ -68,7 +69,7 @@ public class NodeTestCase {
     @Test
     public void testNodeCreation() throws Exception {
 
-        Node<Task> root = new Node<Task>(new TaskNodeAdapter(), pipeline);
+        Node<Task> root = new LazyNode<Task>(new TaskNodeAdapter(), pipeline);
 
         // Children of Pipeline should be ordered
         Iterator<Node<Task>> i = root.getChildren().iterator();
@@ -79,8 +80,8 @@ public class NodeTestCase {
         // Children of Parallel have no order
         List<Node<Task>> children = root.getChildren().get(0).getChildren();
         assertEquals(children.size(), 2);
-        assertTrue(children.contains(new Node<Task>(new TaskNodeAdapter(), unitOfWorkA)));
-        assertTrue(children.contains(new Node<Task>(new TaskNodeAdapter(), unitOfWorkB)));
+        assertTrue(children.contains(new LazyNode<Task>(new TaskNodeAdapter(), unitOfWorkA)));
+        assertTrue(children.contains(new LazyNode<Task>(new TaskNodeAdapter(), unitOfWorkB)));
     }
 
     @Test
@@ -90,8 +91,8 @@ public class NodeTestCase {
         UnitOfWork uow = new UnitOfWork(new EmptyJob());
         p.add(uow);
 
-        Node<Task> child = new Node<Task>(new TaskNodeAdapter(), uow);
-        Node<Task> parent = new Node<Task>(new TaskNodeAdapter(), p);
+        LazyNode<Task> child = new LazyNode<Task>(new TaskNodeAdapter(), uow);
+        LazyNode<Task> parent = new LazyNode<Task>(new TaskNodeAdapter(), p);
         child.setParent(parent);
 
         Iterator<Node<Task>> i = parent.getChildren().iterator();
@@ -101,7 +102,7 @@ public class NodeTestCase {
 
     @Test
     public void testNodeVisitorVisitsAllNodes() throws Exception {
-        Node<Task> root = new Node<Task>(new TaskNodeAdapter(), pipeline);
+        Node<Task> root = new LazyNode<Task>(new TaskNodeAdapter(), pipeline);
 
         final StringBuilder sb = new StringBuilder();
 
@@ -131,8 +132,8 @@ public class NodeTestCase {
         UnitOfWork unitOfWork = new UnitOfWork(new EmptyJob(), "uow");
         pipeline1.add(unitOfWork);
 
-        Node<Task> child = new Node<Task>(new TaskNodeAdapter(), unitOfWork);
-        Node<Task> parent = new Node<Task>(new TaskNodeAdapter(), pipeline1);
+        LazyNode<Task> child = new LazyNode<Task>(new TaskNodeAdapter(), unitOfWork);
+        Node<Task> parent = new LazyNode<Task>(new TaskNodeAdapter(), pipeline1);
 
         child.setParent(parent);
 

@@ -14,6 +14,16 @@
 
 package com.peergreen.tasks.tree;
 
+import static java.util.Collections.singleton;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.concurrent.Future;
+
+import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.execution.helper.TaskExecutorService;
 import com.peergreen.tasks.execution.tracker.TrackerManager;
@@ -23,18 +33,8 @@ import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.group.Group;
 import com.peergreen.tasks.model.job.EmptyJob;
-import com.peergreen.tasks.tree.TaskNodeAdapter;
-import com.peergreen.tasks.tree.TaskRenderingVisitor;
 import com.peergreen.tree.Node;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.concurrent.Future;
-
-import static java.util.Collections.singleton;
+import com.peergreen.tree.node.LazyNode;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,7 +58,7 @@ public class TaskRenderingVisitorTestCase {
     @Test
     public void testSingleNodeRendering() throws Exception {
         UnitOfWork unitOfWork = new UnitOfWork(new EmptyJob(), "uow");
-        Node<Task> node = new Node<Task>(new TaskNodeAdapter(), unitOfWork);
+        Node<Task> node = new LazyNode<Task>(new TaskNodeAdapter(), unitOfWork);
 
         node.walk(visitor);
 
@@ -70,7 +70,7 @@ public class TaskRenderingVisitorTestCase {
         Pipeline master = new Pipeline("master");
         UnitOfWork unitOfWork = new UnitOfWork(new EmptyJob(), "uow");
         master.add(unitOfWork);
-        Node<Task> node = new Node<Task>(new TaskNodeAdapter(), master);
+        Node<Task> node = new LazyNode<Task>(new TaskNodeAdapter(), master);
 
         node.walk(visitor);
 
@@ -90,7 +90,7 @@ public class TaskRenderingVisitorTestCase {
 
         visitor.setGroups(singleton(group));
 
-        Node<Task> node = new Node<Task>(new TaskNodeAdapter(), master);
+        Node<Task> node = new LazyNode<Task>(new TaskNodeAdapter(), master);
 
         node.walk(visitor);
 
@@ -105,7 +105,7 @@ public class TaskRenderingVisitorTestCase {
         UnitOfWork unitOfWork = new UnitOfWork(new EmptyJob(), "uow");
         UnitOfWork unitOfWork2 = new UnitOfWork(new EmptyJob(), "uow2");
         master.add(unitOfWork, unitOfWork2);
-        Node<Task> node = new Node<Task>(new TaskNodeAdapter(), master);
+        Node<Task> node = new LazyNode<Task>(new TaskNodeAdapter(), master);
 
         node.walk(visitor);
 
@@ -124,7 +124,7 @@ public class TaskRenderingVisitorTestCase {
         Pipeline sub = new Pipeline("sub");
         sub.add(new UnitOfWork(new EmptyJob(), "task"));
         master.add(sub);
-        Node<Task> node = new Node<Task>(new TaskNodeAdapter(), master);
+        Node<Task> node = new LazyNode<Task>(new TaskNodeAdapter(), master);
 
         node.walk(visitor);
 
@@ -146,7 +146,7 @@ public class TaskRenderingVisitorTestCase {
         Pipeline sub = new Pipeline("sub");
         sub.add(new UnitOfWork(new EmptyJob(), "task"));
         master.add(sub);
-        Node<Task> node = new Node<Task>(new TaskNodeAdapter(), master);
+        Node<Task> node = new LazyNode<Task>(new TaskNodeAdapter(), master);
 
         node.walk(visitor);
 
@@ -165,7 +165,7 @@ public class TaskRenderingVisitorTestCase {
         WakeUp wakeUp = new WakeUp("wake", unitOfWork);
 
         master.add(wakeUp);
-        Node<Task> node = new Node<Task>(new TaskNodeAdapter(), master);
+        Node<Task> node = new LazyNode<Task>(new TaskNodeAdapter(), master);
 
         ExecutorServiceBuilderManager builderManager = new ExecutorServiceBuilderManager();
         TaskExecutorService execution = new TaskExecutorService(builderManager);
