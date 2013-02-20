@@ -16,20 +16,21 @@
 
 package com.peergreen.tasks.model.group;
 
-import com.peergreen.tasks.context.ExecutionContext;
-import com.peergreen.tasks.context.TaskContext;
-import com.peergreen.tasks.model.Task;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
+
+import java.util.Collections;
+
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
+import com.peergreen.tasks.context.ExecutionContext;
+import com.peergreen.tasks.context.TaskContext;
+import com.peergreen.tasks.model.Task;
 
 /**
  * Created with IntelliJ IDEA.

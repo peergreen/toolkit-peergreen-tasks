@@ -16,11 +16,11 @@
 
 package com.peergreen.tasks.execution.tracker.state;
 
+import java.io.PrintStream;
+
 import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.tracker.TaskTracker;
 import com.peergreen.tasks.model.State;
-
-import java.io.PrintStream;
 
 /**
  * Created with IntelliJ IDEA.

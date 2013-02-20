@@ -16,19 +16,19 @@
 
 package com.peergreen.tasks.tree;
 
-import com.peergreen.tasks.model.Pipeline;
-import com.peergreen.tasks.model.Task;
-import com.peergreen.tasks.model.UnitOfWork;
-import com.peergreen.tasks.model.job.EmptyJob;
-import com.peergreen.tasks.tree.TaskNodeAdapter;
-import org.testng.annotations.Test;
-
-import java.util.Iterator;
-
 import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+
+import java.util.Iterator;
+
+import org.testng.annotations.Test;
+
+import com.peergreen.tasks.model.Pipeline;
+import com.peergreen.tasks.model.Task;
+import com.peergreen.tasks.model.UnitOfWork;
+import com.peergreen.tasks.model.job.EmptyJob;
 
 /**
  * Created with IntelliJ IDEA.

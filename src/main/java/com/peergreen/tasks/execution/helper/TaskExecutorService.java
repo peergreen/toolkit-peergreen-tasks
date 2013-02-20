@@ -16,19 +16,19 @@
 
 package com.peergreen.tasks.execution.helper;
 
-import com.peergreen.tasks.context.DefaultExecutionContext;
-import com.peergreen.tasks.context.ExecutionContext;
-import com.peergreen.tasks.execution.Execution;
-import com.peergreen.tasks.execution.ExecutionBuilderManager;
-import com.peergreen.tasks.model.State;
-import com.peergreen.tasks.model.Task;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import com.peergreen.tasks.context.DefaultExecutionContext;
+import com.peergreen.tasks.context.ExecutionContext;
+import com.peergreen.tasks.execution.Execution;
+import com.peergreen.tasks.execution.ExecutionBuilderManager;
+import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.Task;
 
 /**
  * Created with IntelliJ IDEA.

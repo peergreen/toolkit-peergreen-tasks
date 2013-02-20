@@ -16,11 +16,11 @@
 
 package com.peergreen.tasks.execution.tracker;
 
-import com.peergreen.tasks.execution.LiveTask;
-import com.peergreen.tasks.model.State;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.peergreen.tasks.execution.LiveTask;
+import com.peergreen.tasks.model.State;
 
 /**
  * Created with IntelliJ IDEA.

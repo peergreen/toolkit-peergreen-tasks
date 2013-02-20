@@ -16,13 +16,13 @@
 
 package com.peergreen.tasks.execution.tracker;
 
-import com.peergreen.tasks.execution.LiveTask;
-import com.peergreen.tasks.model.State;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.peergreen.tasks.execution.LiveTask;
+import com.peergreen.tasks.model.State;
 
 /**
  * Created with IntelliJ IDEA.

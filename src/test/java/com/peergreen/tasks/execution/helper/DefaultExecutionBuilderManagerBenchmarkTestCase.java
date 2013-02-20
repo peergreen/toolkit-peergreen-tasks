@@ -16,6 +16,8 @@
 
 package com.peergreen.tasks.execution.helper;
 
+import org.testng.annotations.Test;
+
 import com.google.caliper.Param;
 import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
@@ -25,7 +27,6 @@ import com.peergreen.tasks.context.ExecutionContext;
 import com.peergreen.tasks.execution.builder.PipelineExecutionBuilder;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
-import org.testng.annotations.Test;
 
 /**
  * Created with IntelliJ IDEA.

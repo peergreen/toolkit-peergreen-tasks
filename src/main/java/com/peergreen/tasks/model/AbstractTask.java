@@ -16,10 +16,10 @@
 
 package com.peergreen.tasks.model;
 
+import java.util.UUID;
+
 import com.peergreen.tasks.model.group.Group;
 import com.peergreen.tasks.model.group.GroupReference;
-
-import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.

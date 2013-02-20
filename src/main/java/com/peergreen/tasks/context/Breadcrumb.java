@@ -16,12 +16,12 @@
 
 package com.peergreen.tasks.context;
 
-import com.peergreen.tasks.model.Task;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import com.peergreen.tasks.model.Task;
 
 /**
  * Created with IntelliJ IDEA.

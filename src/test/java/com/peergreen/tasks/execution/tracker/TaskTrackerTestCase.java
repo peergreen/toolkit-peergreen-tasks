@@ -16,17 +16,18 @@
 
 package com.peergreen.tasks.execution.tracker;
 
-import com.peergreen.tasks.execution.LiveTask;
-import com.peergreen.tasks.model.State;
-import com.peergreen.tasks.model.Task;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.peergreen.tasks.execution.LiveTask;
+import com.peergreen.tasks.model.State;
+import com.peergreen.tasks.model.Task;
 
 /**
  * Created with IntelliJ IDEA.

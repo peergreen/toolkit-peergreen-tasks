@@ -16,6 +16,14 @@
 
 package com.peergreen.tasks.context.internal;
 
+import static org.testng.Assert.assertSame;
+
+import java.util.Arrays;
+import java.util.Collections;
+
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import com.peergreen.tasks.context.Breadcrumb;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
@@ -23,13 +31,6 @@ import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.WakeUp;
 import com.peergreen.tasks.model.job.EmptyJob;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.testng.Assert.assertSame;
 
 /**
  * Created with IntelliJ IDEA.

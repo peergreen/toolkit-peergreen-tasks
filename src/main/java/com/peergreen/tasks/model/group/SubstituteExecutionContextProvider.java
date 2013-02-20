@@ -16,10 +16,10 @@
 
 package com.peergreen.tasks.model.group;
 
-import com.peergreen.tasks.context.ExecutionContext;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.peergreen.tasks.context.ExecutionContext;
 
 /**
  * Created with IntelliJ IDEA.

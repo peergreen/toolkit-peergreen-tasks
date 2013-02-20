@@ -16,6 +16,13 @@
 
 package com.peergreen.tasks.context;
 
+import static org.testng.Assert.assertTrue;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.testng.annotations.Test;
+
 import com.peergreen.tasks.execution.helper.ExecutorServiceBuilderManager;
 import com.peergreen.tasks.execution.helper.TaskExecutorService;
 import com.peergreen.tasks.execution.tracker.TrackerManager;
@@ -28,12 +35,6 @@ import com.peergreen.tasks.model.expect.ExpectationTracker;
 import com.peergreen.tasks.model.expect.ExtensionExpectation;
 import com.peergreen.tasks.model.expect.PropertyExpectation;
 import com.peergreen.tasks.model.job.EmptyJob;
-import org.testng.annotations.Test;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static org.testng.Assert.assertTrue;
 
 /**
  * Created with IntelliJ IDEA.

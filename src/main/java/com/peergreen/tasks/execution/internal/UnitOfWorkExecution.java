@@ -16,13 +16,13 @@
 
 package com.peergreen.tasks.execution.internal;
 
+import java.util.concurrent.ExecutorService;
+
 import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.execution.ErrorHandler;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * Created with IntelliJ IDEA.

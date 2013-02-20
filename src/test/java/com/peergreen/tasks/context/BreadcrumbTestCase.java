@@ -16,16 +16,17 @@
 
 package com.peergreen.tasks.context;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+
+import java.util.Iterator;
+
+import org.testng.annotations.Test;
+
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.job.EmptyJob;
-import org.testng.annotations.Test;
-
-import java.util.Iterator;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 
 /**
  * Created with IntelliJ IDEA.

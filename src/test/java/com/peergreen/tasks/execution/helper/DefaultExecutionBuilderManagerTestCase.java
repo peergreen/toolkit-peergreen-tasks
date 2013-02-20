@@ -16,16 +16,17 @@
 
 package com.peergreen.tasks.execution.helper;
 
+import static org.mockito.Mockito.mock;
+import static org.testng.Assert.assertNotNull;
+
+import org.testng.annotations.Test;
+
 import com.peergreen.tasks.context.Breadcrumb;
 import com.peergreen.tasks.context.ExecutionContext;
 import com.peergreen.tasks.execution.Execution;
 import com.peergreen.tasks.execution.builder.PipelineExecutionBuilder;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
-import org.testng.annotations.Test;
-
-import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertNotNull;
 
 /**
  * Created with IntelliJ IDEA.

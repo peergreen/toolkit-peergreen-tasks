@@ -16,6 +16,12 @@
 
 package com.peergreen.tasks.tree;
 
+import static java.util.Collections.emptySet;
+
+import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.tracker.TaskTracker;
 import com.peergreen.tasks.model.State;
@@ -24,15 +30,6 @@ import com.peergreen.tasks.model.group.Group;
 import com.peergreen.tree.Node;
 import com.peergreen.tree.NodeVisitor;
 import com.peergreen.tree.visitor.print.TreePrettyPrintNodeVisitor;
-
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Collections.emptySet;
 
 /**
  * Created with IntelliJ IDEA.

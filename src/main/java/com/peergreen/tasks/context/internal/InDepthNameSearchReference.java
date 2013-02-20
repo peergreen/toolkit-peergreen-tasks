@@ -16,13 +16,13 @@
 
 package com.peergreen.tasks.context.internal;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.peergreen.tasks.context.Breadcrumb;
 import com.peergreen.tasks.context.Reference;
 import com.peergreen.tasks.model.Scope;
 import com.peergreen.tasks.model.Task;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
 * Created with IntelliJ IDEA.

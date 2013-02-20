@@ -16,6 +16,8 @@
 
 package com.peergreen.tasks.execution.builder;
 
+import java.util.concurrent.ExecutorService;
+
 import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.execution.ErrorHandler;
 import com.peergreen.tasks.execution.Execution;
@@ -23,8 +25,6 @@ import com.peergreen.tasks.execution.ExecutionBuilder;
 import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.internal.UnitOfWorkExecution;
 import com.peergreen.tasks.model.UnitOfWork;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * Created with IntelliJ IDEA.

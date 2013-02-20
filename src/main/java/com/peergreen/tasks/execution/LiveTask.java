@@ -16,11 +16,11 @@
 
 package com.peergreen.tasks.execution;
 
+import java.beans.PropertyChangeListener;
+
 import com.peergreen.tasks.context.TaskContext;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
-
-import java.beans.PropertyChangeListener;
 
 /**
  * Created with IntelliJ IDEA.

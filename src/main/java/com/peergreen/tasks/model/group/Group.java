@@ -16,12 +16,12 @@
 
 package com.peergreen.tasks.model.group;
 
-import com.peergreen.tasks.model.Task;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
+
+import com.peergreen.tasks.model.Task;
 
 /**
  * Created with IntelliJ IDEA.

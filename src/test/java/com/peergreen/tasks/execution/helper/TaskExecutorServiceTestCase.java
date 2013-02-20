@@ -16,6 +16,12 @@
 
 package com.peergreen.tasks.execution.helper;
 
+import static org.testng.Assert.assertTrue;
+
+import java.util.concurrent.Future;
+
+import org.testng.annotations.Test;
+
 import com.peergreen.tasks.execution.tracker.TrackerManager;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.State;
@@ -24,11 +30,6 @@ import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.expect.ExpectationTracker;
 import com.peergreen.tasks.model.expect.StateExpectation;
 import com.peergreen.tasks.model.job.SleepJob;
-import org.testng.annotations.Test;
-
-import java.util.concurrent.Future;
-
-import static org.testng.Assert.assertTrue;
 
 /**
  * Created with IntelliJ IDEA.

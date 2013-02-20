@@ -16,6 +16,8 @@
 
 package com.peergreen.tasks.context.helper;
 
+import java.util.Arrays;
+
 import com.peergreen.tasks.context.Breadcrumb;
 import com.peergreen.tasks.context.Reference;
 import com.peergreen.tasks.context.internal.HierarchicalSearchReference;
@@ -23,8 +25,6 @@ import com.peergreen.tasks.context.internal.InDepthNameSearchReference;
 import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.Task;
-
-import java.util.Arrays;
 
 /**
  * Created with IntelliJ IDEA.

@@ -16,6 +16,9 @@
 
 package com.peergreen.tasks.execution.helper;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.peergreen.tasks.context.DefaultTaskContextFactory;
 import com.peergreen.tasks.execution.ErrorHandler;
 import com.peergreen.tasks.execution.TaskContextFactory;
@@ -29,9 +32,6 @@ import com.peergreen.tasks.model.Parallel;
 import com.peergreen.tasks.model.Pipeline;
 import com.peergreen.tasks.model.UnitOfWork;
 import com.peergreen.tasks.model.WakeUp;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created with IntelliJ IDEA.

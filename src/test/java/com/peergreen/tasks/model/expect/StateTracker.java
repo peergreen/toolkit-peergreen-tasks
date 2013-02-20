@@ -16,13 +16,13 @@
 
 package com.peergreen.tasks.model.expect;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.tracker.TaskTracker;
 import com.peergreen.tasks.model.State;
 import com.peergreen.tasks.model.Task;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
