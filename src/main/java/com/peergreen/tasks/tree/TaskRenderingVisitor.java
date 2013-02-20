@@ -21,6 +21,7 @@ import com.peergreen.tasks.model.Task;
 import com.peergreen.tasks.model.group.Group;
 import com.peergreen.tree.Node;
 import com.peergreen.tree.NodeVisitor;
+import com.peergreen.tree.visitor.print.TreePrettyPrintNodeVisitor;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -61,17 +62,7 @@ public class TaskRenderingVisitor extends TaskTracker<Object> implements NodeVis
         states.put(source.getModel(), source.getState());
     }
 
-    private enum Element {
-        TEE("|-- "), BAR("|   "), LAST("`-- "), BLANK("    ");
-
-        private final String value;
-
-        Element(String value) {
-            this.value = value;
-        }
-    }
-
-    private PrintStream stream ;
+    private final NodeVisitor<Task> pretty;
     private Iterable<Group> groups;
     private Map<Task, State> states;
 
@@ -80,7 +71,7 @@ public class TaskRenderingVisitor extends TaskTracker<Object> implements NodeVis
     }
 
     public TaskRenderingVisitor(PrintStream stream) {
-        this.stream = stream;
+        this.pretty = new TaskPrettyPrintVisitor(stream);
         this.states = new HashMap<Task, State>();
         this.groups = emptySet();
     }
@@ -91,67 +82,36 @@ public class TaskRenderingVisitor extends TaskTracker<Object> implements NodeVis
 
     @Override
     public void visit(Node<Task> node) {
-
-        List<Element> prefix = new ArrayList<Element>();
-        if (node.getParent() != null) {
-            // we're visiting an item with parent
-
-            // handle last element
-            if (isLastChild(node)) {
-                prefix.add(0, Element.LAST);
-            } else {
-                prefix.add(0, Element.TEE);
-            }
-
-            // handle other elements
-            Node<Task> current = node.getParent();
-            while (current.getParent() != null) {
-
-                if (isLastChild(current)) {
-                    prefix.add(0, Element.BLANK);
-                } else {
-                    prefix.add(0, Element.BAR);
-                }
-
-                // Move cursor
-                current = current.getParent();
-            }
-
-        } // else no parent (thus no/empty prefix)
-
-        for (Element element : prefix) {
-            stream.print(element.value);
-        }
-
-        // Print Task info
-        Task task = node.getData();
-        State state = states.get(task);
-        stream.printf("%s [%s, %S]",
-                task.getClass().getSimpleName(),
-                task.getName(),
-                (state!= null) ? state : "unknown");
-
-        for (Group group : groups) {
-            if (group.contains(task)) {
-                stream.printf(" @%s", group.getName());
-            }
-        }
-
-        stream.println();
+        pretty.visit(node);
     }
 
-    private boolean isLastChild(Node<?> node) {
-        Node<?> parent = node.getParent();
-        Iterator<? extends Node<?>> i = parent.getChildren().iterator();
+    /**
+     * I need to have a delegating class here since the visitor already extends TaskTracker.
+     */
+    private class TaskPrettyPrintVisitor extends TreePrettyPrintNodeVisitor<Task> {
 
-        // Consume the Iterator until we find the current Node
-        Node<?> child = i.next();
-        while (!node.equals(child)) {
-            child = i.next();
+        public TaskPrettyPrintVisitor(PrintStream stream) {
+            super(stream);
         }
 
-        // It is the last child if this is the last item of the Iterator
-        return !i.hasNext();
+        @Override
+        protected void doPrintInfo(PrintStream stream, Node<Task> node) {
+            // Print Task info
+            Task task = node.getData();
+            State state = states.get(task);
+            stream.printf("%s [%s, %S]",
+                    task.getClass().getSimpleName(),
+                    task.getName(),
+                    (state!= null) ? state : "unknown");
+
+            for (Group group : groups) {
+                if (group.contains(task)) {
+                    stream.printf(" @%s", group.getName());
+                }
+            }
+
+            stream.println();
+        }
     }
 
 }
