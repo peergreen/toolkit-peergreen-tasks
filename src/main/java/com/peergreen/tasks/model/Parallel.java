@@ -28,8 +28,8 @@ import java.util.Iterator;
  * Time: 16:52
  * To change this template use File | Settings | File Templates.
  */
-public class Parallel extends AbstractTask implements Scope {
-    private Collection<Task> tasks = new HashSet<Task>();
+public class Parallel extends AbstractTask implements Container {
+    private final Collection<Task> tasks = new HashSet<Task>();
 
     public Parallel() {
         this(null);
@@ -43,9 +43,14 @@ public class Parallel extends AbstractTask implements Scope {
         return Collections.unmodifiableCollection(tasks);
     }
 
-    public void add(Task task) {
-        if (isModifiable()) {
-            this.tasks.add(task);
+    @Override
+    public void add(Task... tasks) {
+        if (tasks != null) {
+            for (Task task : tasks) {
+                if (isModifiable()) {
+                    this.tasks.add(task);
+                }
+            }
         }
     }
 

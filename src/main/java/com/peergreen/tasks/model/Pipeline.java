@@ -28,8 +28,8 @@ import java.util.List;
  * Time: 16:52
  * To change this template use File | Settings | File Templates.
  */
-public class Pipeline extends AbstractTask implements Scope {
-    private LinkedList<Task> tasks = new LinkedList<Task>();
+public class Pipeline extends AbstractTask implements Container {
+    private final LinkedList<Task> tasks = new LinkedList<Task>();
 
     public Pipeline() {
         this(null);
@@ -49,6 +49,7 @@ public class Pipeline extends AbstractTask implements Scope {
         }
     }
 
+    @Override
     public void add(Task... tasks) {
         if (tasks != null) {
             for (Task task : tasks) {
