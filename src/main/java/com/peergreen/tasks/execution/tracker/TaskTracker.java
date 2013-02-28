@@ -16,8 +16,8 @@
 
 package com.peergreen.tasks.execution.tracker;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.model.State;
@@ -31,8 +31,8 @@ import com.peergreen.tasks.model.State;
  */
 public class TaskTracker<T> implements Tracker<T> {
 
-    private Map<LiveTask, T> tracked = new HashMap<LiveTask, T>();
-    private Tracker<T> tracker;
+    private final Map<LiveTask, T> tracked = new ConcurrentHashMap<LiveTask, T>();
+    private final Tracker<T> tracker;
 
 
     public TaskTracker() {
@@ -68,9 +68,11 @@ public class TaskTracker<T> implements Tracker<T> {
     }
 
 
+    @Override
     public T newSource(LiveTask source) {
         return null;
     }
+    @Override
     public void sourceChanged(LiveTask source, State previous, T bag) {
 
     }
