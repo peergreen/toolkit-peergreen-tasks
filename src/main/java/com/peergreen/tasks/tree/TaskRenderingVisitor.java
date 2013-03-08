@@ -19,8 +19,8 @@ package com.peergreen.tasks.tree;
 import static java.util.Collections.emptySet;
 
 import java.io.PrintStream;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.tracker.TaskTracker;
@@ -63,7 +63,7 @@ public class TaskRenderingVisitor extends TaskTracker<Object> implements NodeVis
 
     private final NodeVisitor<Task> pretty;
     private Iterable<Group> groups;
-    private Map<Task, State> states;
+    private final Map<Task, State> states;
 
     public TaskRenderingVisitor() {
         this(System.out);
@@ -71,7 +71,7 @@ public class TaskRenderingVisitor extends TaskTracker<Object> implements NodeVis
 
     public TaskRenderingVisitor(PrintStream stream) {
         this.pretty = new TaskPrettyPrintVisitor(stream);
-        this.states = new HashMap<Task, State>();
+        this.states = new ConcurrentHashMap<Task, State>();
         this.groups = emptySet();
     }
 
