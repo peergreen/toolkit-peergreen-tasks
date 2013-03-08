@@ -29,7 +29,7 @@ import java.util.Iterator;
  * To change this template use File | Settings | File Templates.
  */
 public class Parallel extends AbstractTask implements Container {
-    private final Collection<Task> tasks = new HashSet<Task>();
+    private final Collection<Task> tasks = Collections.synchronizedSet(new HashSet<Task>());
 
     public Parallel() {
         this(null);
