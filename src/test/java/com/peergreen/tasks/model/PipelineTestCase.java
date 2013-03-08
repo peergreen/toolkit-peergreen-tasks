@@ -92,7 +92,7 @@ public class PipelineTestCase {
     }
 
     private void assertPipelineOrder(Pipeline pipeline, Task... tasks) {
-        Iterator<Task> i = pipeline.getTasks().iterator();
+        Iterator<Task> i = pipeline.iterator();
         for (Task task : tasks) {
             assertEquals(i.next(), task);
         }

@@ -16,10 +16,8 @@
 
 package com.peergreen.tasks.model;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,10 +35,6 @@ public class Pipeline extends AbstractTask implements Container {
 
     public Pipeline(String name) {
         super(name);
-    }
-
-    public List<Task> getTasks() {
-        return Collections.unmodifiableList(tasks);
     }
 
     public void addFirst(Task task) {
@@ -84,6 +78,6 @@ public class Pipeline extends AbstractTask implements Container {
 
     @Override
     public Iterator<Task> iterator() {
-        return getTasks().iterator();
+        return tasks.iterator();
     }
 }

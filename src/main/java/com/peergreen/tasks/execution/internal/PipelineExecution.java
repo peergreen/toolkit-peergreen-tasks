@@ -36,18 +36,19 @@ import com.peergreen.tasks.model.Task;
  */
 public class PipelineExecution extends AbstractExecution implements PropertyChangeListener {
 
-    private Iterator<Task> cursor;
-    private ExecutionBuilderManager executionBuilderManager;
-    private TaskContext taskContext;
-    private Pipeline pipeline;
+    private final Iterator<Task> cursor;
+    private final ExecutionBuilderManager executionBuilderManager;
+    private final TaskContext taskContext;
+    private final Pipeline pipeline;
 
     public PipelineExecution(ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, Pipeline pipeline) {
         this.executionBuilderManager = executionBuilderManager;
         this.taskContext = taskContext;
         this.pipeline = pipeline;
-        this.cursor = pipeline.getTasks().listIterator();
+        this.cursor = pipeline.iterator();
     }
 
+    @Override
     public void execute() {
         pipeline.setReadOnly();
         setState(State.RUNNING);
