@@ -16,8 +16,8 @@
 
 package com.peergreen.tasks.model.expect;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.peergreen.tasks.execution.LiveTask;
 import com.peergreen.tasks.execution.tracker.TaskTracker;
@@ -33,7 +33,7 @@ import com.peergreen.tasks.model.Task;
  */
 public class StateTracker extends TaskTracker<Task> {
 
-    private Map<Task, State> states = new HashMap<Task, State>();
+    private final Map<Task, State> states = new ConcurrentHashMap<Task, State>();
 
     @Override
     public Task newSource(LiveTask source) {
