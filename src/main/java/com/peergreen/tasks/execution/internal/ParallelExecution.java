@@ -36,11 +36,11 @@ import com.peergreen.tasks.model.Task;
  */
 public class ParallelExecution extends AbstractExecution implements PropertyChangeListener {
 
-    private ExecutionBuilderManager executionBuilderManager;
-    private AtomicInteger completed = new AtomicInteger(0);
+    private final ExecutionBuilderManager executionBuilderManager;
+    private final AtomicInteger completed = new AtomicInteger(0);
     private State out = State.COMPLETED;
-    private TaskContext taskContext;
-    private Parallel parallel;
+    private final TaskContext taskContext;
+    private final Parallel parallel;
 
     public ParallelExecution(ExecutionBuilderManager executionBuilderManager, TaskContext taskContext, Parallel parallel) {
         this.executionBuilderManager = executionBuilderManager;
@@ -48,6 +48,7 @@ public class ParallelExecution extends AbstractExecution implements PropertyChan
         this.parallel = parallel;
     }
 
+    @Override
     public void execute() {
         parallel.setReadOnly();
         setState(State.RUNNING);
