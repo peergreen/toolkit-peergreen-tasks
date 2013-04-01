@@ -24,7 +24,7 @@
 
   <groupId>com.peergreen.tasks</groupId>
   <artifactId>peergreen-tasks</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
 
   <name>Peergreen Tasks</name>
   <description>
@@ -100,9 +100,4 @@
       <layout>default</layout>
     </repository>
   </repositories>
-
-
-  <scm>
-    <tag>PEERGREEN_TASKS_1_0_0</tag>
-  </scm>
 </project>
