@@ -36,6 +36,13 @@
     <maven-surefire-plugin.version>2.12.4</maven-surefire-plugin.version>
   </properties>
 
+  <scm>
+    <connection>scm:git:https://forge.peergreen.com/git/git/toolkit/peergreen-tasks.git</connection>
+    <developerConnection>scm:git:https://forge.peergreen.com/git/git/toolkit/peergreen-tasks.git</developerConnection>
+    <url>https://forge.peergreen.com/git/summary/?r=toolkit/peergreen-tasks.git</url>
+    <tag>HEAD</tag>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>org.testng</groupId>
