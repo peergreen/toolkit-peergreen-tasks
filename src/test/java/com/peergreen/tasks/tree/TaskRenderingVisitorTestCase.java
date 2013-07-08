@@ -49,6 +49,7 @@ public class TaskRenderingVisitorTestCase {
 
     private ByteArrayOutputStream baos;
     private TaskRenderingVisitor visitor;
+    private String EOL = System.getProperty("line.separator");
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -64,7 +65,7 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        Assert.assertEquals(baos.toString(), "UnitOfWork [uow, UNKNOWN]\n");
+        Assert.assertEquals(baos.toString(), "UnitOfWork [uow, UNKNOWN]" + EOL);
     }
 
     @Test
@@ -76,8 +77,8 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, UNKNOWN]\n" +
-                "`-- UnitOfWork [uow, UNKNOWN]\n";
+        String expected = "Pipeline [master, UNKNOWN]" + EOL +
+                "`-- UnitOfWork [uow, UNKNOWN]" + EOL;
         Assert.assertEquals(baos.toString(), expected);
     }
 
@@ -96,8 +97,8 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, UNKNOWN]\n" +
-                "`-- UnitOfWork [uow, UNKNOWN] @test\n";
+        String expected = "Pipeline [master, UNKNOWN]" + EOL +
+                "`-- UnitOfWork [uow, UNKNOWN] @test" + EOL;
         Assert.assertEquals(baos.toString(), expected);
     }
 
@@ -111,9 +112,9 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, UNKNOWN]\n" +
-                "|-- UnitOfWork [uow, UNKNOWN]\n" +
-                "`-- UnitOfWork [uow2, UNKNOWN]\n";
+        String expected = "Pipeline [master, UNKNOWN]" + EOL +
+                "|-- UnitOfWork [uow, UNKNOWN]" + EOL +
+                "`-- UnitOfWork [uow2, UNKNOWN]" + EOL;
         Assert.assertEquals(baos.toString(), expected);
     }
 
@@ -130,10 +131,10 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, UNKNOWN]\n" +
-                "|-- UnitOfWork [uow, UNKNOWN]\n" +
-                "`-- Pipeline [sub, UNKNOWN]\n" +
-                "    `-- UnitOfWork [task, UNKNOWN]\n";
+        String expected = "Pipeline [master, UNKNOWN]" + EOL +
+                "|-- UnitOfWork [uow, UNKNOWN]" + EOL +
+                "`-- Pipeline [sub, UNKNOWN]" + EOL +
+                "    `-- UnitOfWork [task, UNKNOWN]" + EOL;
         Assert.assertEquals(baos.toString(), expected);
     }
 
@@ -152,11 +153,11 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, UNKNOWN]\n" +
-                "|-- Pipeline [pipeline, UNKNOWN]\n" +
-                "|   `-- UnitOfWork [uow, UNKNOWN]\n" +
-                "`-- Pipeline [sub, UNKNOWN]\n" +
-                "    `-- UnitOfWork [task, UNKNOWN]\n";
+        String expected = "Pipeline [master, UNKNOWN]" + EOL +
+                "|-- Pipeline [pipeline, UNKNOWN]" + EOL +
+                "|   `-- UnitOfWork [uow, UNKNOWN]" + EOL +
+                "`-- Pipeline [sub, UNKNOWN]" + EOL +
+                "    `-- UnitOfWork [task, UNKNOWN]" + EOL;
         Assert.assertEquals(baos.toString(), expected);
     }
 
@@ -180,9 +181,9 @@ public class TaskRenderingVisitorTestCase {
 
         node.walk(visitor);
 
-        String expected = "Pipeline [master, RUNNING]\n" +
-                "`-- WakeUp [wake, SCHEDULED]\n" +
-                "    `-- UnitOfWork [uow, UNKNOWN]\n";
+        String expected = "Pipeline [master, RUNNING]" + EOL +
+                "`-- WakeUp [wake, SCHEDULED]" + EOL +
+                "    `-- UnitOfWork [uow, UNKNOWN]" + EOL;
         Assert.assertEquals(baos.toString(), expected);
 
         // unblock the execution flow and wait for completion
@@ -192,9 +193,9 @@ public class TaskRenderingVisitorTestCase {
         baos.reset();
         node.walk(visitor);
 
-        String expected2 = "Pipeline [master, COMPLETED]\n" +
-                "`-- WakeUp [wake, COMPLETED]\n" +
-                "    `-- UnitOfWork [uow, COMPLETED]\n";
+        String expected2 = "Pipeline [master, COMPLETED]" + EOL +
+                "`-- WakeUp [wake, COMPLETED]" + EOL +
+                "    `-- UnitOfWork [uow, COMPLETED]" + EOL;
         Assert.assertEquals(baos.toString(), expected2);
 
 
